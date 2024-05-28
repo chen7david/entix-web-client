@@ -1,29 +1,18 @@
-import { useState } from 'react'
-import viteLogo from '/vite.svg'
-import { Button } from 'antd'
-import { DollarOutlined } from '@ant-design/icons'
+import { Route, Routes, BrowserRouter } from 'react-router-dom'
+import { Home } from './pages/home/Home'
+import { Register } from './pages/register/Register'
+import { Navbar } from './components/Navbar'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className="flex h-screen bg-blue-200 justify-center items-center">
-      <div className="flex flex-col gap-3 card text-blue-600 align-center">
-        <h1 className="text-blue-400 text-3xl font-bold">
-          Hello tailwind world!
-        </h1>
-        <img src={viteLogo} alt="Vite logo" />
-        <Button
-          icon={<DollarOutlined />}
-          onClick={() => setCount((count) => count + 1)}
-        >
-          count is {count}
-        </Button>
-        <Button loading onClick={() => setCount((count) => count + 1)}>
-          Cashout
-        </Button>
-      </div>
-    </div>
+    // remove base in vite.config.ts and basename when not hosted on /path
+    <BrowserRouter basename="/entix-web-client/">
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
