@@ -5,7 +5,8 @@ import { Navbar } from './components/Navbar'
 
 function App() {
   return (
-    <BrowserRouter basename="/entix-web-client">
+    // remove base in vite.config.ts and basename when not hosted on /path
+    <BrowserRouter basename="/entix-web-client/">
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
