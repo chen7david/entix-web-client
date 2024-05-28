@@ -1,18 +1,18 @@
-import { Route, Routes, BrowserRouter } from 'react-router-dom'
+import { Route, Routes, HashRouter } from 'react-router-dom'
 import { Home } from './pages/home/Home'
 import { Register } from './pages/register/Register'
 import { Navbar } from './components/Navbar'
 
 function App() {
   return (
-    // remove base in vite.config.ts and basename when not hosted on /path
-    <BrowserRouter basename="/entix-web-client/">
+    // replace with browser router when not hosted at a /path like on github-pages
+    <HashRouter>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 
