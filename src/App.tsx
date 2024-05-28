@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import viteLogo from '/vite.svg'
+import { Button } from 'antd'
+import { DollarOutlined } from '@ant-design/icons'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -11,12 +13,15 @@ function App() {
           Hello tailwind world!
         </h1>
         <img src={viteLogo} alt="Vite logo" />
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
+        <Button
+          icon={<DollarOutlined />}
           onClick={() => setCount((count) => count + 1)}
         >
           count is {count}
-        </button>
+        </Button>
+        <Button loading onClick={() => setCount((count) => count + 1)}>
+          Cashout
+        </Button>
       </div>
     </div>
   )
