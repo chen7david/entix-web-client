@@ -1,17 +1,25 @@
-import { Route, Routes, HashRouter } from 'react-router-dom'
-import { Home } from './pages/home/Home'
-import { Register } from './pages/register/Register'
-import { Navbar } from './components/Navbar'
+import { useState } from 'react'
+import { AppContainer } from './components/Layout'
+import { Pages } from './pages/Pages'
+import { ILoginFormState, Login } from './pages/login/Login'
 
 function App() {
-  return (
-    <HashRouter>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-    </HashRouter>
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  const handleLogin = (props: ILoginFormState) => {
+    console.log('Form data submitted:', props)
+    if (props.username === 'chen7david' && props.password === '88888888')
+      setIsAuthenticated(true)
+  }
+
+  return isAuthenticated ? (
+    <AppContainer>
+      <Pages />
+    </AppContainer>
+  ) : (
+    <AppContainer>
+      <Login onSubmit={handleLogin} />
+    </AppContainer>
   )
 }
 
