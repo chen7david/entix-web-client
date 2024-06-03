@@ -2,7 +2,7 @@ export const Home = () => {
   return (
     <div className="max-w-md w-full p-8 bg-white shadow-lg rounded-lg">
       <span className="text-4xl font-bold text-blue-600 mb-4">
-        Entix Academy
+        Welcome to Entix Academy
       </span>
       <p className="text-blue-300 mb-8">Empowering minds through education.</p>
       <form className="mb-4">
