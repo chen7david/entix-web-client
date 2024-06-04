@@ -26,6 +26,7 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
   }
 
   const handleSubmit = (e: MouseEvent<HTMLElement>) => {
+    e.preventDefault()
     console.log('Form data submitted:', formData)
     onSubmit(formData)
   }

@@ -17,6 +17,7 @@ import { SidebarMenu } from './components/Sidebar/SidebarMenu'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const toggleSidebar = () => {
@@ -25,6 +26,7 @@ function App() {
 
   const login = () => {
     setIsAuthenticated(true)
+    setIsAdmin(true)
   }
 
   const logout = () => {
@@ -55,7 +57,7 @@ function App() {
               <hr className="lex-grow border-gray-200" />
             </SidebarHeader>
             <SidebarBody>
-              <SidebarMenu onClick={toggleSidebar} />
+              <SidebarMenu isAdmin={isAdmin} onClick={toggleSidebar} />
             </SidebarBody>
             <SidebarFooter className="p-4 flex items-center justify-between">
               <Button onClick={logout} block>
