@@ -37,17 +37,17 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
           <img className="w-20" src={Logo} alt="" />
         </div>
 
-        <form className="mt-8 space-y-6">
+        <form className="mt-8 space-y-6 px-2">
           <Input
             size="large"
-            placeholder="username"
+            placeholder="Username"
             name="username"
             value={formData.username}
             onChange={handleChange}
           />
 
           <Input.Password
-            placeholder="input password"
+            placeholder="Password"
             size="large"
             iconRender={(visible) =>
               visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
