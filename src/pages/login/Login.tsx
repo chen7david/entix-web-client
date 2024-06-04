@@ -1,7 +1,7 @@
 import { Button, Input } from 'antd'
 import { useState, ChangeEvent, MouseEvent } from 'react'
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
-
+import Logo from '/entix-bw.svg'
 interface ILoginFormProps {
   onSubmit: (props: ILoginFormState) => void
 }
@@ -31,11 +31,12 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
   }
 
   return (
-    <div className="flex flex-1 bg-blue-100 justify-center items-center">
-      <div className="max-w-md w-full py-12 px-6 bg-white rounded-lg shadow-md space-y-4 m-4">
-        <h2 className="text-3xl font-extrabold text-center text-gray-600">
-          Login
-        </h2>
+    <div className="flex flex-1 bg-gray-100 justify-center items-center">
+      <div className="max-w-md w-full py-12 px-6 bg-white rounded-lg shadow-md space-y-4 m-4 ">
+        <div className="flex justify-center pb-4">
+          <img className="w-20" src={Logo} alt="" />
+        </div>
+
         <form className="mt-8 space-y-6">
           <Input
             size="large"
@@ -56,7 +57,7 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
             onChange={handleChange}
           />
 
-          <Button onClick={handleSubmit} size="large" type="primary" block>
+          <Button onClick={handleSubmit} size="large" block>
             Submit
           </Button>
         </form>
