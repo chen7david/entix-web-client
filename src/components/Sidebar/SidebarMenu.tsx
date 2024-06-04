@@ -2,13 +2,14 @@ import { useState } from 'react'
 import type { MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { Menu } from 'antd'
-import { sidebarMenuData } from './SidebarMenuData'
+import { sidebarAdminMenuData, sidebarMenuData } from './SidebarMenuData'
 
 export interface SidebarMenuProps {
   onClick: () => void
+  isAdmin: boolean
 }
 
-export const SidebarMenu = ({ onClick }: SidebarMenuProps) => {
+export const SidebarMenu = ({ onClick, isAdmin }: SidebarMenuProps) => {
   const [current, setCurrent] = useState('mail')
   const navigate = useNavigate()
 
@@ -22,8 +23,10 @@ export const SidebarMenu = ({ onClick }: SidebarMenuProps) => {
     <Menu
       onClick={menuOnClick}
       selectedKeys={[current]}
-      mode="vertical"
-      items={sidebarMenuData}
+      mode="inline"
+      items={
+        isAdmin ? sidebarMenuData.concat(sidebarAdminMenuData) : sidebarMenuData
+      }
       style={{ borderRight: 'none' }}
     />
   )

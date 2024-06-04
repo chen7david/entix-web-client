@@ -16,7 +16,7 @@ import {
 import { SidebarMenu } from './components/Sidebar/SidebarMenu'
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const toggleSidebar = () => {
