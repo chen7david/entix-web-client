@@ -24,19 +24,18 @@ function App() {
     setIsSidebarOpen(!isSidebarOpen)
   }
 
-  const login = () => {
-    setIsAuthenticated(true)
-    setIsAdmin(true)
-  }
-
   const logout = () => {
     setIsAuthenticated(false)
   }
 
   const handleLogin = (props: ILoginFormState) => {
     console.log('Form data submitted:', props)
-    if (props.username === 'chen7david' && props.password === '88888888')
+    if (props.username === 'david' && props.password === 'david') {
       setIsAuthenticated(true)
+      setIsAdmin(true)
+    } else if (props.username === 'max' && props.password === 'max') {
+      setIsAuthenticated(true)
+    }
   }
 
   return isAuthenticated ? (
@@ -70,19 +69,8 @@ function App() {
         <Main>
           {/* Navbar */}
           <header className="flex md:hidden items-center justify-between h-16 px-4">
-            {isAuthenticated ? (
-              <>
-                <img className="w-8" src={Logo} alt="" />
-                <HamburgerButton
-                  className="md:hidden"
-                  onClick={toggleSidebar}
-                />
-              </>
-            ) : (
-              <Button className="align-right" type="link" onClick={login}>
-                Login
-              </Button>
-            )}
+            <img className="w-8" src={Logo} alt="" />
+            <HamburgerButton className="md:hidden" onClick={toggleSidebar} />
           </header>
           <MainContainer>
             <Pages />
