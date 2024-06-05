@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { Menu } from 'antd'
-import { sidebarAdminMenuData, sidebarMenuData } from './SidebarMenuData'
+import { sidebarAdminMenuData, sidebarMenuData } from './SidebarMenuItems'
 
 export interface SidebarMenuProps {
   onClick: () => void
