@@ -1,12 +1,22 @@
+import { Avatar, Button } from 'antd'
 import cn from 'classnames'
 import React from 'react'
+import { SidebarMenu } from './SidebarMenu'
 
-export interface ISidebarProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface ISidebarDrawerProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   isOpen: boolean
   onClick: () => void
 }
 
-export const Sidebar = (props: ISidebarProps) => {
+export interface ISidebarProps extends React.HTMLAttributes<HTMLDivElement> {
+  isOpen: boolean
+  isAdmin: boolean
+  onToggleOpen: () => void
+  onLogout: () => void
+}
+
+export const SidebarDrawer = (props: ISidebarDrawerProps) => {
   const { className, isOpen, onClick, children, ...restProps } = props
   return (
     <>
@@ -70,5 +80,35 @@ export const SidebarBody = (props: React.HTMLAttributes<HTMLDivElement>) => {
     >
       {children}
     </div>
+  )
+}
+
+export function Sidebar({
+  isOpen,
+  isAdmin,
+  onLogout,
+  onToggleOpen,
+}: ISidebarProps) {
+  return (
+    <SidebarDrawer className="bg-white" isOpen={isOpen} onClick={onToggleOpen}>
+      <SidebarContainer>
+        <SidebarHeader className=" p-4 flex items-center gap-2">
+          <Avatar size={50} />
+          <div className="flex flex-col">
+            <div className="text-sm font-bold">David Chen</div>
+            <div className="text-xs font-light ">Teacher</div>
+          </div>
+          <hr className="lex-grow border-gray-200" />
+        </SidebarHeader>
+        <SidebarBody>
+          <SidebarMenu isAdmin={isAdmin} onClick={onToggleOpen} />
+        </SidebarBody>
+        <SidebarFooter className="p-4 flex items-center justify-between">
+          <Button onClick={onLogout} block>
+            Logout
+          </Button>
+        </SidebarFooter>
+      </SidebarContainer>
+    </SidebarDrawer>
   )
 }
