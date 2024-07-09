@@ -2,6 +2,7 @@ import { Button, Input } from 'antd'
 import { useState, ChangeEvent, MouseEvent } from 'react'
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
 import Logo from '/entix-bw.svg'
+import { http } from './../../http'
 interface ILoginFormProps {
   onSubmit: (props: ILoginFormState) => void
 }
@@ -25,10 +26,12 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
     }))
   }
 
-  const handleSubmit = (e: MouseEvent<HTMLElement>) => {
+  const handleSubmit = async (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
     console.log('Form data submitted:', formData)
     onSubmit(formData)
+    const data = await http.post('/api/v1/auth/login', formData)
+    console.log({ data })
   }
 
   return (
