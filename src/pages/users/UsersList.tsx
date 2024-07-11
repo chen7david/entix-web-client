@@ -1,21 +1,12 @@
 import { useEffect, useState } from 'react'
 import { http } from './../../http'
 import { Button, Table, TableColumnsType } from 'antd'
+import { IViewUserDto, IPaginatedFilterResponse } from 'entix-shared'
 
-export type IUserEntity = {
-  id: number
-  accid: string
-  username: string
-  email: string
-  password: string
-  avatar_url?: string
-  activated_at?: Date | null
-}
-
-const columns: TableColumnsType<IUserEntity> = [
+const columns: TableColumnsType<IViewUserDto> = [
   {
-    title: 'Accid',
-    dataIndex: 'accid',
+    title: 'UserId',
+    dataIndex: 'userid',
     key: 'accid',
     responsive: ['md'],
   },
@@ -37,11 +28,12 @@ const columns: TableColumnsType<IUserEntity> = [
 ]
 
 export const UsersList = () => {
-  const [users, setUsers] = useState<IUserEntity[]>([])
+  const [users, setUsers] = useState<IViewUserDto[]>([])
 
   async function getUsers() {
-    const { data } = await http.get('/api/v1/users')
-    setUsers(data)
+    const { data } =
+      await http.get<IPaginatedFilterResponse<IViewUserDto[]>>('/api/v1/users')
+    setUsers(data.data)
   }
 
   useEffect(() => {
@@ -51,7 +43,7 @@ export const UsersList = () => {
   return (
     <div className="">
       <Button className="mb-5">New User</Button>
-      <Table dataSource={users} columns={columns} />
+      <Table rowKey="id" dataSource={users} columns={columns} />
     </div>
   )
 }

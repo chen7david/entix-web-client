@@ -2,6 +2,8 @@ import { Avatar, Button } from 'antd'
 import cn from 'classnames'
 import React from 'react'
 import { SidebarMenu } from './SidebarMenu'
+import { useAtom } from 'jotai'
+import { currUserAtom } from './../../store/auth.atom'
 
 export interface ISidebarDrawerProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -89,13 +91,16 @@ export function Sidebar({
   onLogout,
   onToggleOpen,
 }: ISidebarProps) {
+  const [currUser] = useAtom(currUserAtom)
   return (
     <SidebarDrawer className="bg-white" isOpen={isOpen} onClick={onToggleOpen}>
       <SidebarContainer>
         <SidebarHeader className=" p-4 flex items-center gap-2">
           <Avatar size={50} />
           <div className="flex flex-col">
-            <div className="text-sm font-bold">David Chen</div>
+            <div className="text-sm font-bold">
+              {currUser ? currUser.username : 'unkown'}
+            </div>
             <div className="text-xs font-light ">Teacher</div>
           </div>
           <hr className="lex-grow border-gray-200" />

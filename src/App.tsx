@@ -7,34 +7,43 @@ import { HamburgerButton } from './components/HamburgerButton'
 import Logo from '/entix-bw.svg'
 import { Sidebar } from './components/Sidebar/Sidebar'
 import { Navbar } from './components/Navbar'
+import { useAtom } from 'jotai'
+import { currUserAtom, isLoginAtom } from './store/auth.atom'
+import { IViewUserLoginDto } from 'entix-shared/dist/models/auth/auth.model'
+import { http } from './http'
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true)
+  const [isLogin, setIsLogin] = useAtom(isLoginAtom)
   const [isAdmin, setIsAdmin] = useState(true)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [_, setCurrUser] = useAtom(currUserAtom)
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
   }
 
   const logout = () => {
-    setIsAuthenticated(false)
+    setIsLogin(false)
     setIsAdmin(false)
+    localStorage.clear()
   }
 
-  const handleLogin = (props: ILoginFormState) => {
-    console.log('Form data submitted:', props)
-    if (props.username === 'david' && props.password === 'david') {
-      setIsAuthenticated(true)
-      setIsAdmin(true)
-    } else if (props.username === 'max' && props.password === 'max') {
-      setIsAuthenticated(true)
-    }
+  const onLogin = async (formData: ILoginFormState) => {
+    const { data } = await http.post<IViewUserLoginDto>(
+      '/api/v1/auth/login',
+      formData,
+    )
+    setCurrUser(data.user)
+    setIsLogin(true)
+    localStorage.setItem('token', JSON.stringify(data.token))
+    localStorage.setItem('refreshToken', JSON.stringify(data.refreshToken))
+    localStorage.setItem('currUser', JSON.stringify(data.user))
+    localStorage.setItem('isLogin', JSON.stringify(true))
   }
 
   return (
     <HashRouter>
-      {isAuthenticated ? (
+      {isLogin ? (
         <AppContainer>
           <Sidebar
             className="bg-white"
@@ -55,7 +64,7 @@ function App() {
         </AppContainer>
       ) : (
         <AppContainer>
-          <Login onSubmit={handleLogin} />
+          <Login onSubmit={onLogin} />
         </AppContainer>
       )}
     </HashRouter>
