@@ -2,7 +2,6 @@ import { Button, Input } from 'antd'
 import { useState, ChangeEvent, MouseEvent } from 'react'
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
 import Logo from '/entix-bw.svg'
-import { http } from './../../http'
 interface ILoginFormProps {
   onSubmit: (props: ILoginFormState) => void
 }
@@ -28,10 +27,7 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
 
   const handleSubmit = async (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
-    console.log('Form data submitted:', formData)
-    onSubmit(formData)
-    const data = await http.post('/api/v1/auth/login', formData)
-    console.log({ data })
+    await onSubmit(formData)
   }
 
   return (
@@ -40,7 +36,6 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
         <div className="flex justify-center pb-4">
           <img className="w-20" src={Logo} alt="" />
         </div>
-
         <form className="mt-8 space-y-6 px-2">
           <Input
             size="large"
