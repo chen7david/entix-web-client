@@ -2,6 +2,8 @@ import { Button, Input } from 'antd'
 import { useState, ChangeEvent, MouseEvent } from 'react'
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
 import Logo from '/entix-bw.svg'
+import { useAtom } from 'jotai'
+import { validationErrorAtom } from './../../store/error.atom'
 interface ILoginFormProps {
   onSubmit: (props: ILoginFormState) => void
 }
@@ -12,6 +14,7 @@ export interface ILoginFormState {
 }
 
 export const Login = ({ onSubmit }: ILoginFormProps) => {
+  const [errors] = useAtom(validationErrorAtom)
   const [formData, setFormData] = useState<ILoginFormState>({
     username: '',
     password: '',
@@ -44,6 +47,7 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
             value={formData.username}
             onChange={handleChange}
           />
+          {errors?.username?._errors && errors?.username?._errors[0]}
 
           <Input.Password
             placeholder="Password"
@@ -55,7 +59,7 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
             value={formData.password}
             onChange={handleChange}
           />
-
+          {errors?.password?._errors && errors?.password?._errors[0]}
           <Button onClick={handleSubmit} size="large" block>
             Submit
           </Button>
