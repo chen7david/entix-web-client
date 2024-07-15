@@ -33,9 +33,10 @@ function App() {
       '/api/v1/auth/login',
       formData,
     )
+    console.log({ data })
     setCurrUser(data.user)
     setIsLogin(true)
-    localStorage.setItem('token', JSON.stringify(data.token))
+    localStorage.setItem('token', JSON.stringify(data.accessToken))
     localStorage.setItem('refreshToken', JSON.stringify(data.refreshToken))
     localStorage.setItem('currUser', JSON.stringify(data.user))
     localStorage.setItem('isLogin', JSON.stringify(true))
