@@ -1,5 +1,6 @@
 import { IViewUserDto } from 'entix-shared'
-import { atom } from 'jotai'
+import { atom, createStore } from 'jotai'
+export const authStore = createStore()
 
 const currUserString = localStorage.getItem('currUser')
 const currUser: IViewUserDto | null = currUserString

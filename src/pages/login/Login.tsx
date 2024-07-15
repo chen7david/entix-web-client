@@ -2,6 +2,8 @@ import { Button, Input } from 'antd'
 import { useState, ChangeEvent, MouseEvent } from 'react'
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
 import Logo from '/entix-bw.svg'
+import { useAtom } from 'jotai'
+import { validationErrorAtom } from './../../store/error.atom'
 interface ILoginFormProps {
   onSubmit: (props: ILoginFormState) => void
 }
@@ -12,6 +14,7 @@ export interface ILoginFormState {
 }
 
 export const Login = ({ onSubmit }: ILoginFormProps) => {
+  const [errors, setErrors] = useAtom(validationErrorAtom)
   const [formData, setFormData] = useState<ILoginFormState>({
     username: '',
     password: '',
@@ -27,6 +30,7 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
 
   const handleSubmit = async (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
+    setErrors({})
     await onSubmit(formData)
   }
 
@@ -37,25 +41,39 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
           <img className="w-20" src={Logo} alt="" />
         </div>
         <form className="mt-8 space-y-6 px-2">
-          <Input
-            size="large"
-            placeholder="Username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-          />
-
-          <Input.Password
-            placeholder="Password"
-            size="large"
-            iconRender={(visible) =>
-              visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-            }
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-
+          <div className="flex flex-col space-y-1">
+            <Input
+              size="large"
+              placeholder="Username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              status={errors?.username?._errors ? 'error' : ''}
+            />
+            {errors?.username?._errors && (
+              <span className="text-red-500 text-sm">
+                {errors.username._errors[0]}
+              </span>
+            )}
+          </div>
+          <div className="flex flex-col space-y-1">
+            <Input.Password
+              placeholder="Password"
+              size="large"
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              status={errors?.password?._errors ? 'error' : ''}
+            />
+            {errors?.password?._errors && (
+              <span className="text-red-500 text-sm">
+                {errors.password._errors[0]}
+              </span>
+            )}
+          </div>
           <Button onClick={handleSubmit} size="large" block>
             Submit
           </Button>

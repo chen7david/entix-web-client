@@ -13,7 +13,7 @@
   "dependencies": {
     "antd": "^5.17.4",
     "axios": "^1.7.2",
-    "entix-shared": "^0.0.6",
+    "entix-shared": "^0.0.7",
     "jotai": "^2.9.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

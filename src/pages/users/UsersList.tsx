@@ -40,9 +40,15 @@ export const UsersList = () => {
     getUsers()
   }, [])
 
+  async function createUser() {
+    await http.post('/api/v1/users', {})
+  }
+
   return (
     <div className="">
-      <Button className="mb-5">New User</Button>
+      <Button onClick={createUser} className="mb-5">
+        New User
+      </Button>
       <Table rowKey="id" dataSource={users} columns={columns} />
     </div>
   )
