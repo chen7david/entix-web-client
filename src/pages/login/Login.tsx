@@ -14,7 +14,7 @@ export interface ILoginFormState {
 }
 
 export const Login = ({ onSubmit }: ILoginFormProps) => {
-  const [errors] = useAtom(validationErrorAtom)
+  const [errors, setErrors] = useAtom(validationErrorAtom)
   const [formData, setFormData] = useState<ILoginFormState>({
     username: '',
     password: '',
@@ -30,6 +30,7 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
 
   const handleSubmit = async (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
+    setErrors({})
     await onSubmit(formData)
   }
 
@@ -40,26 +41,39 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
           <img className="w-20" src={Logo} alt="" />
         </div>
         <form className="mt-8 space-y-6 px-2">
-          <Input
-            size="large"
-            placeholder="Username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-          />
-          {errors?.username?._errors && errors?.username?._errors[0]}
-
-          <Input.Password
-            placeholder="Password"
-            size="large"
-            iconRender={(visible) =>
-              visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-            }
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          {errors?.password?._errors && errors?.password?._errors[0]}
+          <div className="flex flex-col space-y-1">
+            <Input
+              size="large"
+              placeholder="Username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              status={errors?.username?._errors ? 'error' : ''}
+            />
+            {errors?.username?._errors && (
+              <span className="text-red-500 text-sm">
+                {errors.username._errors[0]}
+              </span>
+            )}
+          </div>
+          <div className="flex flex-col space-y-1">
+            <Input.Password
+              placeholder="Password"
+              size="large"
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              status={errors?.password?._errors ? 'error' : ''}
+            />
+            {errors?.password?._errors && (
+              <span className="text-red-500 text-sm">
+                {errors.password._errors[0]}
+              </span>
+            )}
+          </div>
           <Button onClick={handleSubmit} size="large" block>
             Submit
           </Button>
