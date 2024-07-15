@@ -21,12 +21,15 @@ export const http = axios.create({
   // baseURL: 'http://localhost:3000',
 })
 
+let isRefreshing: boolean = false
+
 http.interceptors.request.use(
   (config) => {
+    isRefreshing = false
     const accessTokenString = localStorage.getItem('token')
     if (accessTokenString) {
+      console.log({ accessTokenString })
       const accessToken = JSON.parse(accessTokenString) as string
-      console.log(accessToken)
       config.headers['Authorization'] = `Bearer ${accessToken}`
     }
     return config
@@ -41,16 +44,24 @@ http.interceptors.response.use(
     // Handle successful responses
     return response
   },
-  (error: AxiosError<IResponseError>) => {
+  async (error: AxiosError<IResponseError>) => {
     // Handle error responses
     if (error.response) {
-      const { data, status } = error.response
+      const { data, status, config: originalRequest } = error.response
       console.log({ data, status })
       if (status === 400 && data.details && data.message == 'ValidationError') {
         appStore.set(isLoginAtom, false)
         appStore.set(validationErrorAtom, data.details)
         console.log('hanle validation error: set them')
-      } else if (status === 401) {
+      } else if (!isRefreshing && status === 401) {
+        isRefreshing = true
+        const refresTokenString = localStorage.getItem('refreshToken')
+        const refreshToken = JSON.parse(refresTokenString || '')
+        const res = await http.post('/api/v1/auth/refresh', { refreshToken })
+        const { accessToken } = res.data
+        localStorage.setItem('token', JSON.stringify(accessToken))
+        originalRequest.headers['Authorization'] = `Bearer ${accessToken}`
+        return await http(originalRequest)
         console.log('handle expired token')
       } else if (status > 401 && status < 500) {
         console.log('regular notice error')
