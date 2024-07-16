@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { http } from './../../http'
-import { Table, TableColumnsType } from 'antd'
+import { Button, Table, TableColumnsType } from 'antd'
 import {
   IViewUserDto,
   IPaginatedFilterResponse,
   ICreateUserDto,
 } from 'entix-shared'
 import { UserCreateModal } from './UserCreateModal'
+import { UserDeleteModel } from './UserDeleteModel'
 
 function getAge(dobString: string) {
   // Parse the date string to a Date object
@@ -27,33 +28,45 @@ function getAge(dobString: string) {
   return age
 }
 
-const columns: TableColumnsType<IViewUserDto> = [
-  {
-    title: 'UserId',
-    dataIndex: 'userid',
-    key: 'accid',
-    responsive: ['md'],
-  },
-  {
-    title: 'username',
-    dataIndex: 'username',
-    key: 'username',
-  },
-  {
-    title: 'age',
-    dataIndex: 'date_of_birth',
-    key: 'date_of_birth',
-    render: (text) => getAge(text),
-  },
-  {
-    title: 'email',
-    dataIndex: 'email',
-    key: 'email',
-  },
-]
-
 export const UsersList = () => {
   const [users, setUsers] = useState<IViewUserDto[]>([])
+
+  useEffect(() => {
+    getUsers()
+  }, [])
+
+  const columns: TableColumnsType<IViewUserDto> = [
+    {
+      title: 'id',
+      dataIndex: 'userid',
+      key: 'accid',
+      responsive: ['md'],
+    },
+    {
+      title: 'username',
+      dataIndex: 'username',
+      key: 'username',
+    },
+    {
+      title: 'age',
+      dataIndex: 'date_of_birth',
+      key: 'date_of_birth',
+      render: (text) => getAge(text),
+    },
+    {
+      title: 'email',
+      dataIndex: 'email',
+      key: 'email',
+      responsive: ['lg'],
+    },
+    {
+      title: 'actions',
+      dataIndex: 'email',
+      render: (_, object) => (
+        <UserDeleteModel user={object} onSubmit={deleteUser} />
+      ),
+    },
+  ]
 
   async function getUsers() {
     const { data } = await http.get<IPaginatedFilterResponse<IViewUserDto[]>>(
@@ -62,13 +75,15 @@ export const UsersList = () => {
     setUsers(data.data)
   }
 
-  useEffect(() => {
-    getUsers()
-  }, [])
-
   async function createUser(formData: ICreateUserDto) {
     const { data: user } = await http.post('/api/v1/users', formData)
-    setUsers((prevUsers) => [...prevUsers, user])
+    setUsers((prevUsers) => [user, ...prevUsers])
+  }
+
+  async function deleteUser(user: IViewUserDto) {
+    const { data } = await http.delete('/api/v1/users/' + user.id)
+    console.log(data)
+    setUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id))
   }
 
   return (
