@@ -1,9 +1,12 @@
 import { Button, Input } from 'antd'
-import { useState, ChangeEvent, MouseEvent } from 'react'
+import { useState, ChangeEvent, MouseEvent, useCallback } from 'react'
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
 import Logo from '/entix-bw.svg'
 import { useAtom } from 'jotai'
-import { validationErrorAtom } from './../../store/error.atom'
+import { loginFormValidationAtom } from './../../store/error.atom'
+import { debounce } from 'lodash'
+import { LoginUserDto } from 'entix-shared'
+
 interface ILoginFormProps {
   onSubmit: (props: ILoginFormState) => void
 }
@@ -14,24 +17,41 @@ export interface ILoginFormState {
 }
 
 export const Login = ({ onSubmit }: ILoginFormProps) => {
-  const [errors, setErrors] = useAtom(validationErrorAtom)
+  const [isFormValid, setIsFormValid] = useState(false)
+  const [errors, setErrors] = useAtom(loginFormValidationAtom)
   const [formData, setFormData] = useState<ILoginFormState>({
     username: '',
     password: '',
   })
 
+  const validateForm = useCallback(
+    debounce((data: ILoginFormState) => {
+      const { success, error } = LoginUserDto.safeParse(data)
+      if (!success) {
+        setErrors(error?.format())
+        setIsFormValid(false)
+      } else {
+        setErrors(null)
+        setIsFormValid(true)
+      }
+    }, 500),
+    [setErrors],
+  )
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }))
+    setFormData((prevData) => {
+      const updatedData = { ...prevData, [name]: value }
+      validateForm(updatedData)
+      return updatedData
+    })
   }
 
   const handleSubmit = async (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
-    setErrors({})
-    await onSubmit(formData)
+    if (isFormValid) {
+      await onSubmit(formData)
+    }
   }
 
   return (
@@ -43,6 +63,7 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
         <form className="mt-8 space-y-6 px-2">
           <div className="flex flex-col space-y-1">
             <Input
+              allowClear
               size="large"
               placeholder="Username"
               name="username"
@@ -58,6 +79,7 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
           </div>
           <div className="flex flex-col space-y-1">
             <Input.Password
+              allowClear
               placeholder="Password"
               size="large"
               iconRender={(visible) =>
@@ -74,7 +96,12 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
               </span>
             )}
           </div>
-          <Button onClick={handleSubmit} size="large" block>
+          <Button
+            disabled={!isFormValid}
+            onClick={handleSubmit}
+            size="large"
+            block
+          >
             Submit
           </Button>
         </form>
