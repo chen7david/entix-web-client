@@ -1,9 +1,9 @@
 import axios, { AxiosError } from 'axios'
 import { isLoginAtom } from './store/auth.atom'
 import { appStore } from './store/app.atom'
-import { validationErrorAtom } from './store/error.atom'
+import { globalFormValidationAtom } from './store/error.atom'
 
-type IResponseError = {
+export type IResponseError = {
   status: string
   message: string
   details?: {
@@ -51,7 +51,7 @@ http.interceptors.response.use(
       console.log({ data, status })
       if (status === 400 && data.details && data.message == 'ValidationError') {
         appStore.set(isLoginAtom, false)
-        appStore.set(validationErrorAtom, data.details)
+        appStore.set(globalFormValidationAtom, data.details)
         console.log('hanle validation error: set them')
       } else if (!isRefreshing && status === 401) {
         isRefreshing = true

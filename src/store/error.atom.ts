@@ -1,9 +1,14 @@
+import { ILoginUserDto } from 'entix-shared'
 import { atom } from 'jotai'
+import { ZodFormattedError } from 'zod'
 
-type IValidationError = {
+export type IValidationError = {
   [key: string]: {
     _errors: string[]
   }
 }
 
-export const validationErrorAtom = atom<IValidationError>({})
+export const globalFormValidationAtom = atom<IValidationError>({})
+
+export const loginFormValidationAtom =
+  atom<ZodFormattedError<ILoginUserDto> | null>(null)
