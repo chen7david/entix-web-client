@@ -1,20 +1,10 @@
-import React, { ChangeEvent, useCallback, MouseEvent, useState } from 'react'
-import {
-  Button,
-  Drawer,
-  Input as AntInput,
-  DatePicker,
-  DatePickerProps,
-  Radio,
-  Select,
-} from 'antd'
-import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
+import { ChangeEvent, useCallback, MouseEvent, useState } from 'react'
+import { Button, Drawer, DatePicker, DatePickerProps, Select } from 'antd'
 import { debounce } from 'lodash'
 import { useAtom } from 'jotai'
 import { createUserFormValidationAtom } from './../../store/error.atom'
 import { CreateUserDto, ICreateUserDto } from 'entix-shared'
 import { Input, InputPassword } from './../../components/Form/Input'
-import { http } from './../../http'
 
 type ISex = 'female' | 'male'
 
