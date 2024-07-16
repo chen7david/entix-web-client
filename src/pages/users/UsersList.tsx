@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { http } from './../../http'
-import { Button, Table, TableColumnsType } from 'antd'
+import { Table, TableColumnsType } from 'antd'
 import {
   IViewUserDto,
   IPaginatedFilterResponse,
