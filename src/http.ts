@@ -1,25 +1,13 @@
 import axios, { AxiosError } from 'axios'
-import { isLoginAtom } from './store/auth.atom'
-import { appStore } from './store/app.atom'
-import { globalFormValidationAtom } from './store/error.atom'
 import { message } from 'antd'
-
-export type IResponseError = {
-  status: string
-  message: string
-  details?: {
-    [key: string]: {
-      _errors: string[]
-    }
-  }
-}
+import { HeaderKey, IErrorResponse, StorageKey } from 'entix-shared'
 
 export const http = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  baseURL: 'https://api.entix.me',
-  // baseURL: 'http://localhost:3000',
+  // baseURL: 'https://api.entix.me',
+  baseURL: 'http://localhost:3000',
 })
 
 let isRefreshing: boolean = false
@@ -27,11 +15,11 @@ let isRefreshing: boolean = false
 http.interceptors.request.use(
   (config) => {
     isRefreshing = false
-    const accessTokenString = localStorage.getItem('token')
+    const accessTokenString = localStorage.getItem(StorageKey.AccessToken)
     if (accessTokenString) {
       console.log({ accessTokenString })
       const accessToken = JSON.parse(accessTokenString) as string
-      config.headers['Authorization'] = `Bearer ${accessToken}`
+      config.headers[HeaderKey.Authorization] = `Bearer ${accessToken}`
     }
     return config
   },
@@ -41,44 +29,34 @@ http.interceptors.request.use(
 )
 
 http.interceptors.response.use(
-  (response) => {
-    // Handle successful responses
+  async (response) => {
     return response
   },
-  async (error: AxiosError<IResponseError>) => {
-    // Handle error responses
+  async (error: AxiosError<IErrorResponse>) => {
     if (error.response) {
-      const { data, status, config: originalRequest } = error.response
-      message.error(data.message)
-      console.log({ data, status })
-      if (status === 400 && data.details && data.message == 'ValidationError') {
-        appStore.set(isLoginAtom, false)
-        appStore.set(globalFormValidationAtom, data.details)
-        console.log('hanle validation error: set them')
+      const { status, data, config: originalRequest } = error.response
+
+      if (data.message !== 'Expired token') {
+        message.error(data.message)
       } else if (!isRefreshing && status === 401) {
         isRefreshing = true
-        const refresTokenString = localStorage.getItem('refreshToken')
-        const refreshToken = JSON.parse(refresTokenString || '')
-        const res = await http.post('/api/v1/auth/refresh', { refreshToken })
-        const { accessToken } = res.data
-        localStorage.setItem('token', JSON.stringify(accessToken))
-        originalRequest.headers['Authorization'] = `Bearer ${accessToken}`
+        const refreshToken = JSON.parse(
+          `${localStorage.getItem(StorageKey.RefreshToken)}`,
+        )
+        const { data } = await http.post('/api/v1/auth/refresh', {
+          refreshToken,
+        })
+        localStorage.setItem(
+          StorageKey.AccessToken,
+          JSON.stringify(data.accessToken),
+        )
+        originalRequest.headers[HeaderKey.Authorization] =
+          `Bearer ${data.accessToken}`
         return await http(originalRequest)
-        console.log('handle expired token')
-      } else if (status > 400 && status < 500) {
-        message.error(data.message)
-        console.log('regular notice error')
       }
-      console.error('Response errorXXX:', error.response.data)
     } else if (error.request) {
-      message.error(
-        'No response from server, please check your internet connection',
-      )
-      // The request was made but no response was received
+      message.error('Please check your internet connection')
       console.error('Request error:', error.request)
-    } else {
-      // Something happened in setting up the request that triggered an error
-      console.error('Error:', error.message)
     }
     return Promise.reject(error)
   },
