@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Modal } from 'antd'
+import { Button, Modal, message } from 'antd'
 import { IViewUserDto } from 'entix-shared'
 
 export type IUserDeleteModelProps = {
@@ -17,6 +17,7 @@ export const UserDeleteModel = ({ onSubmit, user }: IUserDeleteModelProps) => {
   const handleOk = async () => {
     await onSubmit(user)
     setIsModalOpen(false)
+    message.success('User deleted successfully')
   }
 
   const handleCancel = () => {
