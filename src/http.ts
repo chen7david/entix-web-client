@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios'
 import { isLoginAtom } from './store/auth.atom'
 import { appStore } from './store/app.atom'
 import { globalFormValidationAtom } from './store/error.atom'
+import { message } from 'antd'
 
 export type IResponseError = {
   status: string
@@ -48,6 +49,7 @@ http.interceptors.response.use(
     // Handle error responses
     if (error.response) {
       const { data, status, config: originalRequest } = error.response
+      message.error(data.message)
       console.log({ data, status })
       if (status === 400 && data.details && data.message == 'ValidationError') {
         appStore.set(isLoginAtom, false)
@@ -63,11 +65,15 @@ http.interceptors.response.use(
         originalRequest.headers['Authorization'] = `Bearer ${accessToken}`
         return await http(originalRequest)
         console.log('handle expired token')
-      } else if (status > 401 && status < 500) {
+      } else if (status > 400 && status < 500) {
+        message.error(data.message)
         console.log('regular notice error')
       }
       console.error('Response errorXXX:', error.response.data)
     } else if (error.request) {
+      message.error(
+        'No response from server, please check your internet connection',
+      )
       // The request was made but no response was received
       console.error('Request error:', error.request)
     } else {

@@ -1,5 +1,12 @@
 import { ChangeEvent, useCallback, MouseEvent, useState } from 'react'
-import { Button, Drawer, DatePicker, DatePickerProps, Select } from 'antd'
+import {
+  Button,
+  Drawer,
+  DatePicker,
+  DatePickerProps,
+  Select,
+  message,
+} from 'antd'
 import { debounce } from 'lodash'
 import { useAtom } from 'jotai'
 import { createUserFormValidationAtom } from './../../store/error.atom'
@@ -72,6 +79,7 @@ export const UserCreateModal = ({ onSubmit }: IUserCreateModalProps) => {
       await onSubmit(formData)
       onClose()
       clearForm()
+      message.success('User created successfully')
     }
   }
 

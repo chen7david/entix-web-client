@@ -1,4 +1,4 @@
-import { Button, Input } from 'antd'
+import { Button, Input, message } from 'antd'
 import { useState, ChangeEvent, MouseEvent, useCallback } from 'react'
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
 import Logo from '/entix-bw.svg'
@@ -51,6 +51,7 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
     e.preventDefault()
     if (isFormValid) {
       await onSubmit(formData)
+      message.success('Welcome back!')
     }
   }
 
