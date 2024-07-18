@@ -2,11 +2,14 @@ import axios, { AxiosError } from 'axios'
 import { message } from 'antd'
 import { HeaderKey, IErrorResponse, StorageKey } from 'entix-shared'
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+
 export const http = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  baseURL: 'https://api.entix.me',
+  baseURL: apiBaseUrl
+  // baseURL: 'https://api.entix.me',
   // baseURL: 'http://localhost:3000',
 })
 
