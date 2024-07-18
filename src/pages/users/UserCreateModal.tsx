@@ -10,8 +10,15 @@ import {
 import { debounce } from 'lodash'
 import { useAtom } from 'jotai'
 import { createUserFormValidationAtom } from './../../store/error.atom'
-import { CreateUserDto, ICreateUserDto } from 'entix-shared'
+import {
+  CreateUserDto,
+  ICreateUserDto,
+  IPaginatedFilterResponse,
+  IViewUserDto,
+} from 'entix-shared'
 import { Input, InputPassword } from './../../components/Form/Input'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createUser } from './../../api/client.api'
 
 type ISex = 'female' | 'male'
 
@@ -26,15 +33,27 @@ const defaultFormData: ICreateUserDto = {
   profile_image_url: '',
 }
 
-type IUserCreateModalProps = {
-  onSubmit: (formData: ICreateUserDto) => Promise<void>
-}
-
-export const UserCreateModal = ({ onSubmit }: IUserCreateModalProps) => {
+export const UserCreateModal = () => {
   const [open, setOpen] = useState(false)
   const [isFormValid, setIsFormValid] = useState(false)
   const [errors, setErrors] = useAtom(createUserFormValidationAtom)
   const [formData, setFormData] = useState<ICreateUserDto>(defaultFormData)
+  const queryClient = useQueryClient()
+
+  const createUserMutation = useMutation({
+    mutationFn: createUser,
+    onSuccess: (newUser) => {
+      queryClient.setQueryData(
+        ['users'],
+        (oldUsers: IPaginatedFilterResponse<IViewUserDto[]>) => {
+          return {
+            ...oldUsers,
+            data: [newUser, ...oldUsers.data],
+          }
+        },
+      )
+    },
+  })
 
   const clearForm = () => {
     setFormData(defaultFormData)
@@ -76,7 +95,7 @@ export const UserCreateModal = ({ onSubmit }: IUserCreateModalProps) => {
   const handleSubmit = async (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
     if (isFormValid) {
-      await onSubmit(formData)
+      await createUserMutation.mutate(formData)
       onClose()
       clearForm()
       message.success('User created successfully')

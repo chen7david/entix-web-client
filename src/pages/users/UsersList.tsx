@@ -1,9 +1,9 @@
 import { Table, TableColumnsType } from 'antd'
-import { IPaginatedFilterResponse, IViewUserDto } from 'entix-shared'
+import { IViewUserDto } from 'entix-shared'
 import { UserCreateModal } from './UserCreateModal'
 import { UserDeleteModel } from './UserDeleteModel'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { createUser, deleteUser, findUsers } from './../../api/client.api'
+import { useQuery } from '@tanstack/react-query'
+import { findUsers } from './../../api/client.api'
 
 function getAge(dobString: string) {
   const dob = new Date(dobString)
@@ -17,37 +17,9 @@ function getAge(dobString: string) {
 }
 
 export const UsersList = () => {
-  const queryClient = useQueryClient()
-
   const userQuery = useQuery({
     queryKey: ['users'],
     queryFn: findUsers,
-  })
-
-  const createUserMutation = useMutation({
-    mutationFn: createUser,
-    onSuccess: (newUser) => {
-      queryClient.setQueryData(
-        ['users'],
-        (oldUsers: IPaginatedFilterResponse<IViewUserDto[]>) => {
-          oldUsers.data = [newUser, ...oldUsers.data]
-          return oldUsers
-        },
-      )
-    },
-  })
-
-  const deleteUserMutation = useMutation({
-    mutationFn: deleteUser,
-    onMutate: (userId) => {
-      queryClient.setQueryData(
-        ['users'],
-        (oldUsers: IPaginatedFilterResponse<IViewUserDto[]>) => {
-          oldUsers.data = oldUsers.data.filter((u) => u.id !== userId)
-          return oldUsers
-        },
-      )
-    },
   })
 
   const columns: TableColumnsType<IViewUserDto> = [
@@ -77,20 +49,13 @@ export const UsersList = () => {
     {
       title: 'actions',
       dataIndex: 'email',
-      render: (_, user) => (
-        <UserDeleteModel
-          user={user}
-          onSubmit={async (id) => deleteUserMutation.mutate(id)}
-        />
-      ),
+      render: (_, user) => <UserDeleteModel user={user} />,
     },
   ]
 
   return (
     <div>
-      <UserCreateModal
-        onSubmit={async (data) => createUserMutation.mutate(data)}
-      />
+      <UserCreateModal />
       <Table
         loading={userQuery.isLoading}
         rowKey="id"
