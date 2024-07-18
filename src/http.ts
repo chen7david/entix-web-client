@@ -6,8 +6,8 @@ export const http = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  // baseURL: 'https://api.entix.me',
-  baseURL: 'http://localhost:3000',
+  baseURL: 'https://api.entix.me',
+  // baseURL: 'http://localhost:3000',
 })
 
 let isRefreshing: boolean = false
