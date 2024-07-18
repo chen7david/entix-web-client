@@ -3,7 +3,7 @@ import { Button, Modal, message } from 'antd'
 import { IViewUserDto } from 'entix-shared'
 
 export type IUserDeleteModelProps = {
-  onSubmit: (formData: IViewUserDto) => Promise<void>
+  onSubmit: (userId: number) => Promise<void>
   user: IViewUserDto
 }
 
@@ -15,7 +15,7 @@ export const UserDeleteModel = ({ onSubmit, user }: IUserDeleteModelProps) => {
   }
 
   const handleOk = async () => {
-    await onSubmit(user)
+    await onSubmit(user.id)
     setIsModalOpen(false)
     message.success('User deleted successfully')
   }

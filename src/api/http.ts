@@ -1,8 +1,9 @@
 import axios, { AxiosError } from 'axios'
 import { message } from 'antd'
 import { HeaderKey, ErrorKey, IErrorResponse, makeBearer } from 'entix-shared'
-import { BrowserStore } from './store/browserstore.store'
-import { clientConfig } from './config'
+import { BrowserStore } from '../store/browserstore.store'
+import { clientConfig } from '../config'
+import { renewToken } from './client.api'
 
 export const http = axios.create({
   headers: {
@@ -36,13 +37,11 @@ http.interceptors.response.use(
         message.error(data.message)
       } else if (!isRefreshResponse && isUnauthorized) {
         const refreshToken = BrowserStore.getRefreshToken()
-        const { data } = await http.post('/api/v1/auth/refresh', {
-          refreshToken,
-        })
-        BrowserStore.setAccessToken(data.accessToken)
-        originalRequest.headers[HeaderKey.Authorization] = makeBearer(
-          data.accessToken,
-        )
+        if (!refreshToken) return Promise.reject(error)
+        const { accessToken } = await renewToken(refreshToken)
+        BrowserStore.setAccessToken(accessToken)
+        originalRequest.headers[HeaderKey.Authorization] =
+          makeBearer(accessToken)
         return await http(originalRequest)
       }
     } else if (error.request) {

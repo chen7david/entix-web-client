@@ -7,7 +7,6 @@ import { appStore } from './store/app.atom.ts'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { clientConfig } from './config.ts'
 
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
