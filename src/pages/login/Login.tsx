@@ -5,15 +5,10 @@ import Logo from '/entix-bw.svg'
 import { useAtom } from 'jotai'
 import { loginFormValidationAtom } from './../../store/error.atom'
 import { debounce } from 'lodash'
-import { LoginUserDto } from 'entix-shared'
+import { LoginUserDto, ILoginUserDto } from 'entix-shared'
 import { loginUser } from './../../api/client.api'
 import { BrowserStore } from './../../store/browserstore.store'
 import { currUserAtom, isLoginAtom } from './../../store/auth.atom'
-
-export interface ILoginFormState {
-  username: string
-  password: string
-}
 
 export const Login = () => {
   const [, setIsLogin] = useAtom(isLoginAtom)
@@ -21,13 +16,13 @@ export const Login = () => {
   const [, setCurrUser] = useAtom(currUserAtom)
   const [isFormValid, setIsFormValid] = useState(false)
   const [errors, setErrors] = useAtom(loginFormValidationAtom)
-  const [loginUserDto, setLoginUserDto] = useState<ILoginFormState>({
+  const [loginUserDto, setLoginUserDto] = useState<ILoginUserDto>({
     username: '',
     password: '',
   })
 
   const validateForm = useCallback(
-    debounce((data: ILoginFormState) => {
+    debounce((data: ILoginUserDto) => {
       const { success, error } = LoginUserDto.safeParse(data)
       if (!success) {
         setErrors(error?.format())
