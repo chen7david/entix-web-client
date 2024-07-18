@@ -6,17 +6,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createUser, deleteUser, findUsers } from './../../api/client.api'
 
 function getAge(dobString: string) {
-  // Parse the date string to a Date object
   const dob = new Date(dobString)
-
-  // Get today's date
   const today = new Date()
-
-  // Calculate the age
   let age = today.getFullYear() - dob.getFullYear()
   const monthDiff = today.getMonth() - dob.getMonth()
-
-  // Check if the birthday has occurred yet this year
   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
     age--
   }
