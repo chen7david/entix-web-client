@@ -1,21 +1,49 @@
 import { useState } from 'react'
 import { Button, Modal, message } from 'antd'
-import { IViewUserDto } from 'entix-shared'
+import { IPaginatedFilterResponse, IViewUserDto } from 'entix-shared'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { deleteUser } from './../../api/client.api'
+import { useAtom } from 'jotai'
+import { currUserAtom } from './../../store/auth.atom'
 
 export type IUserDeleteModelProps = {
-  onSubmit: (userId: number) => Promise<void>
   user: IViewUserDto
 }
 
-export const UserDeleteModel = ({ onSubmit, user }: IUserDeleteModelProps) => {
+export const UserDeleteModel = ({ user }: IUserDeleteModelProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [currUser] = useAtom(currUserAtom)
+  const queryClient = useQueryClient()
+
+  const deleteUserMutation = useMutation({
+    mutationFn: deleteUser,
+    onMutate: (userId) => {
+      queryClient.setQueryData(
+        ['users'],
+        (oldUsers: IPaginatedFilterResponse<IViewUserDto[]>) => {
+          return {
+            ...oldUsers,
+            data: oldUsers.data.filter((u) => u.id !== userId),
+          }
+        },
+      )
+    },
+  })
 
   const showModal = () => {
     setIsModalOpen(true)
   }
 
   const handleOk = async () => {
-    await onSubmit(user.id)
+    if (!currUser) {
+      message.error('Please login to delete user')
+      return
+    }
+    if (user.id === currUser.id) {
+      message.warning('You cannot delete yourself!')
+      return
+    }
+    await deleteUserMutation.mutate(user.id)
     setIsModalOpen(false)
     message.success('User deleted successfully')
   }
@@ -25,14 +53,24 @@ export const UserDeleteModel = ({ onSubmit, user }: IUserDeleteModelProps) => {
   }
   return (
     <>
-      <Button onClick={showModal}>Delete</Button>
+      <Button size="small" type="link" onClick={showModal}>
+        Delete
+      </Button>
       <Modal
-        title="Basic Modal"
+        title="Delete Confirmation"
         open={isModalOpen}
         onOk={handleOk}
+        okText="Delete"
+        okType="danger"
+        okButtonProps={{
+          loading: deleteUserMutation.isPending,
+        }}
         onCancel={handleCancel}
       >
-        <p>Are you sure you want to delete {user.username}?</p>
+        <p className="">
+          Are you sure you want to delete{' '}
+          <span className="font-bold text-red-600">{user.username}</span>?
+        </p>
       </Modal>
     </>
   )

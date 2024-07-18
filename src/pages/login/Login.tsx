@@ -15,6 +15,7 @@ export const Login = () => {
   const [, setIsAdmin] = useAtom(isAdminAtom)
   const [, setCurrUser] = useAtom(currUserAtom)
   const [isFormValid, setIsFormValid] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useAtom(loginFormValidationAtom)
   const [loginUserDto, setLoginUserDto] = useState<ILoginUserDto>({
     username: '',
@@ -47,15 +48,21 @@ export const Login = () => {
   const handleSubmit = async (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
     if (isFormValid) {
-      const { user, accessToken, refreshToken } = await loginUser(loginUserDto)
-      setCurrUser(user)
-      setIsLogin(true)
-      setIsAdmin(true)
-      BrowserStore.setAccessToken(accessToken)
-      BrowserStore.setRefreshToken(refreshToken)
-      BrowserStore.setCurrUser(user)
-      BrowserStore.setIsAdmin(true)
-      message.success('Welcome back!')
+      try {
+        setIsLoading(true)
+        const { user, accessToken, refreshToken } =
+          await loginUser(loginUserDto)
+        setCurrUser(user)
+        setIsLogin(true)
+        setIsAdmin(true)
+        BrowserStore.setAccessToken(accessToken)
+        BrowserStore.setRefreshToken(refreshToken)
+        BrowserStore.setCurrUser(user)
+        BrowserStore.setIsAdmin(true)
+        message.success('Welcome back!')
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -106,6 +113,7 @@ export const Login = () => {
             onClick={handleSubmit}
             size="large"
             block
+            loading={isLoading}
           >
             Submit
           </Button>
