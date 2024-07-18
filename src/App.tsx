@@ -1,57 +1,26 @@
-import { useState } from 'react'
 import { AppContainer, Main, MainContainer } from './components/Layout'
 import { HashRouter } from 'react-router-dom'
 import { Pages } from './pages/Pages'
-import { ILoginFormState, Login } from './pages/login/Login'
+import { Login } from './pages/login/Login'
 import { HamburgerButton } from './components/HamburgerButton'
 import Logo from '/entix-bw.svg'
 import { Sidebar } from './components/Sidebar/Sidebar'
 import { Navbar } from './components/Navbar'
 import { useAtom } from 'jotai'
-import { currUserAtom, isLoginAtom } from './store/auth.atom'
-import { BrowserStore } from './store/browserstore.store'
-import { loginUser } from './api/client.api'
+import { isLoginAtom } from './store/auth.atom'
 
 function App() {
-  const [isLogin, setIsLogin] = useAtom(isLoginAtom)
-  const [isAdmin, setIsAdmin] = useState(true)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [_, setCurrUser] = useAtom(currUserAtom)
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen)
-  }
-
-  const logout = () => {
-    setIsLogin(false)
-    setIsAdmin(false)
-    BrowserStore.clear()
-  }
-
-  const onLogin = async (formData: ILoginFormState) => {
-    const { user, accessToken, refreshToken } = await loginUser(formData)
-    setCurrUser(user)
-    setIsLogin(true)
-    BrowserStore.setAccessToken(accessToken)
-    BrowserStore.setRefreshToken(refreshToken)
-    BrowserStore.setCurrUser(user)
-  }
+  const [isLogin] = useAtom(isLoginAtom)
 
   return (
     <HashRouter>
       {isLogin ? (
         <AppContainer>
-          <Sidebar
-            className="bg-white"
-            isOpen={isSidebarOpen}
-            isAdmin={isAdmin}
-            onToggleOpen={toggleSidebar}
-            onLogout={logout}
-          />
+          <Sidebar />
           <Main>
             <Navbar>
               <img className="w-8" src={Logo} alt="" />
-              <HamburgerButton className="md:hidden" onClick={toggleSidebar} />
+              <HamburgerButton className="md:hidden" />
             </Navbar>
             <MainContainer>
               <Pages />
@@ -60,7 +29,7 @@ function App() {
         </AppContainer>
       ) : (
         <AppContainer>
-          <Login onSubmit={onLogin} />
+          <Login />
         </AppContainer>
       )}
     </HashRouter>

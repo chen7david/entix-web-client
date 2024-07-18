@@ -5,27 +5,24 @@ import Logo from '/entix-bw.svg'
 import { useAtom } from 'jotai'
 import { loginFormValidationAtom } from './../../store/error.atom'
 import { debounce } from 'lodash'
-import { LoginUserDto } from 'entix-shared'
+import { LoginUserDto, ILoginUserDto } from 'entix-shared'
+import { loginUser } from './../../api/client.api'
+import { BrowserStore } from './../../store/browserstore.store'
+import { currUserAtom, isAdminAtom, isLoginAtom } from './../../store/auth.atom'
 
-interface ILoginFormProps {
-  onSubmit: (props: ILoginFormState) => void
-}
-
-export interface ILoginFormState {
-  username: string
-  password: string
-}
-
-export const Login = ({ onSubmit }: ILoginFormProps) => {
+export const Login = () => {
+  const [, setIsLogin] = useAtom(isLoginAtom)
+  const [, setIsAdmin] = useAtom(isAdminAtom)
+  const [, setCurrUser] = useAtom(currUserAtom)
   const [isFormValid, setIsFormValid] = useState(false)
   const [errors, setErrors] = useAtom(loginFormValidationAtom)
-  const [formData, setFormData] = useState<ILoginFormState>({
+  const [loginUserDto, setLoginUserDto] = useState<ILoginUserDto>({
     username: '',
     password: '',
   })
 
   const validateForm = useCallback(
-    debounce((data: ILoginFormState) => {
+    debounce((data: ILoginUserDto) => {
       const { success, error } = LoginUserDto.safeParse(data)
       if (!success) {
         setErrors(error?.format())
@@ -40,7 +37,7 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData((prevData) => {
+    setLoginUserDto((prevData) => {
       const updatedData = { ...prevData, [name]: value }
       validateForm(updatedData)
       return updatedData
@@ -50,7 +47,14 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
   const handleSubmit = async (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
     if (isFormValid) {
-      await onSubmit(formData)
+      const { user, accessToken, refreshToken } = await loginUser(loginUserDto)
+      setCurrUser(user)
+      setIsLogin(true)
+      setIsAdmin(true)
+      BrowserStore.setAccessToken(accessToken)
+      BrowserStore.setRefreshToken(refreshToken)
+      BrowserStore.setCurrUser(user)
+      BrowserStore.setIsAdmin(true)
       message.success('Welcome back!')
     }
   }
@@ -68,7 +72,7 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
               size="large"
               placeholder="Username"
               name="username"
-              value={formData.username}
+              value={loginUserDto.username}
               onChange={handleChange}
               status={errors?.username?._errors ? 'error' : ''}
             />
@@ -87,7 +91,7 @@ export const Login = ({ onSubmit }: ILoginFormProps) => {
                 visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
               }
               name="password"
-              value={formData.password}
+              value={loginUserDto.password}
               onChange={handleChange}
               status={errors?.password?._errors ? 'error' : ''}
             />

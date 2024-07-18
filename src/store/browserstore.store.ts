@@ -52,4 +52,16 @@ export class BrowserStore {
   static removeCurrUser(): void {
     BrowserStore.remove(StorageKey.CurrUser)
   }
+
+  static getIsAdmin(): boolean {
+    return BrowserStore.get(StorageKey.IsAdmin)
+  }
+
+  static setIsAdmin(isAdmin: boolean): void {
+    BrowserStore.set(StorageKey.IsAdmin, isAdmin)
+  }
+
+  static removeIsAdmin(): void {
+    BrowserStore.remove(StorageKey.IsAdmin)
+  }
 }
