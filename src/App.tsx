@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { AppContainer, Main, MainContainer } from './components/Layout'
 import { HashRouter } from 'react-router-dom'
 import { Pages } from './pages/Pages'
@@ -9,38 +8,19 @@ import { Sidebar } from './components/Sidebar/Sidebar'
 import { Navbar } from './components/Navbar'
 import { useAtom } from 'jotai'
 import { isLoginAtom } from './store/auth.atom'
-import { BrowserStore } from './store/browserstore.store'
 
 function App() {
-  const [isLogin, setIsLogin] = useAtom(isLoginAtom)
-  const [isAdmin, setIsAdmin] = useState(true)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen)
-  }
-
-  const logout = () => {
-    setIsLogin(false)
-    setIsAdmin(false)
-    BrowserStore.clear()
-  }
+  const [isLogin] = useAtom(isLoginAtom)
 
   return (
     <HashRouter>
       {isLogin ? (
         <AppContainer>
-          <Sidebar
-            className="bg-white"
-            isOpen={isSidebarOpen}
-            isAdmin={isAdmin}
-            onToggleOpen={toggleSidebar}
-            onLogout={logout}
-          />
+          <Sidebar />
           <Main>
             <Navbar>
               <img className="w-8" src={Logo} alt="" />
-              <HamburgerButton className="md:hidden" onClick={toggleSidebar} />
+              <HamburgerButton className="md:hidden" />
             </Navbar>
             <MainContainer>
               <Pages />

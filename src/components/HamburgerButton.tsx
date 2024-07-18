@@ -1,10 +1,17 @@
+import { useAtom } from 'jotai'
 import React from 'react'
+import { sideBarOpenAtom } from './../store/sidebar.atom'
 
 export const HamburgerButton = (
   props: React.ButtonHTMLAttributes<HTMLButtonElement>,
 ) => {
+  const [isSideBarOpen, setIsSideBarOpenAtom] = useAtom(sideBarOpenAtom)
+
+  const toggleSidebar = () => {
+    setIsSideBarOpenAtom(!isSideBarOpen)
+  }
   return (
-    <button {...props}>
+    <button onClick={toggleSidebar} {...props}>
       <svg
         className="w-6 h-6"
         fill="none"

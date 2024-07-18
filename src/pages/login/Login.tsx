@@ -8,11 +8,11 @@ import { debounce } from 'lodash'
 import { LoginUserDto, ILoginUserDto } from 'entix-shared'
 import { loginUser } from './../../api/client.api'
 import { BrowserStore } from './../../store/browserstore.store'
-import { currUserAtom, isLoginAtom } from './../../store/auth.atom'
+import { currUserAtom, isAdminAtom, isLoginAtom } from './../../store/auth.atom'
 
 export const Login = () => {
   const [, setIsLogin] = useAtom(isLoginAtom)
-  const [, setIsAdmin] = useState(true)
+  const [, setIsAdmin] = useAtom(isAdminAtom)
   const [, setCurrUser] = useAtom(currUserAtom)
   const [isFormValid, setIsFormValid] = useState(false)
   const [errors, setErrors] = useAtom(loginFormValidationAtom)
@@ -54,6 +54,7 @@ export const Login = () => {
       BrowserStore.setAccessToken(accessToken)
       BrowserStore.setRefreshToken(refreshToken)
       BrowserStore.setCurrUser(user)
+      BrowserStore.setIsAdmin(true)
       message.success('Welcome back!')
     }
   }

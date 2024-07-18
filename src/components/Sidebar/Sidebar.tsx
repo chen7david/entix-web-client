@@ -3,40 +3,33 @@ import cn from 'classnames'
 import React from 'react'
 import { SidebarMenu } from './SidebarMenu'
 import { useAtom } from 'jotai'
-import { currUserAtom } from './../../store/auth.atom'
+import { currUserAtom, isAdminAtom, isLoginAtom } from './../../store/auth.atom'
+import { BrowserStore } from './../../store/browserstore.store'
+import { sideBarOpenAtom } from './../../store/sidebar.atom'
 
 export interface ISidebarDrawerProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  isOpen: boolean
-  onClick: () => void
-}
-
-export interface ISidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-  isOpen: boolean
-  isAdmin: boolean
-  onToggleOpen: () => void
-  onLogout: () => void
-}
+  extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const SidebarDrawer = (props: ISidebarDrawerProps) => {
-  const { className, isOpen, onClick, children, ...restProps } = props
+  const { className, children, ...restProps } = props
+  const [isSideBarOpen, setIsSideBarOpen] = useAtom(sideBarOpenAtom)
   return (
     <>
       <div
         className={cn(
           className,
           'fixed z-30 md:relative md:translate-x-0 inset-y-0 w-56 transform transition-transform duration-300 ease-in-out',
-          { 'translate-x-0': isOpen },
-          { '-translate-x-full': !isOpen },
+          { 'translate-x-0': isSideBarOpen },
+          { '-translate-x-full': !isSideBarOpen },
         )}
         {...restProps}
       >
         {children}
       </div>
       {/* Overlay */}
-      {isOpen && (
+      {isSideBarOpen && (
         <div
-          onClick={onClick}
+          onClick={() => setIsSideBarOpen(false)}
           className="fixed inset-0 bg-black opacity-50 z-20 md:hidden"
         ></div>
       )}
@@ -85,15 +78,19 @@ export const SidebarBody = (props: React.HTMLAttributes<HTMLDivElement>) => {
   )
 }
 
-export function Sidebar({
-  isOpen,
-  isAdmin,
-  onLogout,
-  onToggleOpen,
-}: ISidebarProps) {
+export function Sidebar() {
+  const [, setIsLogin] = useAtom(isLoginAtom)
+  const [, setIsAdmin] = useAtom(isAdminAtom)
   const [currUser] = useAtom(currUserAtom)
+
+  const onLogout = () => {
+    setIsLogin(false)
+    setIsAdmin(false)
+    BrowserStore.clear()
+  }
+
   return (
-    <SidebarDrawer className="bg-white" isOpen={isOpen} onClick={onToggleOpen}>
+    <SidebarDrawer className="bg-white">
       <SidebarContainer>
         <SidebarHeader className=" p-4 flex items-center gap-2">
           <Avatar size={50} />
@@ -106,7 +103,7 @@ export function Sidebar({
           <hr className="lex-grow border-gray-200" />
         </SidebarHeader>
         <SidebarBody>
-          <SidebarMenu isAdmin={isAdmin} onClick={onToggleOpen} />
+          <SidebarMenu />
         </SidebarBody>
         <SidebarFooter className="p-4 flex items-center justify-between">
           <Button onClick={onLogout} block>
