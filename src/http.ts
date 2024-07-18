@@ -1,6 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import { message } from 'antd'
-import { HeaderKey, IErrorResponse, StorageKey } from 'entix-shared'
+import { HeaderKey, IErrorResponse, makeBearer } from 'entix-shared'
+import { BrowserStore } from './store/browserstore.store'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
@@ -8,9 +9,7 @@ export const http = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  baseURL: apiBaseUrl
-  // baseURL: 'https://api.entix.me',
-  // baseURL: 'http://localhost:3000',
+  baseURL: apiBaseUrl,
 })
 
 let isRefreshing: boolean = false
@@ -18,11 +17,9 @@ let isRefreshing: boolean = false
 http.interceptors.request.use(
   (config) => {
     isRefreshing = false
-    const accessTokenString = localStorage.getItem(StorageKey.AccessToken)
-    if (accessTokenString) {
-      console.log({ accessTokenString })
-      const accessToken = JSON.parse(accessTokenString) as string
-      config.headers[HeaderKey.Authorization] = `Bearer ${accessToken}`
+    const accessToken = BrowserStore.getAccessToken()
+    if (accessToken) {
+      config.headers[HeaderKey.Authorization] = makeBearer(accessToken)
     }
     return config
   },
@@ -32,9 +29,7 @@ http.interceptors.request.use(
 )
 
 http.interceptors.response.use(
-  async (response) => {
-    return response
-  },
+  async (response) => response,
   async (error: AxiosError<IErrorResponse>) => {
     if (error.response) {
       const { status, data, config: originalRequest } = error.response
@@ -43,18 +38,15 @@ http.interceptors.response.use(
         message.error(data.message)
       } else if (!isRefreshing && status === 401) {
         isRefreshing = true
-        const refreshToken = JSON.parse(
-          `${localStorage.getItem(StorageKey.RefreshToken)}`,
-        )
+        const refreshToken = BrowserStore.getRefreshToken()
+        console.log({ refreshToken })
         const { data } = await http.post('/api/v1/auth/refresh', {
           refreshToken,
         })
-        localStorage.setItem(
-          StorageKey.AccessToken,
-          JSON.stringify(data.accessToken),
+        BrowserStore.setAccessToken(data.accessToken)
+        originalRequest.headers[HeaderKey.Authorization] = makeBearer(
+          data.accessToken,
         )
-        originalRequest.headers[HeaderKey.Authorization] =
-          `Bearer ${data.accessToken}`
         return await http(originalRequest)
       }
     } else if (error.request) {
