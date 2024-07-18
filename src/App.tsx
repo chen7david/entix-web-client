@@ -9,9 +9,8 @@ import { Sidebar } from './components/Sidebar/Sidebar'
 import { Navbar } from './components/Navbar'
 import { useAtom } from 'jotai'
 import { currUserAtom, isLoginAtom } from './store/auth.atom'
-import { IViewUserLoginDto } from 'entix-shared/dist/models/auth/auth.model'
-import { http } from './http'
 import { BrowserStore } from './store/browserstore.store'
+import { loginUser } from './api/client.api'
 
 function App() {
   const [isLogin, setIsLogin] = useAtom(isLoginAtom)
@@ -30,15 +29,12 @@ function App() {
   }
 
   const onLogin = async (formData: ILoginFormState) => {
-    const { data } = await http.post<IViewUserLoginDto>(
-      '/api/v1/auth/login',
-      formData,
-    )
-    setCurrUser(data.user)
+    const { user, accessToken, refreshToken } = await loginUser(formData)
+    setCurrUser(user)
     setIsLogin(true)
-    BrowserStore.setAccessToken(data.accessToken)
-    BrowserStore.setRefreshToken(data.refreshToken)
-    BrowserStore.setCurrUser(data.user)
+    BrowserStore.setAccessToken(accessToken)
+    BrowserStore.setRefreshToken(refreshToken)
+    BrowserStore.setCurrUser(user)
   }
 
   return (
