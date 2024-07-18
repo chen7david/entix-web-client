@@ -49,7 +49,9 @@ export const UsersList = () => {
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
     onMutate: (delUser) => {
-      queryClient.setQueryData(['users'], (oldUsers: IViewUserDto[]) => oldUsers.filter(u => u.id !== delUser.id))
+      queryClient.setQueryData(['users'], (oldUsers: IViewUserDto[]) =>
+        oldUsers.filter((u) => u.id !== delUser.id),
+      )
     },
   })
 

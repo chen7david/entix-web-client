@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import { message } from 'antd'
-import { HeaderKey, IErrorResponse } from 'entix-shared'
+import { HeaderKey, IErrorResponse, makeBearer } from 'entix-shared'
 import { BrowserStore } from './store/browserstore.store'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
@@ -19,8 +19,7 @@ http.interceptors.request.use(
     isRefreshing = false
     const accessToken = BrowserStore.getAccessToken()
     if (accessToken) {
-      console.log({ accessToken })
-      config.headers[HeaderKey.Authorization] = `Bearer ${accessToken}`
+      config.headers[HeaderKey.Authorization] = makeBearer(accessToken)
     }
     return config
   },
@@ -30,9 +29,7 @@ http.interceptors.request.use(
 )
 
 http.interceptors.response.use(
-  async (response) => {
-    return response
-  },
+  async (response) => response,
   async (error: AxiosError<IErrorResponse>) => {
     if (error.response) {
       const { status, data, config: originalRequest } = error.response
@@ -47,8 +44,9 @@ http.interceptors.response.use(
           refreshToken,
         })
         BrowserStore.setAccessToken(data.accessToken)
-        originalRequest.headers[HeaderKey.Authorization] =
-          `Bearer ${data.accessToken}`
+        originalRequest.headers[HeaderKey.Authorization] = makeBearer(
+          data.accessToken,
+        )
         return await http(originalRequest)
       }
     } else if (error.request) {
