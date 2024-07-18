@@ -11,7 +11,7 @@ import { useAtom } from 'jotai'
 import { currUserAtom, isLoginAtom } from './store/auth.atom'
 import { IViewUserLoginDto } from 'entix-shared/dist/models/auth/auth.model'
 import { http } from './http'
-import { StorageKey } from 'entix-shared'
+import { BrowserStore } from './store/browserstore.store'
 
 function App() {
   const [isLogin, setIsLogin] = useAtom(isLoginAtom)
@@ -26,7 +26,7 @@ function App() {
   const logout = () => {
     setIsLogin(false)
     setIsAdmin(false)
-    localStorage.clear()
+    BrowserStore.clear()
   }
 
   const onLogin = async (formData: ILoginFormState) => {
@@ -36,15 +36,9 @@ function App() {
     )
     setCurrUser(data.user)
     setIsLogin(true)
-    localStorage.setItem(
-      StorageKey.AccessToken,
-      JSON.stringify(data.accessToken),
-    )
-    localStorage.setItem(
-      StorageKey.RefreshToken,
-      JSON.stringify(data.refreshToken),
-    )
-    localStorage.setItem(StorageKey.CurrUser, JSON.stringify(data.user))
+    BrowserStore.setAccessToken(data.accessToken)
+    BrowserStore.setRefreshToken(data.refreshToken)
+    BrowserStore.setCurrUser(data.user)
   }
 
   return (
