@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { http } from './../../http'
 import { Table, TableColumnsType } from 'antd'
 import {
@@ -8,6 +7,7 @@ import {
 } from 'entix-shared'
 import { UserCreateModal } from './UserCreateModal'
 import { UserDeleteModel } from './UserDeleteModel'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 function getAge(dobString: string) {
   // Parse the date string to a Date object
@@ -24,16 +24,34 @@ function getAge(dobString: string) {
   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
     age--
   }
-
   return age
 }
 
 export const UsersList = () => {
-  const [users, setUsers] = useState<IViewUserDto[]>([])
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    getUsers()
-  }, [])
+  const userQuery = useQuery({
+    queryKey: ['users'],
+    queryFn: getUsers,
+    staleTime: 1000 * 60 * 2,
+  })
+
+  const userCreateMutation = useMutation({
+    mutationFn: createUser,
+    onSuccess: (newUser) => {
+      queryClient.setQueryData(['users'], (oldUsers: IViewUserDto[]) => [
+        newUser,
+        ...oldUsers,
+      ])
+    },
+  })
+
+  const deleteUserMutation = useMutation({
+    mutationFn: deleteUser,
+    onMutate: (delUser) => {
+      queryClient.setQueryData(['users'], (oldUsers: IViewUserDto[]) => oldUsers.filter(u => u.id !== delUser.id))
+    },
+  })
 
   const columns: TableColumnsType<IViewUserDto> = [
     {
@@ -63,7 +81,12 @@ export const UsersList = () => {
       title: 'actions',
       dataIndex: 'email',
       render: (_, object) => (
-        <UserDeleteModel user={object} onSubmit={deleteUser} />
+        <UserDeleteModel
+          user={object}
+          onSubmit={async (formData: IViewUserDto) =>
+            deleteUserMutation.mutate(formData)
+          }
+        />
       ),
     },
   ]
@@ -72,24 +95,30 @@ export const UsersList = () => {
     const { data } = await http.get<IPaginatedFilterResponse<IViewUserDto[]>>(
       '/api/v1/users?sortBy=id:desc',
     )
-    setUsers(data.data)
+    return data.data
   }
 
-  async function createUser(formData: ICreateUserDto) {
+  async function createUser(formData: ICreateUserDto): Promise<IViewUserDto> {
     const { data: user } = await http.post('/api/v1/users', formData)
-    setUsers((prevUsers) => [user, ...prevUsers])
+    return user
   }
 
   async function deleteUser(user: IViewUserDto) {
     const { data } = await http.delete('/api/v1/users/' + user.id)
-    console.log(data)
-    setUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id))
+    return data
   }
 
   return (
     <div className="">
-      <UserCreateModal onSubmit={createUser} />
-      <Table rowKey="id" dataSource={users} columns={columns} />
+      <UserCreateModal
+        onSubmit={async (data) => userCreateMutation.mutate(data)}
+      />
+      <Table
+        loading={userQuery.isLoading}
+        rowKey="id"
+        dataSource={userQuery.data}
+        columns={columns}
+      />
     </div>
   )
 }
