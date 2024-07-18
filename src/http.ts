@@ -2,14 +2,13 @@ import axios, { AxiosError } from 'axios'
 import { message } from 'antd'
 import { HeaderKey, ErrorKey, IErrorResponse, makeBearer } from 'entix-shared'
 import { BrowserStore } from './store/browserstore.store'
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+import { clientConfig } from './config'
 
 export const http = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  baseURL: apiBaseUrl,
+  baseURL: clientConfig.baseUrl,
 })
 
 http.interceptors.request.use(
