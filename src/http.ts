@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import { message } from 'antd'
-import { HeaderKey, IErrorResponse, makeBearer } from 'entix-shared'
+import { HeaderKey, ErrorKey, IErrorResponse, makeBearer } from 'entix-shared'
 import { BrowserStore } from './store/browserstore.store'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
@@ -12,34 +12,31 @@ export const http = axios.create({
   baseURL: apiBaseUrl,
 })
 
-let isRefreshing: boolean = false
-
 http.interceptors.request.use(
   (config) => {
-    isRefreshing = false
     const accessToken = BrowserStore.getAccessToken()
-    if (accessToken) {
+    if (accessToken)
       config.headers[HeaderKey.Authorization] = makeBearer(accessToken)
-    }
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  },
+  (error) => Promise.reject(error),
 )
 
 http.interceptors.response.use(
   async (response) => response,
   async (error: AxiosError<IErrorResponse>) => {
     if (error.response) {
-      const { status, data, config: originalRequest } = error.response
+      const { request, status, data, config: originalRequest } = error.response
+      const responseURL = `${request.responseURL}`
 
-      if (data.message !== 'Expired token') {
+      const isRefreshResponse = responseURL.includes('/refresh')
+      const isTokenExpired = data.message === ErrorKey.ExpiredToken
+      const isUnauthorized = status === 401
+
+      if (!isTokenExpired) {
         message.error(data.message)
-      } else if (!isRefreshing && status === 401) {
-        isRefreshing = true
+      } else if (!isRefreshResponse && isUnauthorized) {
         const refreshToken = BrowserStore.getRefreshToken()
-        console.log({ refreshToken })
         const { data } = await http.post('/api/v1/auth/refresh', {
           refreshToken,
         })
