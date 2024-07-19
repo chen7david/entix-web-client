@@ -93,7 +93,11 @@ export function Sidebar() {
     <SidebarDrawer className="bg-white">
       <SidebarContainer>
         <SidebarHeader className=" p-4 flex items-center gap-2">
-          <Avatar style={{ backgroundColor: '#3291a8', verticalAlign: 'middle' }} size={50} >
+          <Avatar
+            src={currUser?.profile_image_url}
+            style={{ backgroundColor: '#3291a8', verticalAlign: 'middle' }}
+            size={56}
+          >
             {currUser?.first_name[0]}
           </Avatar>
           <div className="flex flex-col">
