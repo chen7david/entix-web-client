@@ -12,13 +12,14 @@ import { useAtom } from 'jotai'
 import { createUserFormValidationAtom } from './../../store/error.atom'
 import {
   CreateUserDto,
+  ICloudinaryUploadResponse,
   ICreateUserDto,
   IPaginatedFilterResponse,
   IViewUserDto,
 } from 'entix-shared'
 import { Input, InputPassword } from './../../components/Form/Input'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createUser, ICloudinaryUploadResponse } from './../../api/client.api'
+import { createUser } from './../../api/client.api'
 import { AvatarUploader } from '../../components/Form/UploadAvatar'
 
 type ISex = 'female' | 'male'
@@ -30,7 +31,7 @@ const defaultFormData: ICreateUserDto = {
   first_name: '',
   email: '',
   sex: 'male',
-  date_of_birth: '',
+  date_of_birth: new Date(),
   profile_image_url: '',
 }
 
@@ -106,7 +107,7 @@ export const UserCreateModal = () => {
   const onChangeDateOfBirth: DatePickerProps['onChange'] = (_, dateString) => {
     if (typeof dateString === 'string') {
       setFormData((prevData) => {
-        const updatedData = { ...prevData, date_of_birth: dateString }
+        const updatedData = { ...prevData, date_of_birth: new Date(dateString) }
         validateForm(updatedData)
         return updatedData
       })
