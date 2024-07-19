@@ -95,7 +95,7 @@ export function Sidebar() {
         <SidebarHeader className=" p-4 flex items-center gap-2">
           <Avatar
             src={currUser?.profile_image_url}
-            style={{ backgroundColor: '#3291a8', verticalAlign: 'middle' }}
+            style={{ backgroundColor: '#3291a8' }}
             size={56}
           >
             {currUser?.first_name[0]}
@@ -104,7 +104,9 @@ export function Sidebar() {
             <div className="text-sm font-bold">
               {currUser ? currUser.username : 'unkown'}
             </div>
-            <div className="text-xs font-light ">Teacher</div>
+            <div className="text-xs font-light ">
+              {currUser ? currUser.userid : 'unkown'}
+            </div>
           </div>
           <hr className="lex-grow border-gray-200" />
         </SidebarHeader>
