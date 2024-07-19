@@ -18,7 +18,8 @@ import {
 } from 'entix-shared'
 import { Input, InputPassword } from './../../components/Form/Input'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createUser } from './../../api/client.api'
+import { createUser, ICloudinaryUploadResponse } from './../../api/client.api'
+import { AvatarUploader } from '../../components/Form/UploadAvatar'
 
 type ISex = 'female' | 'male'
 
@@ -112,6 +113,19 @@ export const UserCreateModal = () => {
     }
   }
 
+  const onChangeAvatar = async (response: ICloudinaryUploadResponse) => {
+    if (!response.secure_url) return
+    setFormData((prevData) => {
+      const updatedData = {
+        ...prevData,
+        profile_image_url: response.secure_url,
+      }
+      validateForm(updatedData)
+      console.log(updatedData)
+      return updatedData
+    })
+  }
+
   return (
     <>
       <div className="my-4">
@@ -119,6 +133,7 @@ export const UserCreateModal = () => {
       </div>
       <Drawer title="New User" onClose={onClose} open={open}>
         <form className="mt-8 space-y-6 px-2">
+          <AvatarUploader onUploaded={onChangeAvatar} />
           <Input
             label="Username"
             onChange={handleChange}
