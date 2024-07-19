@@ -1,4 +1,4 @@
-import { Table, TableColumnsType } from 'antd'
+import { Avatar, Table, TableColumnsType } from 'antd'
 import { IViewUserDto } from 'entix-shared'
 import { UserCreateModal } from './UserCreateModal'
 import { UserDeleteModel } from './UserDeleteModel'
@@ -22,7 +22,26 @@ export const UsersList = () => {
     queryFn: findUsers,
   })
 
+  const tableAvatar = (user: IViewUserDto) => {
+    return (
+      <Avatar
+        src={user?.profile_image_url}
+        style={{ backgroundColor: '#3291a8' }}
+        size={38}
+      >
+        {user?.first_name[0]}
+      </Avatar>
+    )
+  }
+
   const columns: TableColumnsType<IViewUserDto> = [
+    {
+      title: '#',
+      dataIndex: 'avatar',
+      key: 'profile_image_url',
+      responsive: ['md'],
+      render: (_, user) => tableAvatar(user),
+    },
     {
       title: 'id',
       dataIndex: 'userid',
