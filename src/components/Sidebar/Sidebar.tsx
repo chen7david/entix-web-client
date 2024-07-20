@@ -3,9 +3,9 @@ import cn from 'classnames'
 import React from 'react'
 import { SidebarMenu } from './SidebarMenu'
 import { useAtom } from 'jotai'
-import { currUserAtom, isAdminAtom, isLoginAtom } from './../../store/auth.atom'
-import { BrowserStore } from './../../store/browserstore.store'
-import { sideBarOpenAtom } from './../../store/sidebar.atom'
+import { currUserAtom, isAdminAtom, isLoginAtom } from '@/store/auth.atom'
+import { BrowserStore } from '@/store/browserstore.store'
+import { sideBarOpenAtom } from '@/store/sidebar.atom'
 
 export interface ISidebarDrawerProps
   extends React.HTMLAttributes<HTMLDivElement> {}

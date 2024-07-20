@@ -3,12 +3,12 @@ import { useState, ChangeEvent, MouseEvent, useCallback } from 'react'
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons'
 import Logo from '/entix-bw.svg'
 import { useAtom } from 'jotai'
-import { loginFormValidationAtom } from './../../store/error.atom'
+import { loginFormValidationAtom } from '@/store/error.atom'
 import { debounce } from 'lodash'
 import { LoginUserDto, ILoginUserDto } from 'entix-shared'
-import { loginUser } from './../../api/client.api'
-import { BrowserStore } from './../../store/browserstore.store'
-import { currUserAtom, isAdminAtom, isLoginAtom } from './../../store/auth.atom'
+import { loginUser } from '@/api/client.api'
+import { BrowserStore } from '@/store/browserstore.store'
+import { currUserAtom, isAdminAtom, isLoginAtom } from '@/store/auth.atom'
 
 export const Login = () => {
   const [, setIsLogin] = useAtom(isLoginAtom)
