@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { Button, Modal, message } from 'antd'
 import { IPaginatedFilterResponse, IViewUserDto } from 'entix-shared'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deleteUser } from './../../api/client.api'
 import { useAtom } from 'jotai'
-import { currUserAtom } from './../../store/auth.atom'
+import { currUserAtom } from '@/store/auth.atom'
+import { deleteUser } from '@/api/client.api'
 
 export type IUserDeleteModelProps = {
   user: IViewUserDto

@@ -1,13 +1,13 @@
 import { AppContainer, Main, MainContainer } from './components/Layout'
 import { HashRouter } from 'react-router-dom'
 import { Pages } from './pages/Pages'
-import { Login } from './pages/login/Login'
 import { HamburgerButton } from './components/HamburgerButton'
 import Logo from '/entix-bw.svg'
 import { Sidebar } from './components/Sidebar/Sidebar'
 import { Navbar } from './components/Navbar'
 import { useAtom } from 'jotai'
 import { isLoginAtom } from './store/auth.atom'
+import { Login } from '@/pages/login/Login'
 
 function App() {
   const [isLogin] = useAtom(isLoginAtom)

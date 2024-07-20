@@ -3,7 +3,7 @@ import { IViewUserDto } from 'entix-shared'
 import { UserCreateModal } from './UserCreateModal'
 import { UserDeleteModel } from './UserDeleteModel'
 import { useQuery } from '@tanstack/react-query'
-import { findUsers } from './../../api/client.api'
+import { findUsers } from '@/api/client.api'
 
 function getAge(dobString: string) {
   const dob = new Date(dobString)

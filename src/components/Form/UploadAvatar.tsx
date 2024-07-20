@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Upload, message } from 'antd'
 import ImgCrop from 'antd-img-crop'
 import type { UploadFile, UploadProps } from 'antd'
-import { uploadToCloudinary } from '../../api/client.api'
 import { ICloudinaryUploadResponse } from 'entix-shared'
+import { uploadToCloudinary } from '@/api/client.api'
 
 type IAvatarUploaderProps = {
   onUploaded: (response: ICloudinaryUploadResponse) => Promise<void>

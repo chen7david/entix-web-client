@@ -1,9 +1,9 @@
 import axios, { AxiosError } from 'axios'
 import { message } from 'antd'
 import { HeaderKey, ErrorKey, IErrorResponse, makeBearer } from 'entix-shared'
-import { BrowserStore } from '../store/browserstore.store'
-import { clientConfig } from '../config'
+import { clientConfig } from '@/config'
 import { renewToken } from './client.api'
+import { BrowserStore } from '@/store/browserstore.store'
 
 export const http = axios.create({
   headers: {

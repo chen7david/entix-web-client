@@ -9,7 +9,7 @@ import {
 } from 'antd'
 import { debounce } from 'lodash'
 import { useAtom } from 'jotai'
-import { createUserFormValidationAtom } from './../../store/error.atom'
+import { createUserFormValidationAtom } from '@/store/error.atom'
 import {
   CreateUserDto,
   ICloudinaryUploadResponse,
@@ -17,10 +17,10 @@ import {
   IPaginatedFilterResponse,
   IViewUserDto,
 } from 'entix-shared'
-import { Input, InputPassword } from './../../components/Form/Input'
+import { Input, InputPassword } from '@/components/Form/Input'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createUser } from './../../api/client.api'
-import { AvatarUploader } from '../../components/Form/UploadAvatar'
+import { createUser } from '@/api/client.api'
+import { AvatarUploader } from '@/components/Form/UploadAvatar'
 
 type ISex = 'female' | 'male'
 
