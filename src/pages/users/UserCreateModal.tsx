@@ -21,17 +21,24 @@ import { Input, InputPassword } from '@/components/Form/Input'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createUser } from '@/api/client.api'
 import { AvatarUploader } from '@/components/Form/UploadAvatar'
+import { z } from 'zod'
 
 type ISex = 'female' | 'male'
 
-const defaultFormData: ICreateUserDto = {
+export const TestShema = CreateUserDto.extend({
+  date_of_birth: z.union([z.null(), z.date()]),
+})
+
+export type IItestShema = z.infer<typeof TestShema>
+
+const defaultFormData: IItestShema = {
   username: '',
   password: '',
   last_name: '',
   first_name: '',
   email: '',
   sex: 'male',
-  date_of_birth: new Date(),
+  date_of_birth: null,
   profile_image_url: '',
 }
 
@@ -39,7 +46,7 @@ export const UserCreateModal = () => {
   const [open, setOpen] = useState(false)
   const [isFormValid, setIsFormValid] = useState(false)
   const [errors, setErrors] = useAtom(createUserFormValidationAtom)
-  const [formData, setFormData] = useState<ICreateUserDto>(defaultFormData)
+  const [formData, setFormData] = useState<IItestShema>(defaultFormData)
   const queryClient = useQueryClient()
 
   const createUserMutation = useMutation({
@@ -72,7 +79,7 @@ export const UserCreateModal = () => {
   }
 
   const validateForm = useCallback(
-    debounce((data: ICreateUserDto) => {
+    debounce((data: IItestShema) => {
       const { success, error } = CreateUserDto.safeParse(data)
       if (!success) {
         setErrors(error?.format())
@@ -86,6 +93,7 @@ export const UserCreateModal = () => {
   )
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log(e)
     const { name, value } = e.target
     setFormData((prevData) => {
       const updatedData = { ...prevData, [name]: value }
@@ -97,7 +105,7 @@ export const UserCreateModal = () => {
   const handleSubmit = async (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
     if (isFormValid) {
-      await createUserMutation.mutate(formData)
+      await createUserMutation.mutate(formData as ICreateUserDto)
       onClose()
       clearForm()
       message.success('User created successfully')
