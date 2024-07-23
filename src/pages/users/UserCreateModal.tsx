@@ -89,13 +89,14 @@ export const UserCreateModal = () => {
           <Form.Item
             hasFeedback
             name="date_of_birth"
-            rules={[{ required: true, message: 'Required' }]}
+            rules={[CreateUserDtoRule]}
           >
             <DatePicker
               style={{ width: '100%' }}
               placeholder="Date of birth"
               disabledDate={disableFutureDates}
               onChange={(date) => date.toDate()}
+              allowClear={false}
             />
           </Form.Item>
           <Form.Item>
