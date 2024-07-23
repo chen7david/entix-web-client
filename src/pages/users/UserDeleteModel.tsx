@@ -28,6 +28,12 @@ export const UserDeleteModel = ({ user }: IUserDeleteModelProps) => {
         },
       )
     },
+    onSuccess: () => {
+      message.success('User deleted successfully')
+    },
+    onError: () => {
+      message.error('Failed to delete user')
+    },
   })
 
   const showModal = () => {
@@ -44,13 +50,8 @@ export const UserDeleteModel = ({ user }: IUserDeleteModelProps) => {
       return
     }
     await deleteUserMutation.mutate(user.id)
-    setIsModalOpen(false)
-    message.success('User deleted successfully')
   }
 
-  const handleCancel = () => {
-    setIsModalOpen(false)
-  }
   return (
     <>
       <Button size="small" type="link" onClick={showModal}>
@@ -65,9 +66,9 @@ export const UserDeleteModel = ({ user }: IUserDeleteModelProps) => {
         okButtonProps={{
           loading: deleteUserMutation.isPending,
         }}
-        onCancel={handleCancel}
+        onCancel={() => setIsModalOpen(false)}
       >
-        <p className="">
+        <p>
           Are you sure you want to delete{' '}
           <span className="font-bold text-red-600">{user.username}</span>?
         </p>
