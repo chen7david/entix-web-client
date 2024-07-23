@@ -95,7 +95,6 @@ export const UserCreateModal = () => {
               style={{ width: '100%' }}
               placeholder="Date of birth"
               disabledDate={disableFutureDates}
-              onChange={(date) => date.toDate()}
               allowClear={false}
             />
           </Form.Item>
