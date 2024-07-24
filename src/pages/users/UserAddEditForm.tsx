@@ -1,5 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Button, Drawer, DatePicker, Select, message, Form, Input } from 'antd'
+import {
+  Button,
+  Drawer,
+  DatePicker,
+  Select,
+  message,
+  Form,
+  Input,
+  Space,
+} from 'antd'
 import {
   CreateUserDto,
   ICreateUserDto,
@@ -8,21 +17,29 @@ import {
   UpdateUserDto,
 } from 'entix-shared'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createUser, updateUser } from '@/api/client.api'
+import { activateAccount, createUser, updateUser } from '@/api/client.api'
 import { createSchemaFieldRule } from 'antd-zod'
 import dayjs, { Dayjs } from 'dayjs'
 import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
 import { useAtom } from 'jotai'
 import { AvatarUploader } from '@/components/Form/UploadAvatar'
+import { Indicator } from '@/components/Indicator'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { UserDeleteModel } from './UserDeleteModel'
 
 export const UserAddEditForm = () => {
   const [form] = Form.useForm()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [isManualActivation, setIsManualActivation] = useState(false)
   const [editUser, setEditUser] = useAtom(editUserAtom)
   const [isEditingUser, setIsEditingUser] = useAtom(editUserStatusAtom)
   const CreateUserDtoRule = createSchemaFieldRule(CreateUserDto)
   const UpdateUserDtoRule = createSchemaFieldRule(UpdateUserDto)
   const queryClient = useQueryClient()
+
+  useHotkeys('ctrl+k', () => setIsManualActivation(!isManualActivation), [
+    isManualActivation,
+  ])
 
   useEffect(() => {
     if (isEditingUser) {
@@ -38,6 +55,7 @@ export const UserAddEditForm = () => {
     setEditUser(null)
     setIsDrawerOpen(false)
     setIsEditingUser(false)
+    setIsManualActivation(false)
     form.resetFields()
   }
 
@@ -76,7 +94,32 @@ export const UserAddEditForm = () => {
     },
   })
 
+  const activateAccountMutation = useMutation({
+    mutationFn: activateAccount,
+    onSuccess: () => {
+      queryClient.setQueryData(
+        ['users'],
+        (oldUsers: IPaginatedFilterResponse<IViewUserDto[]>) => ({
+          ...oldUsers,
+          data: oldUsers.data.map((user) => {
+            if (user.id === editUser?.id) {
+              const updatedEditUser = {
+                ...user,
+                activated_at: new Date(),
+              }
+              setEditUser(updatedEditUser)
+              return updatedEditUser
+            }
+            return user
+          }),
+        }),
+      )
+      message.success(`${editUser?.email} was activated`)
+    },
+  })
+
   const handleOnsubmit = (v: ICreateUserDto) => {
+    console.log({ v })
     if (!v.profile_image_url) v.profile_image_url = ''
     if (isEditingUser && editUser) {
       updateUserMutation.mutate({ userId: editUser.id, formData: v })
@@ -87,6 +130,23 @@ export const UserAddEditForm = () => {
 
   const disableFutureDates = (current: Dayjs | null): boolean => {
     return current !== null && current > dayjs().endOf('day')
+  }
+
+  const handleResendActivationEmail = () => {
+    if (!editUser) {
+      message.error('Activation email failed')
+      return
+    }
+    if (editUser.activated_at) {
+      message.error('User is already activated')
+      return
+    }
+    if (isManualActivation) {
+      activateAccountMutation.mutate(editUser.id)
+    } else {
+      // add resend account activation email activation logic here ...
+      message.success(`Activation email sent to ${editUser.email}`)
+    }
   }
 
   return (
@@ -126,12 +186,34 @@ export const UserAddEditForm = () => {
           >
             <Input disabled={isEditingUser} placeholder="Username" />
           </Form.Item>
-          <Form.Item
-            hasFeedback
-            name="email"
-            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
-          >
-            <Input disabled={isEditingUser} placeholder="Email" />
+          <Form.Item>
+            <Space.Compact style={{ width: '100%' }}>
+              <Form.Item
+                noStyle
+                hasFeedback
+                name="email"
+                rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
+              >
+                <Input
+                  placeholder="Email"
+                  prefix={
+                    isEditingUser && (
+                      <Indicator
+                        color={editUser?.activated_at ? 'green' : 'orange'}
+                      />
+                    )
+                  }
+                />
+              </Form.Item>
+              {isEditingUser && (
+                <Button
+                  loading={activateAccountMutation.isPending}
+                  onClick={handleResendActivationEmail}
+                >
+                  {isManualActivation ? 'Activate' : 'Resend'}
+                </Button>
+              )}
+            </Space.Compact>
           </Form.Item>
           <Form.Item
             hidden={isEditingUser}
@@ -197,6 +279,9 @@ export const UserAddEditForm = () => {
             >
               Save
             </Button>
+          </Form.Item>
+          <Form.Item>
+            {editUser && <UserDeleteModel user={editUser} />}
           </Form.Item>
         </Form>
       </Drawer>

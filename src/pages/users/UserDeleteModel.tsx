@@ -54,7 +54,7 @@ export const UserDeleteModel = ({ user }: IUserDeleteModelProps) => {
 
   return (
     <>
-      <Button size="small" type="link" onClick={showModal}>
+      <Button block style={{ color: 'red' }} onClick={showModal}>
         Delete
       </Button>
       <Modal
