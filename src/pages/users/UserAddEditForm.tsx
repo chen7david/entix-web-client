@@ -15,7 +15,7 @@ import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
 import { useAtom } from 'jotai'
 import { AvatarUploader } from '@/components/Form/UploadAvatar'
 
-export const UserCreateModal = () => {
+export const UserAddEditForm = () => {
   const [form] = Form.useForm()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [editUser, setEditUser] = useAtom(editUserAtom)
@@ -98,20 +98,25 @@ export const UserCreateModal = () => {
         title={`${isEditingUser ? 'Edit' : 'Add'} User`}
         onClose={() => closeDrawer()}
         open={isDrawerOpen}
-        extra={<Button onClick={() => form.resetFields()}>Clear</Button>}
+        extra={
+          <Button hidden={isEditingUser} onClick={() => form.resetFields()}>
+            Clear
+          </Button>
+        }
       >
         <Form
           form={form}
           onFinish={handleOnsubmit}
           size="large"
           title="AddEditUserForm"
-          key={isEditingUser ? 'Edit' : 'New'}
+          key={Math.random()}
         >
-          <Form.Item>
+          <Form.Item name="profile_image_url">
             <AvatarUploader
               onUploaded={async ({ secure_url }) => {
                 form.setFieldValue('profile_image_url', secure_url)
               }}
+              defaultImageUrl={editUser?.profile_image_url}
             />
           </Form.Item>
           <Form.Item
