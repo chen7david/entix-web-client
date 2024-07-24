@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query'
 import { findUsers } from '@/api/client.api'
 import { useAtom } from 'jotai'
 import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
-import { Link } from 'react-router-dom'
 
 function getAge(dobString: string) {
   const dob = new Date(dobString)
