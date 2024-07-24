@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Upload, message } from 'antd'
 import ImgCrop from 'antd-img-crop'
 import type { UploadFile, UploadProps } from 'antd'
@@ -7,11 +7,28 @@ import { uploadToCloudinary } from '@/api/client.api'
 
 type IAvatarUploaderProps = {
   onUploaded: (response: ICloudinaryUploadResponse) => Promise<void>
+  defaultImageUrl?: string | null
 }
 
-export const AvatarUploader = ({ onUploaded }: IAvatarUploaderProps) => {
+export const AvatarUploader = ({
+  onUploaded,
+  defaultImageUrl,
+}: IAvatarUploaderProps) => {
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [uploading, setUploading] = useState(false)
+
+  useEffect(() => {
+    if (defaultImageUrl) {
+      setFileList([
+        {
+          uid: '-1',
+          name: 'avatar.png',
+          status: 'done',
+          url: defaultImageUrl,
+        } as UploadFile,
+      ])
+    }
+  }, [defaultImageUrl])
 
   const onChange: UploadProps['onChange'] = async ({
     file,

@@ -1,9 +1,12 @@
 import { Avatar, Table, TableColumnsType } from 'antd'
 import { IViewUserDto } from 'entix-shared'
-import { UserCreateModal } from './UserCreateModal'
+import { UserAddEditForm } from './UserAddEditForm'
 import { UserDeleteModel } from './UserDeleteModel'
 import { useQuery } from '@tanstack/react-query'
 import { findUsers } from '@/api/client.api'
+import { useAtom } from 'jotai'
+import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
+import { Link } from 'react-router-dom'
 
 function getAge(dobString: string) {
   const dob = new Date(dobString)
@@ -17,6 +20,9 @@ function getAge(dobString: string) {
 }
 
 export const UsersList = () => {
+  const [, setEditUser] = useAtom(editUserAtom)
+  const [, setIsEditingUser] = useAtom(editUserStatusAtom)
+
   const userQuery = useQuery({
     queryKey: ['users'],
     queryFn: findUsers,
@@ -52,6 +58,17 @@ export const UsersList = () => {
       title: 'username',
       dataIndex: 'username',
       key: 'username',
+      render: (text, user) => (
+        <span
+          className="text-blue-500 cursor-pointer"
+          onClick={() => {
+            setEditUser(user)
+            setIsEditingUser(true)
+          }}
+        >
+          {text}
+        </span>
+      ),
     },
     {
       title: 'age',
@@ -74,7 +91,7 @@ export const UsersList = () => {
 
   return (
     <div>
-      <UserCreateModal />
+      <UserAddEditForm />
       <Table
         loading={userQuery.isLoading}
         rowKey="id"
