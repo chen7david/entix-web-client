@@ -4,6 +4,8 @@ import { UserCreateModal } from './UserCreateModal'
 import { UserDeleteModel } from './UserDeleteModel'
 import { useQuery } from '@tanstack/react-query'
 import { findUsers } from '@/api/client.api'
+import { useAtom } from 'jotai'
+import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
 
 function getAge(dobString: string) {
   const dob = new Date(dobString)
@@ -17,6 +19,9 @@ function getAge(dobString: string) {
 }
 
 export const UsersList = () => {
+  const [, setEditUser] = useAtom(editUserAtom)
+  const [, setIsEditingUser] = useAtom(editUserStatusAtom)
+
   const userQuery = useQuery({
     queryKey: ['users'],
     queryFn: findUsers,
@@ -52,6 +57,16 @@ export const UsersList = () => {
       title: 'username',
       dataIndex: 'username',
       key: 'username',
+      render: (text, user) => (
+        <a
+          onClick={() => {
+            setEditUser(user)
+            setIsEditingUser(true)
+          }}
+        >
+          {text}
+        </a>
+      ),
     },
     {
       title: 'age',

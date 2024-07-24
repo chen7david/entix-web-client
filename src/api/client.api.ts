@@ -6,6 +6,7 @@ import {
   ICreateUserDto,
   ICloudinaryUploadResponse,
   ISignedCloudinaryResponse,
+  IUpdateUserDto,
 } from 'entix-shared'
 import { http } from './http'
 import axios from 'axios'
@@ -35,6 +36,17 @@ export const createUser = async (
   formData: ICreateUserDto,
 ): Promise<IViewUserDto> => {
   const response = await http.post('/api/v1/users', formData)
+  return response.data
+}
+
+export const updateUser = async ({
+  userId,
+  formData,
+}: {
+  userId: number
+  formData: IUpdateUserDto
+}): Promise<IViewUserDto> => {
+  const response = await http.patch('/api/v1/users/' + userId, formData)
   return response.data
 }
 
