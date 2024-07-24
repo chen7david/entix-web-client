@@ -1,11 +1,11 @@
 import { Avatar, Table, TableColumnsType } from 'antd'
 import { IViewUserDto } from 'entix-shared'
 import { UserAddEditForm } from './UserAddEditForm'
-import { UserDeleteModel } from './UserDeleteModel'
 import { useQuery } from '@tanstack/react-query'
 import { findUsers } from '@/api/client.api'
 import { useAtom } from 'jotai'
 import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
+import { Indicator } from '@/components/Indicator'
 
 function getAge(dobString: string) {
   const dob = new Date(dobString)
@@ -52,6 +52,9 @@ export const UsersList = () => {
       dataIndex: 'userid',
       key: 'accid',
       responsive: ['md'],
+      render: (text) => (
+        <span className="text-gray-200 text-s cursor-pointer">{text}</span>
+      ),
     },
     {
       title: 'username',
@@ -80,11 +83,12 @@ export const UsersList = () => {
       dataIndex: 'email',
       key: 'email',
       responsive: ['lg'],
-    },
-    {
-      title: 'actions',
-      dataIndex: 'email',
-      render: (_, user) => <UserDeleteModel user={user} />,
+      render: (text, user) => (
+        <span className="text-gray-300">
+          <Indicator color={user.activated_at ? 'green' : 'orange'} />
+          {text}
+        </span>
+      ),
     },
   ]
 
