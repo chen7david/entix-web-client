@@ -1,4 +1,4 @@
-import { Button, Form, Input, message } from 'antd'
+import { Button, Checkbox, Form, Input, message } from 'antd'
 import { useState } from 'react'
 import Logo from '/entix-bw.svg'
 import { useAtom } from 'jotai'
@@ -7,6 +7,7 @@ import { loginUser } from '@/api/client.api'
 import { BrowserStore } from '@/store/browserstore.store'
 import { currUserAtom, isAdminAtom, isLoginAtom } from '@/store/auth.atom'
 import { createSchemaFieldRule } from 'antd-zod'
+import { UserOutlined, LockOutlined } from '@ant-design/icons'
 
 export const Login = () => {
   const [, setIsLogin] = useAtom(isLoginAtom)
@@ -47,10 +48,26 @@ export const Login = () => {
             onFinish={handleSubmit}
           >
             <Form.Item required name="username" rules={[LoginUserDtoRule]}>
-              <Input allowClear placeholder="username" />
+              <Input
+                prefix={<UserOutlined />}
+                allowClear
+                placeholder="username"
+              />
             </Form.Item>
             <Form.Item required name="password" rules={[LoginUserDtoRule]}>
-              <Input.Password allowClear placeholder="password" />
+              <Input.Password
+                prefix={<LockOutlined />}
+                allowClear
+                placeholder="password"
+              />
+            </Form.Item>
+            <Form.Item>
+              <Form.Item name="remember" valuePropName="checked" noStyle>
+                <Checkbox>Remember me</Checkbox>
+              </Form.Item>
+              <a className="text-blue-600 float-right" href="">
+                Forgot password
+              </a>
             </Form.Item>
             <Form.Item>
               <Button block loading={isLoading} htmlType="submit">
