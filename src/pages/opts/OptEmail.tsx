@@ -21,10 +21,6 @@ export const OptEmail = () => {
     },
   })
 
-  const handleSubmit = async (v) => {
-    activateAccountMutation.mutate(v)
-  }
-
   return (
     <div className="flex flex-1 h-full bg-gray-100 justify-center items-center">
       <div className="max-w-md w-80 py-10 px-6 bg-white rounded-lg shadow-md space-y-4 m-4">
@@ -40,7 +36,7 @@ export const OptEmail = () => {
             autoComplete="off"
             size="large"
             initialValues={{ passcode }}
-            onFinish={handleSubmit}
+            onFinish={activateAccountMutation.mutate}
           >
             <Form.Item required name="passcode" rules={[OptDtoRule]}>
               <Input.OTP
