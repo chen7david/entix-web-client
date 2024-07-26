@@ -17,7 +17,12 @@ import {
   UpdateUserDto,
 } from 'entix-shared'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { activateAccount, createUser, updateUser } from '@/api/client.api'
+import {
+  activateAccount,
+  createUser,
+  resendAccountActivationEmail,
+  updateUser,
+} from '@/api/client.api'
 import { createSchemaFieldRule } from 'antd-zod'
 import dayjs, { Dayjs } from 'dayjs'
 import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
@@ -94,6 +99,14 @@ export const UserAddEditForm = () => {
     },
   })
 
+  const resendAccountVerificationEmailMutation = useMutation({
+    mutationFn: resendAccountActivationEmail,
+    onSuccess: () => {
+      closeDrawer()
+      message.success(`Activation email sent to ${editUser?.email}`)
+    },
+  })
+
   const activateAccountMutation = useMutation({
     mutationFn: activateAccount,
     onSuccess: () => {
@@ -144,8 +157,7 @@ export const UserAddEditForm = () => {
     if (isManualActivation) {
       activateAccountMutation.mutate(editUser.id)
     } else {
-      // add resend account activation email activation logic here ...
-      message.success(`Activation email sent to ${editUser.email}`)
+      resendAccountVerificationEmailMutation.mutate(editUser.username)
     }
   }
 
@@ -207,7 +219,10 @@ export const UserAddEditForm = () => {
               </Form.Item>
               {isEditingUser && (
                 <Button
-                  loading={activateAccountMutation.isPending}
+                  loading={
+                    activateAccountMutation.isPending ||
+                    resendAccountVerificationEmailMutation.isPending
+                  }
                   onClick={handleResendActivationEmail}
                 >
                   {isManualActivation ? 'Activate' : 'Resend'}
