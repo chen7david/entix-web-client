@@ -1,5 +1,5 @@
 import { AppContainer, Main, MainContainer } from './components/Layout'
-import { HashRouter } from 'react-router-dom'
+
 import { Pages } from './pages/Pages'
 import { HamburgerButton } from './components/HamburgerButton'
 import Logo from '/entix-bw.svg'
@@ -13,7 +13,7 @@ function App() {
   const [isLogin] = useAtom(isLoginAtom)
 
   return (
-    <HashRouter>
+    <>
       {isLogin ? (
         <AppContainer>
           <Sidebar />
@@ -32,7 +32,7 @@ function App() {
           <Login />
         </AppContainer>
       )}
-    </HashRouter>
+    </>
   )
 }
 
