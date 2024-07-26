@@ -18,9 +18,9 @@ import {
 } from 'entix-shared'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
-  activateAccount,
+  forceActivateAccount,
   createUser,
-  resendAccountActivationEmail,
+  sendAccountActivationEmail,
   updateUser,
 } from '@/api/client.api'
 import { createSchemaFieldRule } from 'antd-zod'
@@ -100,15 +100,15 @@ export const UserAddEditForm = () => {
   })
 
   const resendAccountVerificationEmailMutation = useMutation({
-    mutationFn: resendAccountActivationEmail,
+    mutationFn: sendAccountActivationEmail,
     onSuccess: () => {
       closeDrawer()
       message.success(`Activation email sent to ${editUser?.email}`)
     },
   })
 
-  const activateAccountMutation = useMutation({
-    mutationFn: activateAccount,
+  const forceActivateAccountMutation = useMutation({
+    mutationFn: forceActivateAccount,
     onSuccess: () => {
       queryClient.setQueryData(
         ['users'],
@@ -155,7 +155,7 @@ export const UserAddEditForm = () => {
       return
     }
     if (isManualActivation) {
-      activateAccountMutation.mutate(editUser.id)
+      forceActivateAccountMutation.mutate(editUser.id)
     } else {
       resendAccountVerificationEmailMutation.mutate(editUser.username)
     }
@@ -220,7 +220,7 @@ export const UserAddEditForm = () => {
               {isEditingUser && (
                 <Button
                   loading={
-                    activateAccountMutation.isPending ||
+                    forceActivateAccountMutation.isPending ||
                     resendAccountVerificationEmailMutation.isPending
                   }
                   onClick={handleResendActivationEmail}

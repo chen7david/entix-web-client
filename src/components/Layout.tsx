@@ -22,7 +22,7 @@ export const Main = (props: React.HTMLAttributes<HTMLDivElement>) => {
 export const MainContainer = (props: React.HTMLAttributes<HTMLDivElement>) => {
   const { className, children, ...restProps } = props
   return (
-    <div className={cn('flex-1 overflow-y-auto p-4', className)} {...restProps}>
+    <div className={cn('flex-1 overflow-y-auto', className)} {...restProps}>
       {children}
     </div>
   )
