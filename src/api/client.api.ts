@@ -57,6 +57,15 @@ export const activateAccount = async (
   return response.data
 }
 
+export const resendAccountActivationEmail = async (
+  username: string,
+): Promise<{ success: boolean }> => {
+  const response = await http.post('/api/v1/opt/email-verification', {
+    username,
+  })
+  return response.data
+}
+
 export const deleteUser = async (
   userId: number,
 ): Promise<{ success: boolean }> => {
