@@ -79,7 +79,7 @@ export const SidebarBody = (props: React.HTMLAttributes<HTMLDivElement>) => {
 }
 
 export function Sidebar() {
-  const [, setIsLogin] = useAtom(isLoginAtom)
+  const [isLogin, setIsLogin] = useAtom(isLoginAtom)
   const [, setIsAdmin] = useAtom(isAdminAtom)
   const [currUser] = useAtom(currUserAtom)
 
@@ -90,35 +90,37 @@ export function Sidebar() {
   }
 
   return (
-    <SidebarDrawer className="bg-white">
-      <SidebarContainer>
-        <SidebarHeader className=" p-4 flex items-center gap-2">
-          <Avatar
-            src={currUser?.profile_image_url}
-            style={{ backgroundColor: '#3291a8' }}
-            size={56}
-          >
-            {currUser?.first_name[0]}
-          </Avatar>
-          <div className="flex flex-col">
-            <div className="text-sm font-bold">
-              {currUser ? currUser.username : 'unkown'}
+    isLogin && (
+      <SidebarDrawer className="bg-white">
+        <SidebarContainer>
+          <SidebarHeader className="p-4 flex items-center gap-2">
+            <Avatar
+              src={currUser?.profile_image_url}
+              style={{ backgroundColor: '#3291a8' }}
+              size={56}
+            >
+              {currUser?.first_name[0]}
+            </Avatar>
+            <div className="flex flex-col">
+              <div className="text-sm font-bold">
+                {currUser ? currUser.username : 'unkown'}
+              </div>
+              <div className="text-xs font-light ">
+                {currUser ? currUser.userid : 'unkown'}
+              </div>
             </div>
-            <div className="text-xs font-light ">
-              {currUser ? currUser.userid : 'unkown'}
-            </div>
-          </div>
-          <hr className="lex-grow border-gray-200" />
-        </SidebarHeader>
-        <SidebarBody>
-          <SidebarMenu />
-        </SidebarBody>
-        <SidebarFooter className="p-4 flex items-center justify-between">
-          <Button onClick={onLogout} block>
-            Logout
-          </Button>
-        </SidebarFooter>
-      </SidebarContainer>
-    </SidebarDrawer>
+            <hr className="lex-grow border-gray-200" />
+          </SidebarHeader>
+          <SidebarBody>
+            <SidebarMenu />
+          </SidebarBody>
+          <SidebarFooter className="p-4 flex items-center justify-between">
+            <Button onClick={onLogout} block>
+              Logout
+            </Button>
+          </SidebarFooter>
+        </SidebarContainer>
+      </SidebarDrawer>
+    )
   )
 }

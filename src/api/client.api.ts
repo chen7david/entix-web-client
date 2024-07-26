@@ -50,14 +50,25 @@ export const updateUser = async ({
   return response.data
 }
 
-export const activateAccount = async (
+export const forceActivateAccount = async (
   userId: number,
 ): Promise<{ success: boolean }> => {
   const response = await http.post(`/api/v1/users/${userId}/activate`)
   return response.data
 }
 
-export const resendAccountActivationEmail = async (
+export const activateAccount = async ({
+  passcode,
+}: {
+  passcode: string
+}): Promise<{ success: boolean }> => {
+  const response = await http.post('/api/v1/opt/verify-email', {
+    passcode,
+  })
+  return response.data
+}
+
+export const sendAccountActivationEmail = async (
   username: string,
 ): Promise<{ success: boolean }> => {
   const response = await http.post('/api/v1/opt/email-verification', {
