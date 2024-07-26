@@ -52,9 +52,7 @@ export const UsersList = () => {
       dataIndex: 'userid',
       key: 'accid',
       responsive: ['md'],
-      render: (text) => (
-        <span className="text-gray-200 text-s cursor-pointer">{text}</span>
-      ),
+      render: (text) => <span className="text-sm cursor-pointer">{text}</span>,
     },
     {
       title: 'username',
@@ -84,7 +82,7 @@ export const UsersList = () => {
       key: 'email',
       responsive: ['lg'],
       render: (text, user) => (
-        <span className="text-gray-300">
+        <span className="">
           <Indicator color={user.activated_at ? 'green' : 'orange'} />
           {text}
         </span>
