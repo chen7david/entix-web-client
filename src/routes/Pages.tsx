@@ -5,6 +5,7 @@ import { PrivateRoutes } from './PrivateRoutes'
 import { Login } from '@/pages/login/Login'
 import { OptEmail } from '@/pages/opts/OptEmail'
 import { PublicRoutes } from './PublicRoutes'
+import { OptPasswordRecovery } from '@/pages/opts/OptPasswordRecovery'
 
 export const Pages = () => {
   return (
@@ -12,6 +13,7 @@ export const Pages = () => {
       {/* PUBLIC */}
       <Route element={<PublicRoutes />}>
         <Route path="/verify-email" element={<OptEmail />} />
+        <Route path="/password-recovery" element={<OptPasswordRecovery />} />
         <Route path="/login" element={<Login />} />
       </Route>
 

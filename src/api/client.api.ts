@@ -77,6 +77,17 @@ export const sendAccountActivationEmail = async (
   return response.data
 }
 
+export const sendPasswordRecoveryEmail = async ({
+  username,
+}: {
+  username: string
+}): Promise<{ success: boolean }> => {
+  const response = await http.post('/api/v1/opt/password-recovery', {
+    username,
+  })
+  return response.data
+}
+
 export const deleteUser = async (
   userId: number,
 ): Promise<{ success: boolean }> => {
