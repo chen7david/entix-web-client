@@ -68,7 +68,10 @@ export const Login = () => {
               <Form.Item name="remember" valuePropName="checked" noStyle>
                 <Checkbox>Remember me</Checkbox>
               </Form.Item>
-              <a className="text-blue-600 float-right" href="">
+              <a
+                onClick={() => navigate('/password-recovery')}
+                className="text-blue-600 float-right"
+              >
                 Forgot password
               </a>
             </Form.Item>
