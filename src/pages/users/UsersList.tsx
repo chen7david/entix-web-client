@@ -1,22 +1,11 @@
 import { Avatar, Table, TableColumnsType } from 'antd'
-import { IViewUserDto } from 'entix-shared'
+import { IViewUserDto, getAge } from 'entix-shared'
 import { UserAddEditForm } from './UserAddEditForm'
 import { useQuery } from '@tanstack/react-query'
 import { findUsers } from '@/api/client.api'
 import { useAtom } from 'jotai'
 import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
 import { Indicator } from '@/components/Indicator'
-
-function getAge(dobString: string) {
-  const dob = new Date(dobString)
-  const today = new Date()
-  let age = today.getFullYear() - dob.getFullYear()
-  const monthDiff = today.getMonth() - dob.getMonth()
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-    age--
-  }
-  return age
-}
 
 export const UsersList = () => {
   const [, setEditUser] = useAtom(editUserAtom)
@@ -31,7 +20,7 @@ export const UsersList = () => {
     return (
       <Avatar
         src={user?.profile_image_url}
-        style={{ backgroundColor: '#3291a8' }}
+        style={{ backgroundColor: user.sex == 'male' ? '#3291a8' : '#cc233f' }}
         size={38}
       >
         {user?.first_name[0]}
