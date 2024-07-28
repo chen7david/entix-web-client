@@ -28,7 +28,7 @@ export const renewToken = async (
 export const findUsers = async (): Promise<
   IPaginatedFilterResponse<IViewUserDto[]>
 > => {
-  const response = await http.get(`/api/v1/users?sortBy=id:desc`)
+  const response = await http.get(`/api/v1/users?sortBy=id:desc&limit=300`)
   return response.data
 }
 
