@@ -1,4 +1,4 @@
-import { Avatar, Badge, Table, TableColumnsType } from 'antd'
+import { Avatar, Badge, Button, Input, Table, TableColumnsType } from 'antd'
 import { IViewUserDto, daysUntilBirthday, getAge } from 'entix-shared'
 import { UserAddEditForm } from './UserAddEditForm'
 import { useQuery } from '@tanstack/react-query'
@@ -6,6 +6,7 @@ import { findUsers } from '@/api/client.api'
 import { useAtom } from 'jotai'
 import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
 import { Indicator } from '@/components/Indicator'
+import { SearchOutlined } from '@ant-design/icons'
 
 export const UsersList = () => {
   const [, setEditUser] = useAtom(editUserAtom)
@@ -33,7 +34,7 @@ export const UsersList = () => {
       title: '#',
       dataIndex: 'avatar',
       key: 'profile_image_url',
-      responsive: ['md'],
+      width: '20%',
       render: (_, user) => tableAvatar(user),
     },
     {
@@ -47,6 +48,7 @@ export const UsersList = () => {
       title: 'username',
       dataIndex: 'username',
       key: 'username',
+      width: '20%',
       render: (text, user) => (
         <span
           className="text-blue-500 cursor-pointer"
@@ -63,6 +65,8 @@ export const UsersList = () => {
       title: 'age',
       dataIndex: 'date_of_birth',
       key: 'date_of_birth',
+      // responsive: ['md'],
+      width: '20%',
       render: (text) => (
         <div className="flex">
           <span>{getAge(text)}</span>
@@ -94,12 +98,25 @@ export const UsersList = () => {
 
   return (
     <div>
-      <UserAddEditForm />
+      <div className="sticky flex flex-row justify-between top-0 bg-white p-4 shadow-lg z-10">
+        <div id="search" className="">
+          <Input
+            allowClear
+            style={{ width: 200 }}
+            prefix={<SearchOutlined />}
+          />
+          <Button className="ml-3">Search</Button>
+        </div>
+        <UserAddEditForm />
+      </div>
       <Table
+        sticky
+        pagination={false}
         loading={userQuery.isLoading}
         rowKey="id"
         dataSource={userQuery.data?.data}
         columns={columns}
+        style={{ borderRadius: 0 }}
       />
     </div>
   )

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { UserAddOutlined } from '@ant-design/icons'
 import {
   Button,
   Drawer,
@@ -165,8 +166,12 @@ export const UserAddEditForm = () => {
 
   return (
     <>
-      <div className="my-4">
-        <Button onClick={() => setIsDrawerOpen(true)}>New User</Button>
+      <div className="">
+        <Button
+          size="large"
+          icon={<UserAddOutlined />}
+          onClick={() => setIsDrawerOpen(true)}
+        />
       </div>
       <Drawer
         title={`${isEditingUser ? 'Edit' : 'Add'} User`}
