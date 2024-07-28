@@ -32,7 +32,8 @@ import { AvatarUploader } from '@/components/Form/UploadAvatar'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { UserDeleteModel } from './UserDeleteModel'
 import timezones from 'timezones-list'
-console.table(timezones)
+import utc from 'dayjs/plugin/utc'
+dayjs.extend(utc)
 
 export const UserAddEditForm = () => {
   const [form] = Form.useForm()
@@ -53,7 +54,7 @@ export const UserAddEditForm = () => {
       setIsDrawerOpen(true)
       form.setFieldsValue({
         ...editUser,
-        date_of_birth: dayjs(editUser?.date_of_birth),
+        date_of_birth: dayjs(editUser?.date_of_birth).utc(),
       })
     }
   }, [isEditingUser, form])
