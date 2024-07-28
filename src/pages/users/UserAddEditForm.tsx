@@ -8,6 +8,7 @@ import {
   Form,
   Input,
   Space,
+  Badge,
 } from 'antd'
 import {
   CreateUserDto,
@@ -28,9 +29,10 @@ import dayjs, { Dayjs } from 'dayjs'
 import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
 import { useAtom } from 'jotai'
 import { AvatarUploader } from '@/components/Form/UploadAvatar'
-import { Indicator } from '@/components/Indicator'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { UserDeleteModel } from './UserDeleteModel'
+import timezones from 'timezones-list'
+console.table(timezones)
 
 export const UserAddEditForm = () => {
   const [form] = Form.useForm()
@@ -132,7 +134,6 @@ export const UserAddEditForm = () => {
   })
 
   const handleOnsubmit = (v: ICreateUserDto) => {
-    console.log({ v })
     if (!v.profile_image_url) v.profile_image_url = ''
     if (isEditingUser && editUser) {
       updateUserMutation.mutate({ userId: editUser.id, formData: v })
@@ -179,7 +180,6 @@ export const UserAddEditForm = () => {
         <Form
           form={form}
           onFinish={handleOnsubmit}
-          size="large"
           title="AddEditUserForm"
           key={Math.random()}
         >
@@ -191,6 +191,7 @@ export const UserAddEditForm = () => {
               defaultImageUrl={editUser?.profile_image_url}
             />
           </Form.Item>
+
           <Form.Item
             hasFeedback
             name="username"
@@ -198,6 +199,7 @@ export const UserAddEditForm = () => {
           >
             <Input disabled={isEditingUser} placeholder="Username" />
           </Form.Item>
+
           <Form.Item>
             <Space.Compact style={{ width: '100%' }}>
               <Form.Item
@@ -210,13 +212,14 @@ export const UserAddEditForm = () => {
                   placeholder="Email"
                   prefix={
                     isEditingUser && (
-                      <Indicator
+                      <Badge
                         color={editUser?.activated_at ? 'green' : 'orange'}
                       />
                     )
                   }
                 />
               </Form.Item>
+
               {isEditingUser && (
                 <Button
                   loading={
@@ -230,6 +233,7 @@ export const UserAddEditForm = () => {
               )}
             </Space.Compact>
           </Form.Item>
+
           <Form.Item
             hidden={isEditingUser}
             hasFeedback
@@ -238,6 +242,7 @@ export const UserAddEditForm = () => {
           >
             <Input.Password placeholder="Password" />
           </Form.Item>
+
           <Form.Item
             hasFeedback
             name="first_name"
@@ -245,6 +250,7 @@ export const UserAddEditForm = () => {
           >
             <Input placeholder="First name" />
           </Form.Item>
+
           <Form.Item
             hasFeedback
             name="last_name"
@@ -252,6 +258,7 @@ export const UserAddEditForm = () => {
           >
             <Input placeholder="Last name" />
           </Form.Item>
+
           <Form.Item
             hasFeedback
             name="sex"
@@ -265,6 +272,7 @@ export const UserAddEditForm = () => {
               ]}
             />
           </Form.Item>
+
           <Form.Item
             hasFeedback
             name="date_of_birth"
@@ -277,6 +285,63 @@ export const UserAddEditForm = () => {
               allowClear={false}
             />
           </Form.Item>
+
+          <Form.Item
+            hasFeedback
+            name="native_name"
+            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
+          >
+            <Input placeholder="Native name" />
+          </Form.Item>
+
+          <Form.Item
+            hasFeedback
+            name="phone"
+            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
+          >
+            <Input placeholder="Phone" />
+          </Form.Item>
+
+          <Form.Item
+            hasFeedback
+            name="wechatid"
+            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
+          >
+            <Input placeholder="Wechat" />
+          </Form.Item>
+
+          <Form.Item
+            hasFeedback
+            name="country_of_birth"
+            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
+          >
+            <Input placeholder="Country of birth" />
+          </Form.Item>
+
+          <Form.Item
+            hasFeedback
+            name="place_of_birth"
+            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
+          >
+            <Input placeholder="Place of birth" />
+          </Form.Item>
+
+          <Form.Item
+            hasFeedback
+            name="timezone"
+            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
+          >
+            <Select
+              showSearch
+              placeholder="Select a tinezone"
+              optionFilterProp="label"
+              options={timezones.map((timezone) => ({
+                value: timezone.tzCode,
+                label: timezone.label,
+              }))}
+            />
+          </Form.Item>
+
           <Form.Item hidden={isEditingUser}>
             <Button
               loading={createUserMutation.isPending}
@@ -286,6 +351,7 @@ export const UserAddEditForm = () => {
               Submit
             </Button>
           </Form.Item>
+
           <Form.Item hidden={!isEditingUser}>
             <Button
               loading={updateUserMutation.isPending}
@@ -295,6 +361,7 @@ export const UserAddEditForm = () => {
               Save
             </Button>
           </Form.Item>
+
           <Form.Item>
             {editUser && <UserDeleteModel user={editUser} />}
           </Form.Item>
