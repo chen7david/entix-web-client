@@ -1,5 +1,5 @@
-import { Avatar, Table, TableColumnsType } from 'antd'
-import { IViewUserDto, getAge } from 'entix-shared'
+import { Avatar, Badge, Table, TableColumnsType } from 'antd'
+import { IViewUserDto, daysUntilBirthday, getAge } from 'entix-shared'
 import { UserAddEditForm } from './UserAddEditForm'
 import { useQuery } from '@tanstack/react-query'
 import { findUsers } from '@/api/client.api'
@@ -63,7 +63,20 @@ export const UsersList = () => {
       title: 'age',
       dataIndex: 'date_of_birth',
       key: 'date_of_birth',
-      render: (text) => getAge(text),
+      render: (text) => (
+        <div className="flex">
+          <span>{getAge(text)}</span>
+          <span className="ml-5">
+            <Badge
+              count={
+                daysUntilBirthday(text) < 30
+                  ? `${daysUntilBirthday(text)} days`
+                  : 0
+              }
+            ></Badge>
+          </span>
+        </div>
+      ),
     },
     {
       title: 'email',
