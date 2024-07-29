@@ -184,6 +184,7 @@ export const UserAddEditForm = () => {
         }
       >
         <Form
+          size="large"
           form={form}
           onFinish={handleOnsubmit}
           title="AddEditUserForm"
