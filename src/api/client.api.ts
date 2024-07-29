@@ -2,7 +2,6 @@ import {
   ILoginUserDto,
   IViewUserDto,
   IViewUserLoginDto,
-  IPaginatedFilterResponse,
   ICreateUserDto,
   ICloudinaryUploadResponse,
   ISignedCloudinaryResponse,
@@ -25,11 +24,16 @@ export const renewToken = async (
   return response.data
 }
 
-export const findUsers = async (): Promise<
-  IPaginatedFilterResponse<IViewUserDto[]>
-> => {
-  const response = await http.get(`/api/v1/users?sortBy=id:desc&limit=300`)
-  return response.data
+export const findUsers = async ({
+  pageParam,
+}: {
+  pageParam: number
+}): Promise<IViewUserDto[]> => {
+  console.log({ pageParam })
+  const response = await http.get(
+    `/api/v1/users?sortBy=id:desc&limit=10&offset=${pageParam}`,
+  )
+  return response.data.data
 }
 
 export const createUser = async (

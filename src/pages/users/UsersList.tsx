@@ -1,21 +1,45 @@
-import { Avatar, Badge, Button, Input, Table, TableColumnsType } from 'antd'
+import {
+  Avatar,
+  Badge,
+  Button,
+  Input,
+  Spin,
+  Table,
+  TableColumnsType,
+} from 'antd'
 import { IViewUserDto, daysUntilBirthday, getAge } from 'entix-shared'
 import { UserAddEditForm } from './UserAddEditForm'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { findUsers } from '@/api/client.api'
 import { useAtom } from 'jotai'
 import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
 import { Indicator } from '@/components/Indicator'
 import { SearchOutlined } from '@ant-design/icons'
+import { useInView } from 'react-intersection-observer'
+import { useEffect } from 'react'
 
 export const UsersList = () => {
   const [, setEditUser] = useAtom(editUserAtom)
   const [, setIsEditingUser] = useAtom(editUserStatusAtom)
+  const { ref, inView } = useInView()
 
-  const userQuery = useQuery({
+  const usePaginatedQuery = useInfiniteQuery({
     queryKey: ['users'],
     queryFn: findUsers,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      const nextPage = lastPage.length ? allPages.length * 10 : undefined
+      return nextPage
+    },
   })
+
+  useEffect(() => {
+    if (inView && usePaginatedQuery.hasNextPage) {
+      usePaginatedQuery.fetchNextPage()
+    }
+  }, [inView])
+
+  console.log(usePaginatedQuery.data)
 
   const tableAvatar = (user: IViewUserDto) => {
     return (
@@ -112,12 +136,20 @@ export const UsersList = () => {
       <Table
         sticky
         pagination={false}
-        loading={userQuery.isLoading}
+        loading={usePaginatedQuery.isLoading}
         rowKey="id"
-        dataSource={userQuery.data?.data}
+        dataSource={usePaginatedQuery?.data?.pages.flat()}
         columns={columns}
         style={{ borderRadius: 0 }}
       />
+
+      {usePaginatedQuery.isFetching ? (
+        <span className="m-6 flex justify-center">
+          <Spin />
+        </span>
+      ) : (
+        <div ref={ref}></div>
+      )}
     </div>
   )
 }
