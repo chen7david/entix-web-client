@@ -73,7 +73,7 @@ export const UsersList = () => {
       dataIndex: 'first_name',
       key: 'first_name',
       width: '20%',
-      render: (text, user) => (
+      render: (_, user) => (
         <span
           className="text-blue-500 cursor-pointer"
           onClick={() => {
