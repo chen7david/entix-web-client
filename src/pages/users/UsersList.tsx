@@ -69,9 +69,9 @@ export const UsersList = () => {
       render: (text) => <span className="text-sm cursor-pointer">{text}</span>,
     },
     {
-      title: 'username',
-      dataIndex: 'username',
-      key: 'username',
+      title: 'name',
+      dataIndex: 'first_name',
+      key: 'first_name',
       width: '20%',
       render: (text, user) => (
         <span
@@ -81,7 +81,7 @@ export const UsersList = () => {
             setIsEditingUser(true)
           }}
         >
-          {text}
+          {`${user.first_name} ${user.last_name}`}
         </span>
       ),
     },
@@ -122,7 +122,7 @@ export const UsersList = () => {
 
   return (
     <div>
-      <div className="sticky flex flex-row justify-between top-0 bg-white p-4 shadow-lg z-10">
+      <div className="sticky flex flex-row justify-between top-0 bg-white p-4 shadow-sm z-10">
         <div id="search" className="">
           <Input
             allowClear
@@ -134,13 +134,13 @@ export const UsersList = () => {
         <UserAddEditForm />
       </div>
       <Table
-        sticky
+        showHeader={false}
         pagination={false}
         loading={usePaginatedQuery.isLoading}
         rowKey="id"
         dataSource={usePaginatedQuery?.data?.pages.flat()}
         columns={columns}
-        style={{ borderRadius: 0 }}
+        style={{ borderRadius: 0, marginTop: '30px' }}
       />
 
       {usePaginatedQuery.isFetching ? (
