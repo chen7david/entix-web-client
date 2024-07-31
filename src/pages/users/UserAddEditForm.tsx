@@ -75,18 +75,20 @@ export const UserAddEditForm = () => {
   const createUserMutation = useMutation({
     mutationFn: createUser,
     onSuccess: (newUser) => {
-      queryClient.setQueryData(
+      queryClient.setQueryData<InfiniteData<IViewUserDto[]>>(
         ['users'],
-        (oldUsers: IPaginatedFilterResponse<IViewUserDto[]>) => {
+        (oldData) => {
+          if (!oldData) return oldData
           return {
-            ...oldUsers,
-            data: [newUser, ...oldUsers.data],
+            ...oldData,
+            pages: oldData.pages.map((page, index) =>
+              index === 0 ? [newUser, ...page] : page,
+            ),
           }
         },
       )
       closeDrawer()
-      form.resetFields()
-      message.success('User created successfully')
+      message.success('User updated successfully')
     },
   })
 

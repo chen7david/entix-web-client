@@ -31,7 +31,7 @@ export const findUsers = async ({
 }): Promise<IViewUserDto[]> => {
   console.log({ pageParam })
   const response = await http.get(
-    `/api/v1/users?sortBy=id:desc&limit=10&offset=${pageParam}`,
+    `/api/v1/users?sortBy=created_at:desc&limit=10&offset=${pageParam}`,
   )
   return response.data.data
 }
