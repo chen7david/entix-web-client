@@ -380,7 +380,9 @@ export const UserAddEditForm = () => {
           </Form.Item>
 
           <Form.Item>
-            {editUser && <UserDeleteModel user={editUser} />}
+            {editUser && (
+              <UserDeleteModel closeDrawer={closeDrawer} user={editUser} />
+            )}
           </Form.Item>
         </Form>
       </Drawer>
