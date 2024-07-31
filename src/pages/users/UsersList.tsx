@@ -156,6 +156,7 @@ export const UsersList = () => {
               rules={[FullNameSearchRule]}
             >
               <Input
+                size="large"
                 allowClear
                 style={{ width: 200 }}
                 prefix={<SearchOutlined />}
