@@ -38,6 +38,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { UserDeleteModel } from './UserDeleteModel'
 import timezones from 'timezones-list'
 import utc from 'dayjs/plugin/utc'
+import { useSearchParams } from 'react-router-dom'
 dayjs.extend(utc)
 
 export const UserAddEditForm = () => {
@@ -50,6 +51,13 @@ export const UserAddEditForm = () => {
   const CreateUserDtoRule = createSchemaFieldRule(CreateUserDto)
   const UpdateUserDtoRule = createSchemaFieldRule(UpdateUserDto)
   const queryClient = useQueryClient()
+  const [searchParams] = useSearchParams({
+    q: '',
+    sortBy: 'created_at:desc',
+    limit: '10',
+  })
+
+  const q = searchParams.get('q') || ''
 
   useHotkeys('ctrl+k', () => setIsManualActivation(!isManualActivation), [
     isManualActivation,
@@ -77,7 +85,7 @@ export const UserAddEditForm = () => {
     mutationFn: createUser,
     onSuccess: (newUser) => {
       queryClient.setQueryData<InfiniteData<IViewUserDto[]>>(
-        ['users'],
+        ['users', q],
         (oldData) => {
           if (!oldData) return oldData
           return {
@@ -97,7 +105,7 @@ export const UserAddEditForm = () => {
     mutationFn: updateUser,
     onSuccess: (updatedUser) => {
       queryClient.setQueryData<InfiniteData<IViewUserDto[]>>(
-        ['users'],
+        ['users', q],
         (oldData) => {
           if (!oldData) return oldData
 
@@ -180,13 +188,11 @@ export const UserAddEditForm = () => {
 
   return (
     <>
-      <div className="">
-        <Button
-          size="large"
-          icon={<UserAddOutlined />}
-          onClick={() => setIsDrawerOpen(true)}
-        />
-      </div>
+      <Button
+        icon={<UserAddOutlined />}
+        onClick={() => setIsDrawerOpen(true)}
+      />
+
       <Drawer
         title={`${isEditingUser ? 'Edit' : 'Add'} User`}
         onClose={() => closeDrawer()}

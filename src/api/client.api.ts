@@ -10,6 +10,12 @@ import {
 import { http } from './http'
 import axios from 'axios'
 
+type ISearchQueryParams = {
+  q: string
+  sortBy: string
+  limit: string
+}
+
 export const loginUser = async (
   loginDto: ILoginUserDto,
 ): Promise<IViewUserLoginDto> => {
@@ -26,13 +32,16 @@ export const renewToken = async (
 
 export const findUsers = async ({
   pageParam,
+  searchParams,
 }: {
   pageParam: number
+  searchParams: ISearchQueryParams
 }): Promise<IViewUserDto[]> => {
-  console.log({ pageParam })
-  const response = await http.get(
-    `/api/v1/users?sortBy=created_at:desc&limit=10&offset=${pageParam}`,
-  )
+  const queryParams = new URLSearchParams({
+    ...searchParams,
+    offset: `${pageParam}`,
+  }).toString()
+  const response = await http.get(`/api/v1/users?${queryParams}`)
   return response.data.data
 }
 

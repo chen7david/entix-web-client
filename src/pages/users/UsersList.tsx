@@ -2,6 +2,7 @@ import {
   Avatar,
   Badge,
   Button,
+  Form,
   Input,
   Spin,
   Table,
@@ -17,15 +18,35 @@ import { Indicator } from '@/components/Indicator'
 import { SearchOutlined } from '@ant-design/icons'
 import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
+import { z } from 'zod'
+import { createSchemaFieldRule } from 'antd-zod'
+import { useSearchParams } from 'react-router-dom'
+
+const FullNameSearch = z.object({
+  full_name: z
+    .string()
+    .regex(/^[a-zA-Z0-9 ]*$/, 'Must be alphanumeric and can include spaces'),
+})
 
 export const UsersList = () => {
+  const [form] = Form.useForm()
   const [, setEditUser] = useAtom(editUserAtom)
   const [, setIsEditingUser] = useAtom(editUserStatusAtom)
   const { ref, inView } = useInView()
+  const [searchParams, setSearchParams] = useSearchParams({
+    q: '',
+    sortBy: 'created_at:desc',
+    limit: '10',
+  })
+
+  const q = searchParams.get('q') || ''
+  const sortBy = searchParams.get('sortBy') || ''
+  const limit = searchParams.get('limit') || ''
 
   const usePaginatedQuery = useInfiniteQuery({
-    queryKey: ['users'],
-    queryFn: findUsers,
+    queryKey: ['users', q],
+    queryFn: ({ pageParam }) =>
+      findUsers({ pageParam, searchParams: { q, sortBy, limit } }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
       const nextPage = lastPage.length ? allPages.length * 10 : undefined
@@ -118,16 +139,44 @@ export const UsersList = () => {
     },
   ]
 
+  const FullNameSearchRule = createSchemaFieldRule(FullNameSearch)
+
+  const onSearch = async () => {
+    usePaginatedQuery.refetch()
+  }
+
   return (
     <div>
       <div className="sticky flex flex-row justify-between top-0 bg-white p-4 shadow-sm z-10">
         <div id="search" className="">
-          <Input
-            allowClear
-            style={{ width: 200 }}
-            prefix={<SearchOutlined />}
-          />
-          <Button className="ml-3">Search</Button>
+          <Form form={form} layout="inline" onFinish={onSearch}>
+            <Form.Item
+              initialValue={q}
+              name="full_name"
+              rules={[FullNameSearchRule]}
+            >
+              <Input
+                allowClear
+                style={{ width: 200 }}
+                prefix={<SearchOutlined />}
+                onChange={(e) => {
+                  setSearchParams((prev) => {
+                    prev.set('q', e.target.value)
+                    return prev
+                  })
+                }}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button
+                hidden={true}
+                loading={usePaginatedQuery.isLoading && `${q}` !== ''}
+                htmlType="submit"
+              >
+                Search
+              </Button>
+            </Form.Item>
+          </Form>
         </div>
         <UserAddEditForm />
       </div>
