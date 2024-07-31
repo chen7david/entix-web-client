@@ -189,6 +189,7 @@ export const UserAddEditForm = () => {
   return (
     <>
       <Button
+        size="large"
         icon={<UserAddOutlined />}
         onClick={() => setIsDrawerOpen(true)}
       />
