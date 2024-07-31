@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button, Modal, message } from 'antd'
-import { IPaginatedFilterResponse, IViewUserDto } from 'entix-shared'
+import { IViewUserDto } from 'entix-shared'
 import {
   InfiniteData,
   useMutation,
