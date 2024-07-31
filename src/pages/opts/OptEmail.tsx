@@ -9,7 +9,7 @@ import { activateAccount } from '@/api/client.api'
 
 export const OptEmail = () => {
   const OptDtoRule = createSchemaFieldRule(OptDto)
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const passcode = searchParams.get('passcode')?.toUpperCase()
 
