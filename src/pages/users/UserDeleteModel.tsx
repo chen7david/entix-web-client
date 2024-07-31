@@ -1,16 +1,24 @@
 import { useState } from 'react'
 import { Button, Modal, message } from 'antd'
-import { IPaginatedFilterResponse, IViewUserDto } from 'entix-shared'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { IViewUserDto } from 'entix-shared'
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { useAtom } from 'jotai'
 import { currUserAtom } from '@/store/auth.atom'
 import { deleteUser } from '@/api/client.api'
 
 export type IUserDeleteModelProps = {
   user: IViewUserDto
+  closeDrawer: () => void
 }
 
-export const UserDeleteModel = ({ user }: IUserDeleteModelProps) => {
+export const UserDeleteModel = ({
+  user,
+  closeDrawer,
+}: IUserDeleteModelProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currUser] = useAtom(currUserAtom)
   const queryClient = useQueryClient()
@@ -18,17 +26,22 @@ export const UserDeleteModel = ({ user }: IUserDeleteModelProps) => {
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
     onMutate: (userId) => {
-      queryClient.setQueryData(
+      queryClient.setQueryData<InfiniteData<IViewUserDto[]>>(
         ['users'],
-        (oldUsers: IPaginatedFilterResponse<IViewUserDto[]>) => {
+        (oldData) => {
+          if (!oldData) return oldData
+
           return {
-            ...oldUsers,
-            data: oldUsers.data.filter((u) => u.id !== userId),
+            ...oldData,
+            pages: oldData.pages.map((page) =>
+              page.filter((u) => u.id !== userId),
+            ),
           }
         },
       )
     },
     onSuccess: () => {
+      closeDrawer()
       message.success('User deleted successfully')
     },
     onError: () => {

@@ -39,13 +39,11 @@ export const UsersList = () => {
     }
   }, [inView])
 
-  console.log(usePaginatedQuery.data)
-
   const tableAvatar = (user: IViewUserDto) => {
     return (
       <Avatar
         src={user?.profile_image_url}
-        style={{ backgroundColor: user.sex == 'male' ? '#3291a8' : '#cc233f' }}
+        style={{ backgroundColor: user?.sex == 'male' ? '#3291a8' : '#cc233f' }}
         size={38}
       >
         {user?.first_name[0]}
