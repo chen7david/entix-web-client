@@ -18,7 +18,11 @@ import {
   IViewUserDto,
   UpdateUserDto,
 } from 'entix-shared'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query'
 import {
   forceActivateAccount,
   createUser,
@@ -89,14 +93,20 @@ export const UserAddEditForm = () => {
   const updateUserMutation = useMutation({
     mutationFn: updateUser,
     onSuccess: (updatedUser) => {
-      queryClient.setQueryData(
+      queryClient.setQueryData<InfiniteData<IViewUserDto[]>>(
         ['users'],
-        (oldUsers: IPaginatedFilterResponse<IViewUserDto[]>) => ({
-          ...oldUsers,
-          data: oldUsers.data.map((user) =>
-            user.id === updatedUser.id ? updatedUser : user,
-          ),
-        }),
+        (oldData) => {
+          if (!oldData) return oldData
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) =>
+              page.map((u: IViewUserDto) =>
+                u.id === updatedUser.id ? updatedUser : u,
+              ),
+            ),
+          }
+        },
       )
       closeDrawer()
       message.success('User updated successfully')
