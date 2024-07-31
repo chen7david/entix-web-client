@@ -35,7 +35,7 @@ export const AvatarUploader = ({
     fileList: newFileList,
   }) => {
     if (file.status === 'done') {
-      message.success(`${file.name} file uploaded successfully.`)
+      console.log(`Cloudinary file upload successful: ${file.name} .`)
       setFileList(newFileList.slice(-1)) // Maintain only the last uploaded file in the list
     } else if (file.status === 'error') {
       message.error(`${file.name} file upload failed.`)

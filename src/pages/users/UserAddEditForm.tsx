@@ -43,6 +43,7 @@ dayjs.extend(utc)
 export const UserAddEditForm = () => {
   const [form] = Form.useForm()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [isCloseDrawerOnSuccess, setIsCloseDrawerOnSuccess] = useState(false)
   const [isManualActivation, setIsManualActivation] = useState(false)
   const [editUser, setEditUser] = useAtom(editUserAtom)
   const [isEditingUser, setIsEditingUser] = useAtom(editUserStatusAtom)
@@ -110,7 +111,7 @@ export const UserAddEditForm = () => {
           }
         },
       )
-      closeDrawer()
+      if (isCloseDrawerOnSuccess) closeDrawer()
       message.success('User updated successfully')
     },
   })
@@ -150,6 +151,7 @@ export const UserAddEditForm = () => {
   const handleOnsubmit = (v: ICreateUserDto) => {
     if (!v.profile_image_url) v.profile_image_url = ''
     if (isEditingUser && editUser) {
+      setIsCloseDrawerOnSuccess(true)
       updateUserMutation.mutate({ userId: editUser.id, formData: v })
     } else {
       createUserMutation.mutate(v)
@@ -206,6 +208,12 @@ export const UserAddEditForm = () => {
             <AvatarUploader
               onUploaded={async ({ secure_url }) => {
                 form.setFieldValue('profile_image_url', secure_url)
+                if (editUser) {
+                  updateUserMutation.mutate({
+                    userId: editUser.id,
+                    formData: { profile_image_url: secure_url },
+                  })
+                }
               }}
               defaultImageUrl={editUser?.profile_image_url}
             />
