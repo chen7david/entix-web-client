@@ -188,12 +188,14 @@ export const UserAddEditForm = () => {
 
   return (
     <>
-      <Button
-        size="large"
-        icon={<UserAddOutlined />}
-        onClick={() => setIsDrawerOpen(true)}
-      />
-
+      <div className="flex-1 flex justify-end">
+        <Button
+          className="item-right"
+          size="large"
+          icon={<UserAddOutlined />}
+          onClick={() => setIsDrawerOpen(true)}
+        />
+      </div>
       <Drawer
         title={`${isEditingUser ? 'Edit' : 'Add'} User`}
         onClose={() => closeDrawer()}

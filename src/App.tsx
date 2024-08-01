@@ -1,26 +1,26 @@
-import { AppContainer, Main, MainContainer } from './components/Layout'
-import { HamburgerButton } from './components/HamburgerButton'
-import Logo from '/entix-bw.svg'
+import { AppContainer } from './components/layout/AppContainer'
+import { MainContainer } from './components/layout/MainContainer'
+import { Drawer } from './components/layout/Drawer'
 import { Sidebar } from './components/Sidebar/Sidebar'
-import { Navbar } from './components/Navbar'
 import { Pages } from './routes/Pages'
+import { useAtom } from 'jotai'
+import { sidebarOpenAtom } from './store/sidebar.atom'
 
 function App() {
+  const [isDrawerOpen, setIsDrawerOpen] = useAtom(sidebarOpenAtom)
   return (
-    <>
-      <AppContainer>
+    <AppContainer>
+      <Drawer
+        show={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        className="bg-gray-100"
+      >
         <Sidebar />
-        <Main>
-          <Navbar>
-            <img className="w-8" src={Logo} alt="" />
-            <HamburgerButton className="md:hidden" />
-          </Navbar>
-          <MainContainer>
-            <Pages />
-          </MainContainer>
-        </Main>
-      </AppContainer>
-    </>
+      </Drawer>
+      <MainContainer>
+        <Pages />
+      </MainContainer>
+    </AppContainer>
   )
 }
 

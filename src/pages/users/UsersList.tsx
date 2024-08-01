@@ -21,6 +21,8 @@ import { useEffect } from 'react'
 import { z } from 'zod'
 import { createSchemaFieldRule } from 'antd-zod'
 import { useSearchParams } from 'react-router-dom'
+import { Toolbar } from '@/components/layout/Toolbar'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 const FullNameSearch = z.object({
   full_name: z
@@ -146,58 +148,58 @@ export const UsersList = () => {
   }
 
   return (
-    <div>
-      <div className="sticky flex flex-row justify-between top-0 bg-white p-4 shadow-sm z-10">
-        <div id="search" className="">
-          <Form form={form} layout="inline" onFinish={onSearch}>
-            <Form.Item
-              initialValue={q}
-              name="full_name"
-              rules={[FullNameSearchRule]}
+    <>
+      <Toolbar className="bg-white shadow-sm">
+        <Form form={form} layout="inline" onFinish={onSearch}>
+          <Form.Item
+            initialValue={q}
+            name="full_name"
+            rules={[FullNameSearchRule]}
+          >
+            <Input
+              size="large"
+              allowClear
+              style={{ width: 200 }}
+              prefix={<SearchOutlined />}
+              onChange={(e) => {
+                setSearchParams((prev) => {
+                  prev.set('q', e.target.value)
+                  return prev
+                })
+              }}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              hidden={true}
+              loading={usePaginatedQuery.isLoading && `${q}` !== ''}
+              htmlType="submit"
             >
-              <Input
-                size="large"
-                allowClear
-                style={{ width: 200 }}
-                prefix={<SearchOutlined />}
-                onChange={(e) => {
-                  setSearchParams((prev) => {
-                    prev.set('q', e.target.value)
-                    return prev
-                  })
-                }}
-              />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                hidden={true}
-                loading={usePaginatedQuery.isLoading && `${q}` !== ''}
-                htmlType="submit"
-              >
-                Search
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
+              Search
+            </Button>
+          </Form.Item>
+        </Form>
         <UserAddEditForm />
-      </div>
-      <Table
-        showHeader={false}
-        pagination={false}
-        loading={usePaginatedQuery.isLoading}
-        rowKey="id"
-        dataSource={usePaginatedQuery?.data?.pages.flat()}
-        columns={columns}
-        style={{ borderRadius: 0, marginTop: '30px' }}
-      />
+      </Toolbar>
+      <PageContainer className="flex flex-col gap-4">
+        <Table
+          showHeader={false}
+          pagination={false}
+          loading={usePaginatedQuery.isLoading}
+          rowKey="id"
+          dataSource={usePaginatedQuery?.data?.pages.flat()}
+          columns={columns}
+          style={{ borderRadius: 0, marginTop: '8px' }}
+        />
 
-      {usePaginatedQuery.isFetching ? (
-        <span className="m-6 flex justify-center">
-          <Spin />
-        </span>
-      ) : (
-        <div ref={ref}></div>
-      )}
-    </div>
+        {usePaginatedQuery.isFetching ? (
+          <span className="m-6 flex justify-center">
+            <Spin />
+          </span>
+        ) : (
+          <div ref={ref}></div>
+        )}
+      </PageContainer>
+    </>
   )
 }

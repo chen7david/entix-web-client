@@ -1,11 +1,11 @@
 import { useAtom } from 'jotai'
 import React from 'react'
-import { sideBarOpenAtom } from './../store/sidebar.atom'
+import { sidebarOpenAtom } from './../store/sidebar.atom'
 
 export const HamburgerButton = (
   props: React.ButtonHTMLAttributes<HTMLButtonElement>,
 ) => {
-  const [isSideBarOpen, setIsSideBarOpenAtom] = useAtom(sideBarOpenAtom)
+  const [isSideBarOpen, setIsSideBarOpenAtom] = useAtom(sidebarOpenAtom)
 
   const toggleSidebar = () => {
     setIsSideBarOpenAtom(!isSideBarOpen)
