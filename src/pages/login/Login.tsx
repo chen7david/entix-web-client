@@ -54,14 +54,14 @@ export const Login = () => {
               <Input
                 prefix={<UserOutlined />}
                 allowClear
-                placeholder="username"
+                placeholder="Username"
               />
             </Form.Item>
             <Form.Item required name="password" rules={[LoginUserDtoRule]}>
               <Input.Password
                 prefix={<LockOutlined />}
                 allowClear
-                placeholder="password"
+                placeholder="Password"
               />
             </Form.Item>
             <Form.Item>

@@ -5,13 +5,13 @@ import { Menu } from 'antd'
 import { sidebarAdminMenuData, sidebarMenuData } from './SidebarMenuItems'
 import { useAtom } from 'jotai'
 import { isAdminAtom } from '@/store/auth.atom'
-import { sideBarOpenAtom } from '@/store/sidebar.atom'
+import { sidebarOpenAtom } from '@/store/sidebar.atom'
 
 export const SidebarMenu = () => {
   const [current, setCurrent] = useState('mail')
   const navigate = useNavigate()
   const [isAdmin] = useAtom(isAdminAtom)
-  const [isSideBarOpen, setIsSideBarOpenAtom] = useAtom(sideBarOpenAtom)
+  const [isSideBarOpen, setIsSideBarOpenAtom] = useAtom(sidebarOpenAtom)
 
   const menuOnClick: MenuProps['onClick'] = (e) => {
     setCurrent(e.key)
@@ -27,7 +27,7 @@ export const SidebarMenu = () => {
       items={
         isAdmin ? sidebarMenuData.concat(sidebarAdminMenuData) : sidebarMenuData
       }
-      style={{ borderRight: 'none' }}
+      style={{ borderRight: 'none', backgroundColor: '#f5f5f5' }}
     />
   )
 }
