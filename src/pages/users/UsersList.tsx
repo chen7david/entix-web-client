@@ -47,10 +47,13 @@ export const UsersList = () => {
 
   const usePaginatedQuery = useInfiniteQuery({
     queryKey: ['users', q],
-    queryFn: ({ pageParam }) =>
+    queryFn: ({ pageParam }: { pageParam: number }) =>
       findUsers({ pageParam, searchParams: { q, sortBy, limit } }),
     initialPageParam: 0,
-    getNextPageParam: (lastPage, allPages) => {
+    getNextPageParam: (
+      lastPage: IViewUserDto[],
+      allPages: IViewUserDto[][],
+    ) => {
       const nextPage = lastPage.length ? allPages.length * 10 : undefined
       return nextPage
     },
@@ -159,10 +162,11 @@ export const UsersList = () => {
             <Input
               size="large"
               allowClear
+              placeholder="Firstname lastname"
               style={{ width: 200 }}
               prefix={<SearchOutlined />}
-              onChange={(e) => {
-                setSearchParams((prev) => {
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setSearchParams((prev: URLSearchParams) => {
                   prev.set('q', e.target.value)
                   return prev
                 })
