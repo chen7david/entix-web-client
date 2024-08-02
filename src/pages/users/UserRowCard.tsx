@@ -47,13 +47,7 @@ export const UserRowCard = ({ user, className, ...props }: IUserRowCard) => {
           }
         ></Badge>
       </div>
-      <Badge
-        color={balance > 0 ? 'blue' : '#f5222d'}
-        count={new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-        }).format(0)}
-      />
+      <div className="text-xs">{user.userid}</div>
       <div
         id="actions"
         className="flex flex-col md:flex-row md:gap-1 col-start-3 col-end-4 row-start-1 row-end-4 md:col-start-auto md:col-end-auto md:row-start-auto md:row-end-auto"
