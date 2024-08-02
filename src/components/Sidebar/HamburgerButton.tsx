@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai'
 import React from 'react'
-import { sidebarOpenAtom } from './../store/sidebar.atom'
+import { sidebarOpenAtom } from '../../store/sidebar.atom'
 
 export const HamburgerButton = (
   props: React.ButtonHTMLAttributes<HTMLButtonElement>,

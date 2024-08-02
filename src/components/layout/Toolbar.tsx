@@ -1,6 +1,6 @@
 import { Form } from 'antd'
 import cn from 'classnames'
-import { HamburgerButton } from '../HamburgerButton'
+import { HamburgerButton } from '../Sidebar/HamburgerButton'
 
 export const Toolbar = ({
   children,
