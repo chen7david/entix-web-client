@@ -17,7 +17,7 @@ function App() {
       >
         <Sidebar />
       </Drawer>
-      <MainContainer>
+      <MainContainer className="bg-gray-50">
         <Pages />
       </MainContainer>
     </AppContainer>
