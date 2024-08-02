@@ -10,13 +10,9 @@ import {
   InputNumber,
   Badge,
 } from 'antd'
-import { CurrencyType, IViewUserDto } from 'entix-shared'
-import {
-  InfiniteData,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query'
-import { createUser, getUserCnyBalance, makeTransfer } from '@/api/client.api'
+import { CurrencyType } from 'entix-shared'
+import { useMutation } from '@tanstack/react-query'
+import { getUserCnyBalance, makeTransfer } from '@/api/client.api'
 import { createSchemaFieldRule } from 'antd-zod'
 import dayjs from 'dayjs'
 import { editUserAtom, manageWalletStatusAtom } from '@/store/update.atom'
@@ -44,7 +40,6 @@ export const UserWalletForm = () => {
   const PartialTransferDetailsRule = createSchemaFieldRule(
     PartialTransferDetails,
   )
-  const queryClient = useQueryClient()
 
   const userCnyBalanceMutation = useMutation({
     mutationFn: getUserCnyBalance,
@@ -69,26 +64,6 @@ export const UserWalletForm = () => {
     setIsManageWallet(false)
     form.resetFields()
   }
-
-  const createUserMutation = useMutation({
-    mutationFn: createUser,
-    onSuccess: (newUser) => {
-      queryClient.setQueryData<InfiniteData<IViewUserDto[]>>(
-        ['users', q],
-        (oldData) => {
-          if (!oldData) return oldData
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page, index) =>
-              index === 0 ? [newUser, ...page] : page,
-            ),
-          }
-        },
-      )
-      closeDrawer()
-      message.success('transfer completed')
-    },
-  })
 
   const handleOnsubmit = ({
     transfer_type,
@@ -185,7 +160,7 @@ export const UserWalletForm = () => {
 
         <Form.Item>
           <Button
-            loading={createUserMutation.isPending}
+            loading={makeTransferMutation.isPending}
             block
             htmlType="submit"
           >

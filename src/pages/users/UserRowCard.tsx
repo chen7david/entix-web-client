@@ -22,7 +22,6 @@ export const UserRowCard = ({ user, className, ...props }: IUserRowCard) => {
   const [, setEditUser] = useAtom(editUserAtom)
   const [, setIsEditingUser] = useAtom(editUserStatusAtom)
   const [, setIsManageWallet] = useAtom(manageWalletStatusAtom)
-  const balance = 0
   return (
     <div
       {...props}
