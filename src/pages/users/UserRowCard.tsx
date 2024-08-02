@@ -1,7 +1,11 @@
 import { UserAvatar } from './UserAvatar'
 import { daysUntilBirthday, getAge, IViewUserDto } from 'entix-shared'
 import { useAtom } from 'jotai'
-import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
+import {
+  editUserAtom,
+  editUserStatusAtom,
+  manageWalletStatusAtom,
+} from '@/store/update.atom'
 import { Badge, Button } from 'antd'
 import cn from 'classnames'
 import {
@@ -17,7 +21,7 @@ export interface IUserRowCard extends React.HTMLAttributes<HTMLDivElement> {
 export const UserRowCard = ({ user, className, ...props }: IUserRowCard) => {
   const [, setEditUser] = useAtom(editUserAtom)
   const [, setIsEditingUser] = useAtom(editUserStatusAtom)
-  const balance = 0
+  const [, setIsManageWallet] = useAtom(manageWalletStatusAtom)
   return (
     <div
       {...props}
@@ -42,13 +46,7 @@ export const UserRowCard = ({ user, className, ...props }: IUserRowCard) => {
           }
         ></Badge>
       </div>
-      <Badge
-        color={balance > 0 ? 'blue' : '#f5222d'}
-        count={new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-        }).format(0)}
-      />
+      <div className="text-xs">{user.userid}</div>
       <div
         id="actions"
         className="flex flex-col md:flex-row md:gap-1 col-start-3 col-end-4 row-start-1 row-end-4 md:col-start-auto md:col-end-auto md:row-start-auto md:row-end-auto"
@@ -62,7 +60,16 @@ export const UserRowCard = ({ user, className, ...props }: IUserRowCard) => {
             setIsEditingUser(true)
           }}
         />
-        <Button type="text" shape="circle" icon={<WalletOutlined />} />
+        <Button
+          type="text"
+          shape="circle"
+          icon={<WalletOutlined />}
+          onClick={() => {
+            console.log('hello there')
+            setEditUser(user)
+            setIsManageWallet(true)
+          }}
+        />
         <Button type="text" shape="circle" icon={<CalendarOutlined />} />
       </div>
     </div>
