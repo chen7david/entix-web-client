@@ -12,6 +12,7 @@ import { Toolbar } from '@/components/Layout/Toolbar'
 import { PageContainer } from '@/components/Layout/PageContainer'
 import { UserRowCard } from './UserRowCard'
 import { z } from 'zod'
+import { UserWalletForm } from './UserWalletForm'
 
 const FullNameSearch = z.object({
   full_name: z
@@ -92,6 +93,7 @@ export const UsersList = () => {
           </Form.Item>
         </Form>
         <UserAddEditForm />
+        <UserWalletForm />
       </Toolbar>
       <PageContainer className="flex flex-col gap-2">
         {usePaginatedQuery?.data?.pages

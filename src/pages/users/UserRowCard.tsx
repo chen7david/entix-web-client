@@ -1,7 +1,11 @@
 import { UserAvatar } from './UserAvatar'
 import { daysUntilBirthday, getAge, IViewUserDto } from 'entix-shared'
 import { useAtom } from 'jotai'
-import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
+import {
+  editUserAtom,
+  editUserStatusAtom,
+  manageWalletStatusAtom,
+} from '@/store/update.atom'
 import { Badge, Button } from 'antd'
 import cn from 'classnames'
 import {
@@ -17,6 +21,7 @@ export interface IUserRowCard extends React.HTMLAttributes<HTMLDivElement> {
 export const UserRowCard = ({ user, className, ...props }: IUserRowCard) => {
   const [, setEditUser] = useAtom(editUserAtom)
   const [, setIsEditingUser] = useAtom(editUserStatusAtom)
+  const [, setIsManageWallet] = useAtom(manageWalletStatusAtom)
   const balance = 0
   return (
     <div
@@ -62,7 +67,16 @@ export const UserRowCard = ({ user, className, ...props }: IUserRowCard) => {
             setIsEditingUser(true)
           }}
         />
-        <Button type="text" shape="circle" icon={<WalletOutlined />} />
+        <Button
+          type="text"
+          shape="circle"
+          icon={<WalletOutlined />}
+          onClick={() => {
+            console.log('hello there')
+            setEditUser(user)
+            setIsManageWallet(true)
+          }}
+        />
         <Button type="text" shape="circle" icon={<CalendarOutlined />} />
       </div>
     </div>

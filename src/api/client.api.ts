@@ -6,6 +6,8 @@ import {
   ICloudinaryUploadResponse,
   ISignedCloudinaryResponse,
   IUpdateUserDto,
+  ILedgerTransferDto,
+  ILedgerEntity,
 } from 'entix-shared'
 import { http } from './http'
 import axios from 'axios'
@@ -54,6 +56,22 @@ export const createUser = async (
 
 export const getCurrUserEtpBalance = async (): Promise<{ balance: number }> => {
   const response = await http.get('/api/v1/ledger-etp-balance')
+  return response.data
+}
+
+export const makeTransfer = async (
+  ledgerTransferDto: ILedgerTransferDto,
+): Promise<{ sender: ILedgerEntity; recipient: ILedgerEntity }> => {
+  const response = await http.post('/api/v1/ledger-transfer', ledgerTransferDto)
+  return response.data
+}
+
+export const getUserCnyBalance = async ({
+  userId,
+}: {
+  userId: number
+}): Promise<{ balance: number }> => {
+  const response = await http.get(`/api/v1/users/${userId}/cny-balance`)
   return response.data
 }
 
