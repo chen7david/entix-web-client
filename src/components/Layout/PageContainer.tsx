@@ -6,7 +6,7 @@ export const PageContainer = ({
   ...restProps
 }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <div className={cn('m-5', className)} {...restProps}>
+    <div className={cn('m-5 max-w-1200', className)} {...restProps}>
       {children}
     </div>
   )
