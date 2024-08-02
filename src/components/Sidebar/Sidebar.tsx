@@ -1,10 +1,12 @@
-import { Avatar, Button } from 'antd'
+import { Avatar, Badge, Button } from 'antd'
 import cn from 'classnames'
 import React from 'react'
 import { SidebarMenu } from './SidebarMenu'
 import { useAtom } from 'jotai'
 import { currUserAtom, isAdminAtom, isLoginAtom } from '@/store/auth.atom'
 import { BrowserStore } from '@/store/browserstore.store'
+import { useQuery } from '@tanstack/react-query'
+import { getCurrUserEtpBalance } from '@/api/client.api'
 
 export interface ISidebarDrawerProps
   extends React.HTMLAttributes<HTMLDivElement> {}
@@ -55,6 +57,11 @@ export function Sidebar() {
   const [, setIsAdmin] = useAtom(isAdminAtom)
   const [currUser] = useAtom(currUserAtom)
 
+  const getBalanceQuery = useQuery({
+    queryKey: ['currUser:etpBalance'],
+    queryFn: getCurrUserEtpBalance,
+  })
+
   const onLogout = () => {
     setIsLogin(false)
     setIsAdmin(false)
@@ -72,13 +79,17 @@ export function Sidebar() {
           >
             {currUser?.first_name[0]}
           </Avatar>
-          <div className="flex flex-col text-gray-800">
+          <div className="flex flex-col text-gray-800 gap-1">
             <div className="text-sm font-bold">
               {currUser ? currUser.username : 'unkown'}
             </div>
-            <div className="text-xs font-light ">
-              {currUser ? currUser.userid : 'unkown'}
-            </div>
+            <Badge
+              color="#374151"
+              count={new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+              }).format(getBalanceQuery.data?.balance || 0)}
+            />
           </div>
           <hr className="lex-grow border-gray-200" />
         </SidebarHeader>
