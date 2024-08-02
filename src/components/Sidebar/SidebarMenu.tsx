@@ -2,10 +2,11 @@ import { useState } from 'react'
 import type { MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { Menu } from 'antd'
-import { sidebarAdminMenuData, sidebarMenuData } from './SidebarMenuItems'
 import { useAtom } from 'jotai'
 import { isAdminAtom } from '@/store/auth.atom'
 import { sidebarOpenAtom } from '@/store/sidebar.atom'
+import { sidebarGeneralMenuItems } from '@/routes/sidebar/SidebarGeneralMenuItems'
+import { adminSidebarMenuItems } from '@/routes/sidebar/SidebarAdminMenuItems'
 
 export const SidebarMenu = () => {
   const [current, setCurrent] = useState('mail')
@@ -25,7 +26,9 @@ export const SidebarMenu = () => {
       selectedKeys={[current]}
       mode="inline"
       items={
-        isAdmin ? sidebarMenuData.concat(sidebarAdminMenuData) : sidebarMenuData
+        isAdmin
+          ? sidebarGeneralMenuItems.concat(adminSidebarMenuItems)
+          : sidebarGeneralMenuItems
       }
       style={{ borderRight: 'none', backgroundColor: '#f5f5f5' }}
     />

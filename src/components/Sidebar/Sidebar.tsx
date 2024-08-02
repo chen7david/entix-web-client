@@ -7,52 +7,14 @@ import { currUserAtom, isAdminAtom, isLoginAtom } from '@/store/auth.atom'
 import { BrowserStore } from '@/store/browserstore.store'
 import { useQuery } from '@tanstack/react-query'
 import { getCurrUserEtpBalance } from '@/api/client.api'
+import { SidebarHeader } from './SidebarHeader'
+import { SidebarBody } from './SidebarBody'
+import { SidebarFooter } from './SidebarFooter'
 
 export interface ISidebarDrawerProps
   extends React.HTMLAttributes<HTMLDivElement> {}
 
-export const SidebarContainer = (
-  props: React.HTMLAttributes<HTMLDivElement>,
-) => {
-  const { className, children, ...restProps } = props
-  return (
-    <div className={cn(className, 'flex flex-col h-full')} {...restProps}>
-      {children}
-    </div>
-  )
-}
-
-export const SidebarHeader = (props: React.HTMLAttributes<HTMLDivElement>) => {
-  const { className, children, ...restProps } = props
-  return (
-    <div className={cn(className, 'flex h-24')} {...restProps}>
-      {children}
-    </div>
-  )
-}
-
-export const SidebarFooter = (props: React.HTMLAttributes<HTMLDivElement>) => {
-  const { className, children, ...restProps } = props
-  return (
-    <div className={cn(className, 'flex h-16')} {...restProps}>
-      {children}
-    </div>
-  )
-}
-
-export const SidebarBody = (props: React.HTMLAttributes<HTMLDivElement>) => {
-  const { className, children, ...restProps } = props
-  return (
-    <div
-      className={cn(className, 'flex-1 overflow-y-scroll p-2')}
-      {...restProps}
-    >
-      {children}
-    </div>
-  )
-}
-
-export function Sidebar() {
+export function Sidebar({ className, ...props }: ISidebarDrawerProps) {
   const [isLogin, setIsLogin] = useAtom(isLoginAtom)
   const [, setIsAdmin] = useAtom(isAdminAtom)
   const [currUser] = useAtom(currUserAtom)
@@ -70,7 +32,7 @@ export function Sidebar() {
 
   return (
     isLogin && (
-      <div className="flex flex-col h-full">
+      <div {...props} className={cn('flex flex-col h-full', className)}>
         <SidebarHeader className="p-4 flex items-center gap-2">
           <Avatar
             src={currUser?.profile_image_url}

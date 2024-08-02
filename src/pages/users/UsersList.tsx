@@ -14,15 +14,14 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { findUsers } from '@/api/client.api'
 import { useAtom } from 'jotai'
 import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
-import { Indicator } from '@/components/Indicator'
 import { SearchOutlined } from '@ant-design/icons'
 import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
 import { z } from 'zod'
 import { createSchemaFieldRule } from 'antd-zod'
 import { useSearchParams } from 'react-router-dom'
-import { Toolbar } from '@/components/layout/Toolbar'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { Toolbar } from '@/components/Layout/Toolbar'
+import { PageContainer } from '@/components/Layout/PageContainer'
 
 const FullNameSearch = z.object({
   full_name: z
@@ -96,7 +95,7 @@ export const UsersList = () => {
       title: 'name',
       dataIndex: 'first_name',
       key: 'first_name',
-      width: '20%',
+      width: '30%',
       render: (_, user) => (
         <span
           className="text-blue-500 cursor-pointer"
@@ -105,6 +104,10 @@ export const UsersList = () => {
             setIsEditingUser(true)
           }}
         >
+          <Badge
+            className="pr-2"
+            color={user.activated_at ? 'green' : 'orange'}
+          />
           {`${user.first_name} ${user.last_name}`}
         </span>
       ),
@@ -128,18 +131,6 @@ export const UsersList = () => {
             ></Badge>
           </span>
         </div>
-      ),
-    },
-    {
-      title: 'email',
-      dataIndex: 'email',
-      key: 'email',
-      responsive: ['lg'],
-      render: (text, user) => (
-        <span className="">
-          <Indicator color={user.activated_at ? 'green' : 'orange'} />
-          {text}
-        </span>
       ),
     },
   ]

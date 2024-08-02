@@ -1,5 +1,5 @@
-import { PageContainer } from '@/components/layout/PageContainer'
-import { Toolbar } from '@/components/layout/Toolbar'
+import { PageContainer } from '@/components/Layout/PageContainer'
+import { Toolbar } from '@/components/Layout/Toolbar'
 
 export const Wallet = () => {
   return (
