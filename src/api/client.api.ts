@@ -52,6 +52,11 @@ export const createUser = async (
   return response.data
 }
 
+export const getCurrUserEtpBalance = async (): Promise<{ balance: number }> => {
+  const response = await http.get('/api/v1/ledger-etp-balance')
+  return response.data
+}
+
 export const updateUser = async ({
   userId,
   formData,
