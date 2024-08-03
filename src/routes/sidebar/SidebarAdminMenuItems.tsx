@@ -22,21 +22,14 @@ export const adminSidebarMenuItems: MenuItem[] = [
         icon: <AreaChartOutlined />,
       },
       {
-        label: 'Users',
-        key: '/users',
+        label: 'List',
+        key: '/users/list',
+        icon: <UserOutlined />,
+      },
+      {
+        label: 'Groups',
+        key: '/groups/list',
         icon: <TeamOutlined />,
-        children: [
-          {
-            label: 'List',
-            key: '/users/list',
-            icon: <UserOutlined />,
-          },
-          {
-            label: 'Create',
-            key: '/users/create',
-            icon: <UserOutlined />,
-          },
-        ],
       },
       {
         label: 'Roles',

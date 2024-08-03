@@ -10,6 +10,7 @@ import { Profile } from '@/pages/profile/Profile'
 import { Wallet } from '@/pages/wallet/Wallet'
 import { OrderList } from '@/pages/orders/Orders'
 import { Shop } from '@/pages/shop/Shop'
+import { GroupList } from '@/pages/groups/GroupList'
 
 export const Pages = () => {
   return (
@@ -24,6 +25,7 @@ export const Pages = () => {
       {/* PRIVATE */}
       <Route element={<PrivateRoutes />}>
         <Route path="/users/list" element={<UsersList />} />
+        <Route path="/groups/list" element={<GroupList />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/wallet" element={<Wallet />} />
         <Route path="/orders" element={<OrderList />} />
