@@ -4,7 +4,15 @@ import { Avatar, Select, SelectProps, Spin } from 'antd'
 import { debounce } from 'lodash'
 import { useMemo, useState } from 'react'
 
-export const UserSearchSelect = () => {
+interface IUserSearchSelectProps {
+  value?: string[] // An array of user IDs
+  onChange?: (value: string[]) => void // A function that accepts an array of user IDs
+}
+
+export const UserSearchSelect = ({
+  value,
+  onChange,
+}: IUserSearchSelectProps) => {
   const [q, setSearch] = useState('')
   const options: SelectProps['options'] = []
 
@@ -16,6 +24,7 @@ export const UserSearchSelect = () => {
 
   userSearchQuery?.data?.map((user) => {
     options.push({
+      key: user.id,
       value: user.id,
       label: (
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -28,9 +37,9 @@ export const UserSearchSelect = () => {
           >
             {user.first_name[0]}
           </Avatar>
-          <span
-            style={{ marginLeft: 8 }}
-          >{`${user.first_name} ${user.last_name}`}</span>
+          <span style={{ marginLeft: 8 }}>
+            {`${user.first_name} ${user.last_name}`}
+          </span>
         </div>
       ),
     })
@@ -43,7 +52,8 @@ export const UserSearchSelect = () => {
       <Select
         mode="multiple"
         allowClear
-        labelInValue
+        value={value}
+        onChange={onChange}
         placeholder="Select students"
         filterOption={false}
         onSearch={debouncedSearch}
@@ -52,6 +62,7 @@ export const UserSearchSelect = () => {
           userSearchQuery.isLoading ? <Spin size="small" /> : null
         }
         options={options}
+        optionLabelProp="label"
       />
     </>
   )

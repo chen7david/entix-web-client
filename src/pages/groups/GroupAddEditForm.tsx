@@ -172,29 +172,61 @@ export const GroupAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="description"
+            name="user_ids"
             rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
           >
-            {/* <Select
-              mode="multiple"
-              allowClear
-              style={{ width: '100%' }}
-              placeholder="Please select"
-              defaultValue={['a10', 'c12']}
-              onChange={(value: string[]) => {
-                console.log(`selected ${value}`)
-              }}
-              options={options}
-            /> */}
             <UserSearchSelect />
           </Form.Item>
 
           <Form.Item
             hasFeedback
-            name="description"
+            name="duration"
             rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
           >
-            <TimePicker style={{ width: '100%' }} format={'HH:mm'} />
+            <Select
+              placeholder="Select duration"
+              style={{ width: '100%' }}
+              options={[
+                { value: 30, label: '30 minutes' },
+                { value: 45, label: '45 minutes' },
+                { value: 60, label: '60 minutes' },
+                { value: 90, label: '90 minutes' },
+                { value: 120, label: '120 minutes' },
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item
+            hasFeedback
+            name="time"
+            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
+          >
+            <TimePicker
+              use12Hours
+              minuteStep={5}
+              hourStep={1}
+              placeholder="Select time"
+              style={{ width: '100%' }}
+              format={'HH:mm'}
+            />
+          </Form.Item>
+
+          <Form.Item
+            hasFeedback
+            name="payment_plan_id"
+            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
+          >
+            <Select
+              placeholder="Select payment plan"
+              style={{ width: '100%' }}
+              options={[
+                { value: 1, label: 'Basic' },
+                { value: 2, label: 'Silver' },
+                { value: 3, label: 'Gold' },
+                { value: 4, label: 'Primary' },
+                { value: 5, label: 'Standard' },
+              ]}
+            />
           </Form.Item>
 
           <Form.Item
