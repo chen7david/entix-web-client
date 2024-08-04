@@ -1,40 +1,37 @@
 import { useState } from 'react'
 import { Button, Modal, message } from 'antd'
-import { IViewUserDto } from 'entix-shared'
+import { IGroupEntity } from 'entix-shared'
 import {
   InfiniteData,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query'
-import { useAtom } from 'jotai'
-import { currUserAtom } from '@/store/auth.atom'
-import { deleteUser } from '@/api/client.api'
+import { deleteGroup } from '@/api/client.api'
 
-export type IUserDeleteModelProps = {
-  user: IViewUserDto
+export type IGroupDeleteModelProps = {
+  group: IGroupEntity
   closeDrawer: () => void
 }
 
-export const UserDeleteModel = ({
-  user,
+export const GroupDeleteModel = ({
+  group,
   closeDrawer,
-}: IUserDeleteModelProps) => {
+}: IGroupDeleteModelProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [currUser] = useAtom(currUserAtom)
   const queryClient = useQueryClient()
 
-  const deleteUserMutation = useMutation({
-    mutationFn: deleteUser,
-    onMutate: (userId) => {
-      queryClient.setQueryData<InfiniteData<IViewUserDto[]>>(
-        ['users', ''],
+  const deleteGroupMutation = useMutation({
+    mutationFn: deleteGroup,
+    onMutate: (groupId) => {
+      queryClient.setQueryData<InfiniteData<IGroupEntity[]>>(
+        ['groups', ''],
         (oldData) => {
           if (!oldData) return oldData
 
           return {
             ...oldData,
             pages: oldData.pages.map((page) =>
-              page.filter((u) => u.id !== userId),
+              page.filter((item) => item.id !== groupId),
             ),
           }
         },
@@ -42,10 +39,10 @@ export const UserDeleteModel = ({
     },
     onSuccess: () => {
       closeDrawer()
-      message.success('User deleted successfully')
+      message.success('Group deleted successfully')
     },
     onError: () => {
-      message.error('Failed to delete user')
+      message.error('Failed to delete group')
     },
   })
 
@@ -54,15 +51,7 @@ export const UserDeleteModel = ({
   }
 
   const handleOk = async () => {
-    if (!currUser) {
-      message.error('Please login to delete user')
-      return
-    }
-    if (user.id === currUser.id) {
-      message.warning('You cannot delete yourself!')
-      return
-    }
-    await deleteUserMutation.mutate(user.id)
+    await deleteGroupMutation.mutate(group.id)
   }
 
   return (
@@ -77,13 +66,13 @@ export const UserDeleteModel = ({
         okText="Delete"
         okType="danger"
         okButtonProps={{
-          loading: deleteUserMutation.isPending,
+          loading: deleteGroupMutation.isPending,
         }}
         onCancel={() => setIsModalOpen(false)}
       >
         <p>
           Are you sure you want to delete{' '}
-          <span className="font-bold text-red-600">{user.username}</span>?
+          <span className="font-bold text-red-600">{group.name}</span>?
         </p>
       </Modal>
     </>

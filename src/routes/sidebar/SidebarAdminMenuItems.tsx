@@ -22,7 +22,7 @@ export const adminSidebarMenuItems: MenuItem[] = [
         icon: <AreaChartOutlined />,
       },
       {
-        label: 'List',
+        label: 'Users',
         key: '/users/list',
         icon: <UserOutlined />,
       },

@@ -1,7 +1,7 @@
 import { Button, Form, Input, Spin } from 'antd'
-import { IViewUserDto } from 'entix-shared'
+import { IGroupEntity, IViewUserDto } from 'entix-shared'
 import { UserAddEditForm } from './UserAddEditForm'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { QueryFunctionContext, useInfiniteQuery } from '@tanstack/react-query'
 import { findUsers } from '@/api/client.api'
 import { SearchOutlined } from '@ant-design/icons'
 import { useInView } from 'react-intersection-observer'
@@ -35,7 +35,7 @@ export const UsersList = () => {
 
   const usePaginatedQuery = useInfiniteQuery({
     queryKey: ['users', q],
-    queryFn: ({ pageParam }: { pageParam: number }) =>
+    queryFn: ({ pageParam }: QueryFunctionContext<string[], number>) =>
       findUsers({ pageParam, searchParams: { q, sortBy, limit } }),
     initialPageParam: 0,
     getNextPageParam: (

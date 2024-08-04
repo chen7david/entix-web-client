@@ -8,9 +8,14 @@ import {
   IUpdateUserDto,
   ILedgerTransferDto,
   ILedgerEntity,
+  IGroupEntity,
+  IUpdateGroupDto,
+  ICreateGroupDto,
+  IUserModel,
 } from 'entix-shared'
 import { http } from './http'
 import axios from 'axios'
+import { QueryFunction } from '@tanstack/react-query'
 
 type ISearchQueryParams = {
   q: string
@@ -32,6 +37,18 @@ export const renewToken = async (
   return response.data
 }
 
+export const filterUsers: QueryFunction<
+  IUserModel[],
+  [string, { q: string }]
+> = async ({ queryKey }): Promise<IUserModel[]> => {
+  const [, params] = queryKey
+  const queryParams = new URLSearchParams({
+    ...params,
+  }).toString()
+  const response = await http.get(`/api/v1/users?${queryParams}`)
+  return response.data.data
+}
+
 export const findUsers = async ({
   pageParam,
   searchParams,
@@ -47,10 +64,32 @@ export const findUsers = async ({
   return response.data.data
 }
 
+export const findGroups = async ({
+  pageParam,
+  searchParams,
+}: {
+  pageParam: number
+  searchParams: ISearchQueryParams
+}): Promise<IGroupEntity[]> => {
+  const queryParams = new URLSearchParams({
+    ...searchParams,
+    offset: `${pageParam}`,
+  }).toString()
+  const response = await http.get(`/api/v1/groups?${queryParams}`)
+  return response.data
+}
+
 export const createUser = async (
   formData: ICreateUserDto,
 ): Promise<IViewUserDto> => {
   const response = await http.post('/api/v1/users', formData)
+  return response.data
+}
+
+export const createGroup = async (
+  formData: ICreateGroupDto,
+): Promise<IGroupEntity> => {
+  const response = await http.post('/api/v1/groups', formData)
   return response.data
 }
 
@@ -83,6 +122,17 @@ export const updateUser = async ({
   formData: IUpdateUserDto
 }): Promise<IViewUserDto> => {
   const response = await http.patch('/api/v1/users/' + userId, formData)
+  return response.data
+}
+
+export const updateGroup = async ({
+  groupId,
+  formData,
+}: {
+  groupId: number
+  formData: IUpdateGroupDto
+}): Promise<IGroupEntity> => {
+  const response = await http.patch('/api/v1/groups/' + groupId, formData)
   return response.data
 }
 
@@ -128,6 +178,13 @@ export const deleteUser = async (
   userId: number,
 ): Promise<{ success: boolean }> => {
   const response = await http.delete('/api/v1/users/' + userId)
+  return response.data
+}
+
+export const deleteGroup = async (
+  groupId: number,
+): Promise<{ success: boolean }> => {
+  const response = await http.delete('/api/v1/groups/' + groupId)
   return response.data
 }
 
