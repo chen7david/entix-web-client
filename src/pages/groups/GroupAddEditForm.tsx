@@ -50,12 +50,6 @@ export const GroupAddEditForm = () => {
   })
 
   const q = searchParams.get('q') || ''
-  const options: SelectProps['options'] = [
-    {
-      value: '1',
-      label: 'David',
-    },
-  ]
 
   useEffect(() => {
     if (isEditingGroup) {
@@ -64,6 +58,7 @@ export const GroupAddEditForm = () => {
         ...editGroup,
         start_date: dayjs(editGroup?.start_date).utc(),
         end_date: dayjs(editGroup?.end_date).utc(),
+        time: dayjs(editGroup?.time).utc(),
       })
     }
   }, [isEditingGroup, form])
