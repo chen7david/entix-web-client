@@ -12,6 +12,7 @@ import {
   IUpdateGroupDto,
   ICreateGroupDto,
   IUserModel,
+  IGroupWithUsersModel,
 } from 'entix-shared'
 import { http } from './http'
 import axios from 'axios'
@@ -70,7 +71,7 @@ export const findGroups = async ({
 }: {
   pageParam: number
   searchParams: ISearchQueryParams
-}): Promise<IGroupEntity[]> => {
+}): Promise<IGroupWithUsersModel[]> => {
   const queryParams = new URLSearchParams({
     ...searchParams,
     offset: `${pageParam}`,

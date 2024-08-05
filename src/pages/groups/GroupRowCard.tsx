@@ -1,4 +1,4 @@
-import { IGroupEntity } from 'entix-shared'
+import { IGroupEntity, IGroupWithUsersModel } from 'entix-shared'
 import { useAtom } from 'jotai'
 import { editGroupAtom, editGroupStatusAtom } from '@/store/group.atom'
 import { Avatar, Button, Tooltip } from 'antd'
@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons'
 
 export interface IGroupRowCard extends React.HTMLAttributes<HTMLDivElement> {
-  group: IGroupEntity
+  group: IGroupWithUsersModel
 }
 
 export const GroupRowCard = ({ group, className, ...props }: IGroupRowCard) => {
@@ -27,21 +27,25 @@ export const GroupRowCard = ({ group, className, ...props }: IGroupRowCard) => {
       )}
     >
       <div className="flex h-full row-span-3 justify-center items-center md:justify-start">
-        <Avatar.Group>
-          <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" />
-          <a href="https://ant.design">
-            <Avatar style={{ backgroundColor: '#f56a00' }}>K</Avatar>
-          </a>
-          <Tooltip title="Ant User" placement="top">
-            <Avatar
-              style={{ backgroundColor: '#87d068' }}
-              icon={<UserOutlined />}
-            />
-          </Tooltip>
-          <Avatar
-            style={{ backgroundColor: '#1677ff' }}
-            icon={<AntDesignOutlined />}
-          />
+        <Avatar.Group maxCount={2}>
+          {group &&
+            group?.users?.map((user) => (
+              <Tooltip
+                key={user.id}
+                title={`${user.first_name} ${user.last_name}`}
+                placement="top"
+              >
+                <Avatar
+                  style={{
+                    backgroundColor:
+                      user?.sex == 'male' ? '#3291a8' : '#cc233f',
+                  }}
+                  src={user.profile_image_url}
+                >
+                  {user.first_name[0]}
+                </Avatar>
+              </Tooltip>
+            ))}
         </Avatar.Group>
       </div>
       <span className="">{group.name}</span>

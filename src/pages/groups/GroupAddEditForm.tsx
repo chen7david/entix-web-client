@@ -9,13 +9,12 @@ import {
   Select,
   DatePicker,
   TimePicker,
-  SelectProps,
-  Spin,
 } from 'antd'
 import {
   CreateGroupDto,
   ICreateGroupDto,
   IGroupEntity,
+  IGroupUserModel,
   UpdateGroupDto,
 } from 'entix-shared'
 import {
@@ -92,17 +91,17 @@ export const GroupAddEditForm = () => {
 
   const updateGroupMutation = useMutation({
     mutationFn: updateGroup,
-    onSuccess: (updatedUser) => {
+    onSuccess: (updatedGroup) => {
       queryClient.setQueryData<InfiniteData<IGroupEntity[]>>(
-        ['groups', q],
+        ['groups', { groupId: updatedGroup.id }],
         (oldData) => {
           if (!oldData) return oldData
 
           return {
             ...oldData,
             pages: oldData.pages.map((page) =>
-              page.map((u: IGroupEntity) =>
-                u.id === updatedUser.id ? updatedUser : u,
+              page.map((group: IGroupEntity) =>
+                group.id === updatedGroup.id ? updatedGroup : group,
               ),
             ),
           }
@@ -114,11 +113,18 @@ export const GroupAddEditForm = () => {
   })
 
   const handleOnsubmit = (v: ICreateGroupDto) => {
+    console.log(v)
     if (isEditingGroup && editGroup) {
       setIsCloseDrawerOnSuccess(true)
-      updateGroupMutation.mutate({ groupId: editGroup.id, formData: v })
+      updateGroupMutation.mutate({
+        groupId: editGroup.id,
+        formData: { ...v, user_ids: v.user_ids.map((u: any) => u.value) },
+      })
     } else {
-      createGroupMutation.mutate(v)
+      createGroupMutation.mutate({
+        ...v,
+        user_ids: v.user_ids.map((u: any) => u.value),
+      })
     }
   }
 
@@ -165,13 +171,23 @@ export const GroupAddEditForm = () => {
             <Input.TextArea rows={4} placeholder="description" />
           </Form.Item>
 
-          <Form.Item
-            hasFeedback
-            name="user_ids"
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
-          >
-            <UserSearchSelect />
-          </Form.Item>
+          {editGroup && (
+            <Form.Item
+              hasFeedback
+              name="user_ids"
+              rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
+            >
+              <UserSearchSelect
+                isUpdating={isEditingGroup}
+                editGroup={editGroup}
+                setSelectedIds={(user_ids) =>
+                  form.setFieldValue('user_ids', user_ids)
+                }
+                value={editGroup?.users.map((i) => `${i.id}`)}
+                onChange={(value) => form.setFieldsValue({ user_ids: value })}
+              />
+            </Form.Item>
+          )}
 
           <Form.Item
             hasFeedback
