@@ -9,6 +9,7 @@ import { currUserAtom, isAdminAtom, isLoginAtom } from '@/store/auth.atom'
 import { createSchemaFieldRule } from 'antd-zod'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
+import { decodeToken } from '@/helpers/jwt.helpers'
 
 export const Login = () => {
   const [, setIsLogin] = useAtom(isLoginAtom)
@@ -23,13 +24,15 @@ export const Login = () => {
     try {
       setIsLoading(true)
       const { user, accessToken, refreshToken } = await loginUser(loginUserDto)
+      const tokenUser = decodeToken(accessToken)
+      console.log({ accessToken, tokenUser })
       setCurrUser(user)
       setIsLogin(true)
-      setIsAdmin(true)
+      setIsAdmin(tokenUser.isAdmin)
       BrowserStore.setAccessToken(accessToken)
       BrowserStore.setRefreshToken(refreshToken)
       BrowserStore.setCurrUser(user)
-      BrowserStore.setIsAdmin(true)
+      BrowserStore.setIsAdmin(tokenUser.isAdmin)
       message.success('Welcome back!')
       navigate('/')
     } finally {

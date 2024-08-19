@@ -1,14 +1,11 @@
 import { useState } from 'react'
 import { Button, Modal, message } from 'antd'
 import { IUser } from 'entix-shared'
-import {
-  InfiniteData,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
 import { currUserAtom } from '@/store/auth.atom'
 import { deleteUser } from '@/api/client.api'
+import { useSearchParams } from 'react-router-dom'
 
 export type IUserDeleteModelProps = {
   user: IUser
@@ -22,22 +19,17 @@ export const UserDeleteModel = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currUser] = useAtom(currUserAtom)
   const queryClient = useQueryClient()
+  const [searchParams] = useSearchParams({
+    firstName: '',
+    limit: '10',
+  })
+
+  const firstName = searchParams.get('firstName') || ''
 
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
-    onMutate: (userId) => {
-      queryClient.setQueryData<InfiniteData<IUser[]>>(['users'], (oldData) => {
-        if (!oldData) return oldData
-
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) =>
-            page.filter((u) => u.id !== userId),
-          ),
-        }
-      })
-    },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users', { firstName }] })
       closeDrawer()
       message.success('User deleted successfully')
     },

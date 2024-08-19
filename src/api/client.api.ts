@@ -9,13 +9,19 @@ import {
   ICreateTransferDto,
   ILedgerEntity,
   IPaginatedRespose,
+  ILedgerWithUser,
 } from 'entix-shared'
 import { http } from './http'
 import axios from 'axios'
 
 type ISearchQueryParams = {
-  firstName: string
-  limit: string
+  firstName?: string
+  currencyType?: string
+  limit?: string
+  startDate?: string
+  endDate?: string
+  trxid?: string
+  userId?: string
 }
 
 export const loginUser = async (
@@ -73,6 +79,21 @@ export const getUserCnyBalance = async ({
   userId: number
 }): Promise<{ balance: number }> => {
   const response = await http.get(`/api/v1/users/${userId}/cny-balance`)
+  return response.data
+}
+
+export const getStatements = async ({
+  pageParam,
+  searchParams,
+}: {
+  pageParam: string | null
+  searchParams: ISearchQueryParams
+}): Promise<IPaginatedRespose<ILedgerWithUser>> => {
+  const queryParams = new URLSearchParams({
+    ...searchParams,
+    cursor: `${pageParam}`,
+  }).toString()
+  const response = await http.get(`/api/v1/ledgers/statements?${queryParams}`)
   return response.data
 }
 

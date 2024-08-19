@@ -36,6 +36,7 @@ export const UsersList = () => {
     queryFn: ({ pageParam = null }: { pageParam: string | null }) =>
       findUsers({ pageParam, searchParams: { firstName, limit } }),
     initialPageParam: null,
+    select: ({ pages }) => pages.flatMap(({ items }) => items),
   })
 
   useEffect(() => {
@@ -87,9 +88,10 @@ export const UsersList = () => {
         <UserWalletForm />
       </Toolbar>
       <PageContainer className="flex flex-col gap-2">
-        {usePaginatedQuery?.data?.pages
-          .flatMap(({ items }) => items)
-          .flatMap((user) => <UserRowCard key={user.id} user={user} />)}
+        {usePaginatedQuery?.data?.map((user) => (
+          <UserRowCard key={user.id} user={user} />
+        ))}
+
         {usePaginatedQuery.isFetching ? (
           <span className="m-6 flex justify-center">
             <Spin />

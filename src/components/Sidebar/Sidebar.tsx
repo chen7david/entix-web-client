@@ -1,4 +1,4 @@
-import { Avatar, Badge, Button } from 'antd'
+import { Avatar, Button } from 'antd'
 import cn from 'classnames'
 import React from 'react'
 import { SidebarMenu } from './SidebarMenu'

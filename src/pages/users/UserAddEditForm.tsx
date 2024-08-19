@@ -18,11 +18,7 @@ import {
   IUser,
   UpdateUserDto,
 } from 'entix-shared'
-import {
-  InfiniteData,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   forceActivateAccount,
   createUser,
@@ -37,8 +33,8 @@ import { AvatarUploader } from '@/components/Form/UploadAvatar'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { UserDeleteModel } from './UserDeleteModel'
 import timezones from 'timezones-list'
-import utc from 'dayjs/plugin/utc'
 import { useSearchParams } from 'react-router-dom'
+import utc from 'dayjs/plugin/utc'
 dayjs.extend(utc)
 
 export const UserAddEditForm = () => {
@@ -52,12 +48,12 @@ export const UserAddEditForm = () => {
   const UpdateUserDtoRule = createSchemaFieldRule(UpdateUserDto)
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams({
-    q: '',
+    firstName: '',
     sortBy: 'created_at:desc',
     limit: '10',
   })
 
-  const q = searchParams.get('q') || ''
+  const firstName = searchParams.get('firstName') || ''
 
   useHotkeys('ctrl+k', () => setIsManualActivation(!isManualActivation), [
     isManualActivation,
@@ -83,19 +79,8 @@ export const UserAddEditForm = () => {
 
   const createUserMutation = useMutation({
     mutationFn: createUser,
-    onSuccess: (newUser) => {
-      queryClient.setQueryData<InfiniteData<IUser[]>>(
-        ['users', q],
-        (oldData) => {
-          if (!oldData) return oldData
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page, index) =>
-              index === 0 ? [newUser, ...page] : page,
-            ),
-          }
-        },
-      )
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users', { firstName }] })
       closeDrawer()
       message.success('User updated successfully')
     },
@@ -103,22 +88,8 @@ export const UserAddEditForm = () => {
 
   const updateUserMutation = useMutation({
     mutationFn: updateUser,
-    onSuccess: (updatedUser) => {
-      queryClient.setQueryData<InfiniteData<IUser[]>>(
-        ['users', q],
-        (oldData) => {
-          if (!oldData) return oldData
-
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) =>
-              page.map((u: IUser) =>
-                u.id === updatedUser.id ? updatedUser : u,
-              ),
-            ),
-          }
-        },
-      )
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users', { firstName }] })
       if (isCloseDrawerOnSuccess) closeDrawer()
       message.success('User updated successfully')
     },
