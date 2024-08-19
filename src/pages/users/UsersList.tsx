@@ -23,18 +23,18 @@ export const UsersList = () => {
   const [form] = Form.useForm()
   const { ref, inView } = useInView()
   const [searchParams, setSearchParams] = useSearchParams({
-    username: '',
+    firstName: '',
     limit: '10',
   })
 
-  const username = searchParams.get('username') || ''
+  const firstName = searchParams.get('firstName') || ''
   const limit = searchParams.get('limit') || ''
 
   const usePaginatedQuery = useInfiniteQuery({
-    queryKey: ['users', { username }],
+    queryKey: ['users', { firstName }],
     getNextPageParam: (prevData) => prevData.cursor,
     queryFn: ({ pageParam = null }: { pageParam: string | null }) =>
-      findUsers({ pageParam, searchParams: { username, limit } }),
+      findUsers({ pageParam, searchParams: { firstName, limit } }),
     initialPageParam: null,
   })
 
@@ -55,7 +55,7 @@ export const UsersList = () => {
       <Toolbar className="bg-white shadow-sm">
         <Form form={form} layout="inline" onFinish={onSearch}>
           <Form.Item
-            initialValue={username}
+            initialValue={firstName}
             name="fullName"
             rules={[FullNameSearchRule]}
           >
@@ -67,7 +67,7 @@ export const UsersList = () => {
               prefix={<SearchOutlined />}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setSearchParams((prev: URLSearchParams) => {
-                  prev.set('q', e.target.value)
+                  prev.set('firstName', e.target.value)
                   return prev
                 })
               }}
@@ -76,7 +76,7 @@ export const UsersList = () => {
           <Form.Item>
             <Button
               hidden={true}
-              loading={usePaginatedQuery.isLoading && `${username}` !== ''}
+              loading={usePaginatedQuery.isLoading && `${firstName}` !== ''}
               htmlType="submit"
             >
               Search

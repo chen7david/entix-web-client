@@ -14,7 +14,7 @@ import { http } from './http'
 import axios from 'axios'
 
 type ISearchQueryParams = {
-  username: string
+  firstName: string
   limit: string
 }
 

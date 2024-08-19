@@ -50,7 +50,7 @@ export function Sidebar({ className, ...props }: ISidebarDrawerProps) {
               count={new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
-              }).format(getBalanceQuery.data?.balance || 0)}
+              }).format((getBalanceQuery.data?.balance || 0) / 100)}
             />
           </div>
           <hr className="lex-grow border-gray-200" />
