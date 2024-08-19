@@ -68,7 +68,7 @@ export const UserAddEditForm = () => {
       setIsDrawerOpen(true)
       form.setFieldsValue({
         ...editUser,
-        date_of_birth: dayjs(editUser?.dateOfBirth).utc(),
+        dateOfBirth: dayjs(editUser?.dateOfBirth).utc(),
       })
     }
   }, [isEditingUser, form])
@@ -281,7 +281,7 @@ export const UserAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="first_name"
+            name="firstName"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
             <Input placeholder="First name" />
@@ -289,7 +289,7 @@ export const UserAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="last_name"
+            name="lastName"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
             <Input placeholder="Last name" />
@@ -303,15 +303,15 @@ export const UserAddEditForm = () => {
             <Select
               placeholder="Sex"
               options={[
-                { value: 'male', label: 'Male' },
-                { value: 'female', label: 'Female' },
+                { value: 'm', label: 'Male' },
+                { value: 'f', label: 'Female' },
               ]}
             />
           </Form.Item>
 
           <Form.Item
             hasFeedback
-            name="date_of_birth"
+            name="dateOfBirth"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
             <DatePicker
@@ -324,7 +324,7 @@ export const UserAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="native_name"
+            name="nativeName"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
             <Input placeholder="Native name" />
@@ -348,7 +348,7 @@ export const UserAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="country_of_birth"
+            name="countryOfBirth"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
             <Input placeholder="Country of birth" />
@@ -356,7 +356,7 @@ export const UserAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="place_of_birth"
+            name="placeOfBirth"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
             <Input placeholder="Place of birth" />

@@ -10,6 +10,7 @@ import { getCurrUserEtpBalance } from '@/api/client.api'
 import { SidebarHeader } from './SidebarHeader'
 import { SidebarBody } from './SidebarBody'
 import { SidebarFooter } from './SidebarFooter'
+import { MoneyBadge } from '../MoneyBadge'
 
 export interface ISidebarDrawerProps
   extends React.HTMLAttributes<HTMLDivElement> {}
@@ -45,12 +46,10 @@ export function Sidebar({ className, ...props }: ISidebarDrawerProps) {
             <div className="text-sm font-bold">
               {currUser ? currUser.username : 'unkown'}
             </div>
-            <Badge
-              color="#374151"
-              count={new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-              }).format((getBalanceQuery.data?.balance || 0) / 100)}
+            <MoneyBadge
+              balance={getBalanceQuery.data?.balance}
+              currency="USD"
+              decimals={0}
             />
           </div>
           <hr className="lex-grow border-gray-200" />
