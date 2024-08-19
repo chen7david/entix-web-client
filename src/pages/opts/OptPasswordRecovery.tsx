@@ -1,14 +1,14 @@
 import Logo from '/entix-bw.svg'
 import { Button, Form, Input, message } from 'antd'
-import { createSchemaFieldRule } from 'antd-zod'
-import { UsernameDto } from 'entix-shared'
+// import { createSchemaFieldRule } from 'antd-zod'
+// import { UsernameDto } from 'entix-shared'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { sendPasswordRecoveryEmail } from '@/api/client.api'
 import { UserOutlined } from '@ant-design/icons'
 
 export const OptPasswordRecovery = () => {
-  const UsernameDtoRule = createSchemaFieldRule(UsernameDto)
+  // const UsernameDtoRule = createSchemaFieldRule(UsernameDto)
   const navigate = useNavigate()
 
   const setPasswordRecoveryMutation = useMutation({
@@ -37,7 +37,7 @@ export const OptPasswordRecovery = () => {
             size="large"
             onFinish={setPasswordRecoveryMutation.mutate}
           >
-            <Form.Item required name="username" rules={[UsernameDtoRule]}>
+            <Form.Item required name="username" rules={[]}>
               <Input
                 allowClear
                 placeholder="Username"

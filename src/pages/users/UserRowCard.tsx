@@ -1,5 +1,5 @@
 import { UserAvatar } from './UserAvatar'
-import { daysUntilBirthday, getAge, IViewUserDto } from 'entix-shared'
+import { daysUntilBirthday, getAge, IUser } from 'entix-shared'
 import { useAtom } from 'jotai'
 import {
   editUserAtom,
@@ -15,7 +15,7 @@ import {
 } from '@ant-design/icons'
 
 export interface IUserRowCard extends React.HTMLAttributes<HTMLDivElement> {
-  user: IViewUserDto
+  user: IUser
 }
 
 export const UserRowCard = ({ user, className, ...props }: IUserRowCard) => {
@@ -33,20 +33,20 @@ export const UserRowCard = ({ user, className, ...props }: IUserRowCard) => {
       <div className="flex h-full row-span-3 justify-center items-center md:justify-start">
         <UserAvatar className="" user={user} />
       </div>
-      <span className="">{`${user.first_name} ${user.last_name}`}</span>
+      <span className="">{`${user.firstName} ${user.lastName}`}</span>
 
       <div id="age" className="flex md:gap-1 ">
-        <span>{getAge(user.date_of_birth.toString())}</span>
+        <span>{getAge(user.dateOfBirth.toString())}</span>
         <Badge
           className="ml-3"
           count={
-            daysUntilBirthday(user.date_of_birth.toString()) < 30
-              ? `${daysUntilBirthday(user.date_of_birth.toString())} days`
+            daysUntilBirthday(user.dateOfBirth.toString()) < 30
+              ? `${daysUntilBirthday(user.dateOfBirth.toString())} days`
               : 0
           }
         ></Badge>
       </div>
-      <div className="text-xs">{user.userid}</div>
+      <div className="text-xs">{user.xid}</div>
       <div
         id="actions"
         className="flex flex-col md:flex-row md:gap-1 col-start-3 col-end-4 row-start-1 row-end-4 md:col-start-auto md:col-end-auto md:row-start-auto md:row-end-auto"

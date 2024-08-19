@@ -1,10 +1,10 @@
-import { IViewUserDto } from 'entix-shared'
+import { IUser } from 'entix-shared'
 import { atom, createStore } from 'jotai'
 import { BrowserStore } from './browserstore.store'
 export const authStore = createStore()
 
 const currUser = BrowserStore.getCurrUser()
-export const currUserAtom = atom<IViewUserDto | null>(currUser)
+export const currUserAtom = atom<IUser | null>(currUser)
 
 const isLogin = BrowserStore.getAccessToken() !== null
 export const isLoginAtom = atom<boolean>(isLogin)

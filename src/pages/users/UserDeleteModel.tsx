@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button, Modal, message } from 'antd'
-import { IViewUserDto } from 'entix-shared'
+import { IUser } from 'entix-shared'
 import {
   InfiniteData,
   useMutation,
@@ -11,7 +11,7 @@ import { currUserAtom } from '@/store/auth.atom'
 import { deleteUser } from '@/api/client.api'
 
 export type IUserDeleteModelProps = {
-  user: IViewUserDto
+  user: IUser
   closeDrawer: () => void
 }
 
@@ -26,19 +26,16 @@ export const UserDeleteModel = ({
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
     onMutate: (userId) => {
-      queryClient.setQueryData<InfiniteData<IViewUserDto[]>>(
-        ['users'],
-        (oldData) => {
-          if (!oldData) return oldData
+      queryClient.setQueryData<InfiniteData<IUser[]>>(['users'], (oldData) => {
+        if (!oldData) return oldData
 
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) =>
-              page.filter((u) => u.id !== userId),
-            ),
-          }
-        },
-      )
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) =>
+            page.filter((u) => u.id !== userId),
+          ),
+        }
+      })
     },
     onSuccess: () => {
       closeDrawer()

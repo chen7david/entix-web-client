@@ -14,8 +14,8 @@ import {
 import {
   CreateUserDto,
   ICreateUserDto,
-  IPaginatedFilterResponse,
-  IViewUserDto,
+  IPaginatedRespose,
+  IUser,
   UpdateUserDto,
 } from 'entix-shared'
 import {
@@ -68,7 +68,7 @@ export const UserAddEditForm = () => {
       setIsDrawerOpen(true)
       form.setFieldsValue({
         ...editUser,
-        date_of_birth: dayjs(editUser?.date_of_birth).utc(),
+        date_of_birth: dayjs(editUser?.dateOfBirth).utc(),
       })
     }
   }, [isEditingUser, form])
@@ -84,7 +84,7 @@ export const UserAddEditForm = () => {
   const createUserMutation = useMutation({
     mutationFn: createUser,
     onSuccess: (newUser) => {
-      queryClient.setQueryData<InfiniteData<IViewUserDto[]>>(
+      queryClient.setQueryData<InfiniteData<IUser[]>>(
         ['users', q],
         (oldData) => {
           if (!oldData) return oldData
@@ -104,7 +104,7 @@ export const UserAddEditForm = () => {
   const updateUserMutation = useMutation({
     mutationFn: updateUser,
     onSuccess: (updatedUser) => {
-      queryClient.setQueryData<InfiniteData<IViewUserDto[]>>(
+      queryClient.setQueryData<InfiniteData<IUser[]>>(
         ['users', q],
         (oldData) => {
           if (!oldData) return oldData
@@ -112,7 +112,7 @@ export const UserAddEditForm = () => {
           return {
             ...oldData,
             pages: oldData.pages.map((page) =>
-              page.map((u: IViewUserDto) =>
+              page.map((u: IUser) =>
                 u.id === updatedUser.id ? updatedUser : u,
               ),
             ),
@@ -137,9 +137,9 @@ export const UserAddEditForm = () => {
     onSuccess: () => {
       queryClient.setQueryData(
         ['users'],
-        (oldUsers: IPaginatedFilterResponse<IViewUserDto[]>) => ({
+        (oldUsers: IPaginatedRespose<IUser>) => ({
           ...oldUsers,
-          data: oldUsers.data.map((user) => {
+          data: oldUsers.items.map((user) => {
             if (user.id === editUser?.id) {
               const updatedEditUser = {
                 ...user,
@@ -157,7 +157,7 @@ export const UserAddEditForm = () => {
   })
 
   const handleOnsubmit = (v: ICreateUserDto) => {
-    if (!v.profile_image_url) v.profile_image_url = ''
+    if (!v.imageUrl) v.imageUrl = ''
     if (isEditingUser && editUser) {
       setIsCloseDrawerOnSuccess(true)
       updateUserMutation.mutate({ userId: editUser.id, formData: v })
@@ -175,7 +175,7 @@ export const UserAddEditForm = () => {
       message.error('Activation email failed')
       return
     }
-    if (editUser.activated_at) {
+    if (editUser.activatedAt) {
       message.error('User is already activated')
       return
     }
@@ -213,18 +213,18 @@ export const UserAddEditForm = () => {
           title="AddEditUserForm"
           key={Math.random()}
         >
-          <Form.Item name="profile_image_url">
+          <Form.Item name="imageUrl">
             <AvatarUploader
               onUploaded={async ({ secure_url }) => {
-                form.setFieldValue('profile_image_url', secure_url)
+                form.setFieldValue('imageUrl', secure_url)
                 if (editUser) {
                   updateUserMutation.mutate({
                     userId: editUser.id,
-                    formData: { profile_image_url: secure_url },
+                    formData: { imageUrl: secure_url },
                   })
                 }
               }}
-              defaultImageUrl={editUser?.profile_image_url}
+              defaultImageUrl={editUser?.imageUrl}
             />
           </Form.Item>
 
@@ -249,7 +249,7 @@ export const UserAddEditForm = () => {
                   prefix={
                     isEditingUser && (
                       <Badge
-                        color={editUser?.activated_at ? 'green' : 'orange'}
+                        color={editUser?.activatedAt ? 'green' : 'orange'}
                       />
                     )
                   }

@@ -78,9 +78,9 @@ export const UserWalletForm = () => {
     }
     const data = {
       amount: amount,
-      sender_id: transfer_type === 'deposit' ? currUser.id : editUser.id,
-      recipient_id: transfer_type === 'withdraw' ? currUser.id : editUser.id,
-      currency_type: CurrencyType.ChineseYuan,
+      senderId: transfer_type === 'deposit' ? currUser.id : editUser.id,
+      recipientId: transfer_type === 'withdraw' ? currUser.id : editUser.id,
+      currencyType: CurrencyType.ChineseYuan,
       password,
     }
     console.log(data)
@@ -89,7 +89,7 @@ export const UserWalletForm = () => {
 
   return (
     <Drawer
-      title={`${editUser?.first_name} ${editUser?.last_name}`}
+      title={`${editUser?.firstName} ${editUser?.lastName}`}
       onClose={() => closeDrawer()}
       open={isDrawerOpen}
       extra={

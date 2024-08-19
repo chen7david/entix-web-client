@@ -1,5 +1,4 @@
 import { Button, Form, Input, Spin } from 'antd'
-import { IViewUserDto } from 'entix-shared'
 import { UserAddEditForm } from './UserAddEditForm'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { findUsers } from '@/api/client.api'
@@ -24,27 +23,19 @@ export const UsersList = () => {
   const [form] = Form.useForm()
   const { ref, inView } = useInView()
   const [searchParams, setSearchParams] = useSearchParams({
-    q: '',
-    sortBy: 'created_at:desc',
+    username: '',
     limit: '10',
   })
 
-  const q = searchParams.get('q') || ''
-  const sortBy = searchParams.get('sortBy') || ''
+  const username = searchParams.get('username') || ''
   const limit = searchParams.get('limit') || ''
 
   const usePaginatedQuery = useInfiniteQuery({
-    queryKey: ['users', q],
-    queryFn: ({ pageParam }: { pageParam: number }) =>
-      findUsers({ pageParam, searchParams: { q, sortBy, limit } }),
-    initialPageParam: 0,
-    getNextPageParam: (
-      lastPage: IViewUserDto[],
-      allPages: IViewUserDto[][],
-    ) => {
-      const nextPage = lastPage.length ? allPages.length * 10 : undefined
-      return nextPage
-    },
+    queryKey: ['users', { username }],
+    getNextPageParam: (prevData) => prevData.cursor,
+    queryFn: ({ pageParam = null }: { pageParam: string | null }) =>
+      findUsers({ pageParam, searchParams: { username, limit } }),
+    initialPageParam: null,
   })
 
   useEffect(() => {
@@ -64,8 +55,8 @@ export const UsersList = () => {
       <Toolbar className="bg-white shadow-sm">
         <Form form={form} layout="inline" onFinish={onSearch}>
           <Form.Item
-            initialValue={q}
-            name="full_name"
+            initialValue={username}
+            name="fullName"
             rules={[FullNameSearchRule]}
           >
             <Input
@@ -85,7 +76,7 @@ export const UsersList = () => {
           <Form.Item>
             <Button
               hidden={true}
-              loading={usePaginatedQuery.isLoading && `${q}` !== ''}
+              loading={usePaginatedQuery.isLoading && `${username}` !== ''}
               htmlType="submit"
             >
               Search
@@ -97,9 +88,8 @@ export const UsersList = () => {
       </Toolbar>
       <PageContainer className="flex flex-col gap-2">
         {usePaginatedQuery?.data?.pages
-          .flat()
-          .map((user) => <UserRowCard key={user.id} user={user} />)}
-
+          .flatMap(({ items }) => items)
+          .flatMap((user) => <UserRowCard key={user.id} user={user} />)}
         {usePaginatedQuery.isFetching ? (
           <span className="m-6 flex justify-center">
             <Spin />

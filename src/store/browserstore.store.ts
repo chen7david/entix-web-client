@@ -1,4 +1,4 @@
-import { IViewUserDto, StorageKey } from 'entix-shared'
+import { IUser, StorageKey } from 'entix-shared'
 
 export class BrowserStore {
   static get(key: string) {
@@ -41,11 +41,11 @@ export class BrowserStore {
     BrowserStore.remove(StorageKey.RefreshToken)
   }
 
-  static getCurrUser(): IViewUserDto | null {
+  static getCurrUser(): IUser | null {
     return BrowserStore.get(StorageKey.CurrUser)
   }
 
-  static setCurrUser(user: IViewUserDto): void {
+  static setCurrUser(user: IUser): void {
     BrowserStore.set(StorageKey.CurrUser, user)
   }
 

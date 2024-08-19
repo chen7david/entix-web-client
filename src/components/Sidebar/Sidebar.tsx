@@ -35,11 +35,11 @@ export function Sidebar({ className, ...props }: ISidebarDrawerProps) {
       <div {...props} className={cn('flex flex-col h-full', className)}>
         <SidebarHeader className="p-4 flex items-center gap-2">
           <Avatar
-            src={currUser?.profile_image_url}
+            src={currUser?.imageUrl}
             style={{ backgroundColor: '#3291a8' }}
             size={52}
           >
-            {currUser?.first_name[0]}
+            {currUser?.firstName[0]}
           </Avatar>
           <div className="flex flex-col text-gray-800 gap-1">
             <div className="text-sm font-bold">
