@@ -20,6 +20,7 @@ import {
   TimePicker,
 } from 'antd'
 import { useSearchParams } from 'react-router-dom'
+import { SelectSearch } from '@/components/Form/SelectSearch'
 dayjs.extend(utc)
 
 export const GroupAddEditForm = () => {
@@ -108,6 +109,60 @@ export const GroupAddEditForm = () => {
           title="AddEditGroupForm"
           key={Math.random()}
         >
+          <Form.Item
+            hasFeedback
+            name="users"
+            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
+          >
+            <SelectSearch
+              defaultOptions={[
+                {
+                  id: 246,
+                  deletedAt: null,
+                  createdAt: new Date('2024-06-20T15:42:06.000Z'),
+                  updatedAt: new Date('2024-06-20T15:45:06.000Z'),
+                  xid: 'fd050049-8c39-41bf-bd14-059e06055fc1',
+                  username: 'kellyxu',
+                  email: 'chen7david@me.com',
+                  firstName: 'Kelly',
+                  lastName: 'Xu',
+                  dateOfBirth: new Date('2013-09-07T00:00:00.000Z'),
+                  sex: 'm',
+                  imageUrl:
+                    'https://res.cloudinary.com/dbhdod0gm/image/upload/v1722174291/sgjvyx96oqlkrgl7bjdm.png',
+                  phone: '',
+                  wechat: '',
+                  otherName: '',
+                  countryOfBirth: 'China',
+                  placeOfBirth: 'Changchun',
+                  timezone: 'Asia/Shanghai',
+                  activatedAt: null,
+                },
+                {
+                  id: 245,
+                  deletedAt: null,
+                  createdAt: new Date('2024-05-15T14:59:59.000Z'),
+                  updatedAt: new Date('2024-05-15T15:01:38.000Z'),
+                  xid: '54c17b76-7cc1-44e1-a3e6-47a9ef4e1d53',
+                  username: 'jakewang',
+                  email: 'a@abc.com',
+                  firstName: 'Jake',
+                  lastName: 'Wang',
+                  dateOfBirth: new Date('2019-03-04T00:00:00.000Z'),
+                  sex: 'm',
+                  imageUrl:
+                    'https://res.cloudinary.com/dbhdod0gm/image/upload/v1722173541/loecqvtyodn154p1pvm6.png',
+                  phone: '98237481723',
+                  wechat: '',
+                  otherName: '',
+                  countryOfBirth: 'China',
+                  placeOfBirth: 'Changchun',
+                  timezone: 'Asia/Shanghai',
+                  activatedAt: null,
+                },
+              ]}
+            />
+          </Form.Item>
           <Form.Item
             hasFeedback
             name="name"
