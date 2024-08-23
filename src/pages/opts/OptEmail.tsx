@@ -2,13 +2,13 @@ import Logo from '/entix-bw.svg'
 import { Button, Form, Input, message } from 'antd'
 import { createSchemaFieldRule } from 'antd-zod'
 import { useSearchParams } from 'react-router-dom'
-import { OptDto } from 'entix-shared'
+import { PasscodeOtpDto } from 'entix-shared'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { activateAccount } from '@/api/client.api'
 
 export const OptEmail = () => {
-  const OptDtoRule = createSchemaFieldRule(OptDto)
+  const PasscodeOtpDtoRule = createSchemaFieldRule(PasscodeOtpDto)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const passcode = searchParams.get('passcode')?.toUpperCase()
@@ -38,7 +38,7 @@ export const OptEmail = () => {
             initialValues={{ passcode }}
             onFinish={activateAccountMutation.mutate}
           >
-            <Form.Item required name="passcode" rules={[OptDtoRule]}>
+            <Form.Item required name="passcode" rules={[PasscodeOtpDtoRule]}>
               <Input.OTP
                 formatter={(str) => str.toUpperCase()}
                 style={{ width: '100%' }}

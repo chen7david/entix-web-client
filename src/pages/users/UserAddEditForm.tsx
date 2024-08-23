@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { UserAddOutlined } from '@ant-design/icons'
+import { PlusOutlined } from '@ant-design/icons'
 import {
   Button,
   Drawer,
@@ -14,15 +14,11 @@ import {
 import {
   CreateUserDto,
   ICreateUserDto,
-  IPaginatedFilterResponse,
-  IViewUserDto,
+  IPaginatedRespose,
+  IUser,
   UpdateUserDto,
 } from 'entix-shared'
-import {
-  InfiniteData,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   forceActivateAccount,
   createUser,
@@ -37,8 +33,8 @@ import { AvatarUploader } from '@/components/Form/UploadAvatar'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { UserDeleteModel } from './UserDeleteModel'
 import timezones from 'timezones-list'
-import utc from 'dayjs/plugin/utc'
 import { useSearchParams } from 'react-router-dom'
+import utc from 'dayjs/plugin/utc'
 dayjs.extend(utc)
 
 export const UserAddEditForm = () => {
@@ -52,12 +48,12 @@ export const UserAddEditForm = () => {
   const UpdateUserDtoRule = createSchemaFieldRule(UpdateUserDto)
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams({
-    q: '',
+    firstName: '',
     sortBy: 'created_at:desc',
     limit: '10',
   })
 
-  const q = searchParams.get('q') || ''
+  const firstName = searchParams.get('firstName') || ''
 
   useHotkeys('ctrl+k', () => setIsManualActivation(!isManualActivation), [
     isManualActivation,
@@ -68,7 +64,7 @@ export const UserAddEditForm = () => {
       setIsDrawerOpen(true)
       form.setFieldsValue({
         ...editUser,
-        date_of_birth: dayjs(editUser?.date_of_birth).utc(),
+        dateOfBirth: dayjs(editUser?.dateOfBirth).utc(),
       })
     }
   }, [isEditingUser, form])
@@ -83,19 +79,8 @@ export const UserAddEditForm = () => {
 
   const createUserMutation = useMutation({
     mutationFn: createUser,
-    onSuccess: (newUser) => {
-      queryClient.setQueryData<InfiniteData<IViewUserDto[]>>(
-        ['users', q],
-        (oldData) => {
-          if (!oldData) return oldData
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page, index) =>
-              index === 0 ? [newUser, ...page] : page,
-            ),
-          }
-        },
-      )
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users', { firstName }] })
       closeDrawer()
       message.success('User updated successfully')
     },
@@ -103,22 +88,8 @@ export const UserAddEditForm = () => {
 
   const updateUserMutation = useMutation({
     mutationFn: updateUser,
-    onSuccess: (updatedUser) => {
-      queryClient.setQueryData<InfiniteData<IViewUserDto[]>>(
-        ['users', q],
-        (oldData) => {
-          if (!oldData) return oldData
-
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) =>
-              page.map((u: IViewUserDto) =>
-                u.id === updatedUser.id ? updatedUser : u,
-              ),
-            ),
-          }
-        },
-      )
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users', { firstName }] })
       if (isCloseDrawerOnSuccess) closeDrawer()
       message.success('User updated successfully')
     },
@@ -137,9 +108,9 @@ export const UserAddEditForm = () => {
     onSuccess: () => {
       queryClient.setQueryData(
         ['users'],
-        (oldUsers: IPaginatedFilterResponse<IViewUserDto[]>) => ({
+        (oldUsers: IPaginatedRespose<IUser>) => ({
           ...oldUsers,
-          data: oldUsers.data.map((user) => {
+          data: oldUsers.items.map((user) => {
             if (user.id === editUser?.id) {
               const updatedEditUser = {
                 ...user,
@@ -157,7 +128,7 @@ export const UserAddEditForm = () => {
   })
 
   const handleOnsubmit = (v: ICreateUserDto) => {
-    if (!v.profile_image_url) v.profile_image_url = ''
+    if (!v.imageUrl) v.imageUrl = ''
     if (isEditingUser && editUser) {
       setIsCloseDrawerOnSuccess(true)
       updateUserMutation.mutate({ userId: editUser.id, formData: v })
@@ -175,7 +146,7 @@ export const UserAddEditForm = () => {
       message.error('Activation email failed')
       return
     }
-    if (editUser.activated_at) {
+    if (editUser.activatedAt) {
       message.error('User is already activated')
       return
     }
@@ -192,7 +163,7 @@ export const UserAddEditForm = () => {
         <Button
           className="item-right"
           size="large"
-          icon={<UserAddOutlined />}
+          icon={<PlusOutlined />}
           onClick={() => setIsDrawerOpen(true)}
         />
       </div>
@@ -213,18 +184,18 @@ export const UserAddEditForm = () => {
           title="AddEditUserForm"
           key={Math.random()}
         >
-          <Form.Item name="profile_image_url">
+          <Form.Item name="imageUrl">
             <AvatarUploader
               onUploaded={async ({ secure_url }) => {
-                form.setFieldValue('profile_image_url', secure_url)
+                form.setFieldValue('imageUrl', secure_url)
                 if (editUser) {
                   updateUserMutation.mutate({
                     userId: editUser.id,
-                    formData: { profile_image_url: secure_url },
+                    formData: { imageUrl: secure_url },
                   })
                 }
               }}
-              defaultImageUrl={editUser?.profile_image_url}
+              defaultImageUrl={editUser?.imageUrl}
             />
           </Form.Item>
 
@@ -249,7 +220,7 @@ export const UserAddEditForm = () => {
                   prefix={
                     isEditingUser && (
                       <Badge
-                        color={editUser?.activated_at ? 'green' : 'orange'}
+                        color={editUser?.activatedAt ? 'green' : 'orange'}
                       />
                     )
                   }
@@ -281,7 +252,7 @@ export const UserAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="first_name"
+            name="firstName"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
             <Input placeholder="First name" />
@@ -289,7 +260,7 @@ export const UserAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="last_name"
+            name="lastName"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
             <Input placeholder="Last name" />
@@ -303,15 +274,15 @@ export const UserAddEditForm = () => {
             <Select
               placeholder="Sex"
               options={[
-                { value: 'male', label: 'Male' },
-                { value: 'female', label: 'Female' },
+                { value: 'm', label: 'Male' },
+                { value: 'f', label: 'Female' },
               ]}
             />
           </Form.Item>
 
           <Form.Item
             hasFeedback
-            name="date_of_birth"
+            name="dateOfBirth"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
             <DatePicker
@@ -324,7 +295,7 @@ export const UserAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="native_name"
+            name="nativeName"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
             <Input placeholder="Native name" />
@@ -348,7 +319,7 @@ export const UserAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="country_of_birth"
+            name="countryOfBirth"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
             <Input placeholder="Country of birth" />
@@ -356,7 +327,7 @@ export const UserAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="place_of_birth"
+            name="placeOfBirth"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
             <Input placeholder="Place of birth" />

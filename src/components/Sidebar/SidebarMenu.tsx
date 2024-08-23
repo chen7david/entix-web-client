@@ -19,7 +19,7 @@ export const SidebarMenu = () => {
     navigate(e.key)
     setIsSideBarOpenAtom(!isSideBarOpen)
   }
-
+  console.log({ isAdmin })
   return (
     <Menu
       onClick={menuOnClick}

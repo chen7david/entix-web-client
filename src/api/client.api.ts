@@ -1,33 +1,39 @@
 import {
   ILoginUserDto,
-  IViewUserDto,
-  IViewUserLoginDto,
+  IUser,
+  IAuthUserContext,
   ICreateUserDto,
   ICloudinaryUploadResponse,
   ISignedCloudinaryResponse,
   IUpdateUserDto,
-  ILedgerTransferDto,
-  ILedgerEntity,
+  ICreateTransferDto,
+  IPaymentEntity,
+  IPaginatedRespose,
+  IPaymentWithUser,
 } from 'entix-shared'
 import { http } from './http'
 import axios from 'axios'
 
 type ISearchQueryParams = {
-  q: string
-  sortBy: string
-  limit: string
+  firstName?: string
+  currencyType?: string
+  limit?: string
+  startDate?: string
+  endDate?: string
+  trxid?: string
+  userId?: string
 }
 
 export const loginUser = async (
   loginDto: ILoginUserDto,
-): Promise<IViewUserLoginDto> => {
+): Promise<IAuthUserContext> => {
   const response = await http.post('/api/v1/auth/login', loginDto)
   return response.data
 }
 
 export const renewToken = async (
   refreshToken: string,
-): Promise<IViewUserLoginDto> => {
+): Promise<IAuthUserContext> => {
   const response = await http.post('/api/v1/auth/refresh', { refreshToken })
   return response.data
 }
@@ -36,33 +42,34 @@ export const findUsers = async ({
   pageParam,
   searchParams,
 }: {
-  pageParam: number
+  pageParam: string | null
   searchParams: ISearchQueryParams
-}): Promise<IViewUserDto[]> => {
+}): Promise<IPaginatedRespose<IUser>> => {
   const queryParams = new URLSearchParams({
     ...searchParams,
-    offset: `${pageParam}`,
+    cursor: `${pageParam}`,
   }).toString()
   const response = await http.get(`/api/v1/users?${queryParams}`)
-  return response.data.data
+  return response.data
 }
 
-export const createUser = async (
-  formData: ICreateUserDto,
-): Promise<IViewUserDto> => {
+export const createUser = async (formData: ICreateUserDto): Promise<IUser> => {
   const response = await http.post('/api/v1/users', formData)
   return response.data
 }
 
 export const getCurrUserEtpBalance = async (): Promise<{ balance: number }> => {
-  const response = await http.get('/api/v1/ledger-etp-balance')
+  const response = await http.get('/api/v1/payments/etp-balance')
   return response.data
 }
 
 export const makeTransfer = async (
-  ledgerTransferDto: ILedgerTransferDto,
-): Promise<{ sender: ILedgerEntity; recipient: ILedgerEntity }> => {
-  const response = await http.post('/api/v1/ledger-transfer', ledgerTransferDto)
+  ledgerTransferDto: ICreateTransferDto,
+): Promise<{ sender: IPaymentEntity; recipient: IPaymentEntity }> => {
+  const response = await http.post(
+    '/api/v1/payments/transfers',
+    ledgerTransferDto,
+  )
   return response.data
 }
 
@@ -75,13 +82,28 @@ export const getUserCnyBalance = async ({
   return response.data
 }
 
+export const getStatements = async ({
+  pageParam,
+  searchParams,
+}: {
+  pageParam: string | null
+  searchParams: ISearchQueryParams
+}): Promise<IPaginatedRespose<IPaymentWithUser>> => {
+  const queryParams = new URLSearchParams({
+    ...searchParams,
+    cursor: `${pageParam}`,
+  }).toString()
+  const response = await http.get(`/api/v1/payments/statements?${queryParams}`)
+  return response.data
+}
+
 export const updateUser = async ({
   userId,
   formData,
 }: {
   userId: number
   formData: IUpdateUserDto
-}): Promise<IViewUserDto> => {
+}): Promise<IUser> => {
   const response = await http.patch('/api/v1/users/' + userId, formData)
   return response.data
 }

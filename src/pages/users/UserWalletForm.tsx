@@ -1,15 +1,6 @@
 import { useEffect, useState } from 'react'
 import { LockOutlined } from '@ant-design/icons'
-import {
-  Button,
-  Drawer,
-  Select,
-  message,
-  Form,
-  Input,
-  InputNumber,
-  Badge,
-} from 'antd'
+import { Button, Drawer, Select, message, Form, Input, InputNumber } from 'antd'
 import { CurrencyType } from 'entix-shared'
 import { useMutation } from '@tanstack/react-query'
 import { getUserCnyBalance, makeTransfer } from '@/api/client.api'
@@ -21,10 +12,11 @@ import utc from 'dayjs/plugin/utc'
 import { UserAvatar } from './UserAvatar'
 import { z } from 'zod'
 import { currUserAtom } from '@/store/auth.atom'
+import { MoneyBadge } from '@/components/MoneyBadge'
 dayjs.extend(utc)
 
 const PartialTransferDetails = z.object({
-  transfer_type: z.enum(['deposit', 'withdraw']),
+  transferType: z.enum(['deposit', 'withdraw']),
   password: z.string().min(8),
   amount: z.number(),
 })
@@ -66,7 +58,7 @@ export const UserWalletForm = () => {
   }
 
   const handleOnsubmit = ({
-    transfer_type,
+    transferType,
     amount,
     password,
   }: IPartialTransferDetails) => {
@@ -78,9 +70,9 @@ export const UserWalletForm = () => {
     }
     const data = {
       amount: amount,
-      sender_id: transfer_type === 'deposit' ? currUser.id : editUser.id,
-      recipient_id: transfer_type === 'withdraw' ? currUser.id : editUser.id,
-      currency_type: CurrencyType.ChineseYuan,
+      senderId: transferType === 'deposit' ? currUser.id : editUser.id,
+      recipientId: transferType === 'withdraw' ? currUser.id : editUser.id,
+      currencyType: CurrencyType.ChineseYuan,
       password,
     }
     console.log(data)
@@ -89,19 +81,17 @@ export const UserWalletForm = () => {
 
   return (
     <Drawer
-      title={`${editUser?.first_name} ${editUser?.last_name}`}
+      title={`${editUser?.firstName} ${editUser?.lastName}`}
       onClose={() => closeDrawer()}
       open={isDrawerOpen}
       extra={
         editUser && (
           <div className=" flex w-48 justify-between items-center">
             <UserAvatar user={editUser} />
-            <Badge
-              color="#374151"
-              count={new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'CNY',
-              }).format(userCnyBalanceMutation.data?.balance || 0)}
+            <MoneyBadge
+              balance={userCnyBalanceMutation.data?.balance}
+              currency="JPY"
+              decimals={2}
             />
           </div>
         )
@@ -113,11 +103,11 @@ export const UserWalletForm = () => {
         onFinish={handleOnsubmit}
         title="Manage Wallet"
         key={Math.random()}
-        initialValues={{ transfer_type: 'deposit' }}
+        initialValues={{ transferType: 'deposit' }}
       >
         <Form.Item
           hasFeedback
-          name="transfer_type"
+          name="transferType"
           rules={[PartialTransferDetailsRule]}
         >
           <Select

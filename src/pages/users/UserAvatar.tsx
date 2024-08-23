@@ -1,23 +1,23 @@
 import { Avatar, Badge } from 'antd'
-import { IViewUserDto } from 'entix-shared'
+import { IUser } from 'entix-shared'
 import cn from 'classnames'
 
 export interface IUserAvatar extends React.HTMLAttributes<HTMLDivElement> {
-  user: IViewUserDto
+  user: IUser
 }
 
 export const UserAvatar = ({ user, className, ...props }: IUserAvatar) => {
   return (
     <div {...props} className={cn('flex items-center', className)}>
-      <Badge className="mr-2" color={user.activated_at ? 'green' : 'orange'} />
+      <Badge className="mr-2" color={user.activatedAt ? 'green' : 'orange'} />
       <Avatar
-        src={user?.profile_image_url}
+        src={user?.imageUrl}
         style={{
-          backgroundColor: user?.sex == 'male' ? '#3291a8' : '#cc233f',
+          backgroundColor: user?.sex == 'm' ? '#3291a8' : '#cc233f',
         }}
         size={38}
       >
-        {user?.first_name[0]}
+        {user?.firstName[0]}
       </Avatar>
     </div>
   )
