@@ -3,11 +3,7 @@ import { LockOutlined } from '@ant-design/icons'
 import { Button, Drawer, Select, message, Form, Input, InputNumber } from 'antd'
 import { CurrencyType } from 'entix-shared'
 import { useMutation } from '@tanstack/react-query'
-import {
-  getCurrUserEtpBalance,
-  getUserCnyBalance,
-  makeTransfer,
-} from '@/api/client.api'
+import { getUserCnyBalance, makeTransfer } from '@/api/client.api'
 import { createSchemaFieldRule } from 'antd-zod'
 import dayjs from 'dayjs'
 import { editUserAtom, manageWalletStatusAtom } from '@/store/update.atom'

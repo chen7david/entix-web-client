@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { UserAddOutlined } from '@ant-design/icons'
+import { PlusOutlined } from '@ant-design/icons'
 import {
   Button,
   Drawer,
@@ -163,7 +163,7 @@ export const UserAddEditForm = () => {
         <Button
           className="item-right"
           size="large"
-          icon={<UserAddOutlined />}
+          icon={<PlusOutlined />}
           onClick={() => setIsDrawerOpen(true)}
         />
       </div>

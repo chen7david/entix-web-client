@@ -23,20 +23,13 @@ export const adminSidebarMenuItems: MenuItem[] = [
       },
       {
         label: 'Users',
-        key: '/users',
+        key: '/users/list',
+        icon: <UserOutlined />,
+      },
+      {
+        label: 'Groups',
+        key: '/groups/list',
         icon: <TeamOutlined />,
-        children: [
-          {
-            label: 'List',
-            key: '/users/list',
-            icon: <UserOutlined />,
-          },
-          {
-            label: 'Create',
-            key: '/users/create',
-            icon: <UserOutlined />,
-          },
-        ],
       },
       {
         label: 'Roles',

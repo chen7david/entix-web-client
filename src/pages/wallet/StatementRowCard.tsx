@@ -1,4 +1,4 @@
-import { ILedgerWithUser } from 'entix-shared'
+import { IPaymentWithUser } from 'entix-shared'
 import cn from 'classnames'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -6,7 +6,7 @@ dayjs.extend(utc)
 
 export interface IStatementRowCard
   extends React.HTMLAttributes<HTMLDivElement> {
-  item: ILedgerWithUser
+  item: IPaymentWithUser
 }
 
 export const StatementRowCard = ({

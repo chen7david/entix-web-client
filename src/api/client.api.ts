@@ -7,9 +7,9 @@ import {
   ISignedCloudinaryResponse,
   IUpdateUserDto,
   ICreateTransferDto,
-  ILedgerEntity,
+  IPaymentEntity,
   IPaginatedRespose,
-  ILedgerWithUser,
+  IPaymentWithUser,
 } from 'entix-shared'
 import { http } from './http'
 import axios from 'axios'
@@ -59,15 +59,15 @@ export const createUser = async (formData: ICreateUserDto): Promise<IUser> => {
 }
 
 export const getCurrUserEtpBalance = async (): Promise<{ balance: number }> => {
-  const response = await http.get('/api/v1/ledgers/etp-balance')
+  const response = await http.get('/api/v1/payments/etp-balance')
   return response.data
 }
 
 export const makeTransfer = async (
   ledgerTransferDto: ICreateTransferDto,
-): Promise<{ sender: ILedgerEntity; recipient: ILedgerEntity }> => {
+): Promise<{ sender: IPaymentEntity; recipient: IPaymentEntity }> => {
   const response = await http.post(
-    '/api/v1/ledgers/transfers',
+    '/api/v1/payments/transfers',
     ledgerTransferDto,
   )
   return response.data
@@ -88,12 +88,12 @@ export const getStatements = async ({
 }: {
   pageParam: string | null
   searchParams: ISearchQueryParams
-}): Promise<IPaginatedRespose<ILedgerWithUser>> => {
+}): Promise<IPaginatedRespose<IPaymentWithUser>> => {
   const queryParams = new URLSearchParams({
     ...searchParams,
     cursor: `${pageParam}`,
   }).toString()
-  const response = await http.get(`/api/v1/ledgers/statements?${queryParams}`)
+  const response = await http.get(`/api/v1/payments/statements?${queryParams}`)
   return response.data
 }
 
