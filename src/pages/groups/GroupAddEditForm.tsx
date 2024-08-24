@@ -13,7 +13,17 @@ import {
 } from '@/api/clients/group.client'
 import { CreateGroupDto, ICreateGroupDto, UpdateGroupDto } from 'entix-shared'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Button, Drawer, message, Form, Input, Select, DatePicker } from 'antd'
+import {
+  Button,
+  Drawer,
+  message,
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  Divider,
+  Switch,
+} from 'antd'
 import { useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
 import { GroupUserSearchSelect } from './GroupUserSearchSelect'
@@ -50,6 +60,7 @@ export const GroupAddEditForm = () => {
       form.setFieldsValue({
         ...editGroup,
         userIds: groupUserQuery?.data?.map(({ id }) => id),
+        updateFutureSession: false,
       })
     }
   }, [isEditingGroup, form, groupUserQuery?.data])
@@ -80,6 +91,7 @@ export const GroupAddEditForm = () => {
   })
 
   const handleOnsubmit = async (v: ICreateGroupDto) => {
+    console.log(v)
     if (isEditingGroup && editGroup) {
       await updateGroupMutation.mutate({
         groupId: editGroup?.id,
@@ -111,6 +123,7 @@ export const GroupAddEditForm = () => {
         }
       >
         <Form
+          layout="vertical"
           size="large"
           form={form}
           onFinish={handleOnsubmit}
@@ -180,6 +193,8 @@ export const GroupAddEditForm = () => {
             />
           </Form.Item>
 
+          <Divider dashed />
+
           <Form.Item hidden={isEditingGroup}>
             <Button
               loading={createGroupMutation.isPending}
@@ -190,6 +205,28 @@ export const GroupAddEditForm = () => {
             </Button>
           </Form.Item>
 
+          <Form.Item
+            noStyle
+            name="updateFutureSession"
+            label="Update future sessions:"
+            hidden={!isEditingGroup}
+            valuePropName="checked"
+          >
+            <Switch
+              checkedChildren="All"
+              unCheckedChildren="0"
+              onChange={(checked) => {
+                form.setFieldValue('updateFutureSession', checked)
+              }}
+            />
+          </Form.Item>
+          <p
+            hidden={!isEditingGroup}
+            className="mb-3 mt-3 text-xs text-gray-400"
+          >
+            When "Update future sessions" is ON all session after the current
+            date will be updated with the new group details.
+          </p>
           <Form.Item hidden={!isEditingGroup}>
             <Button
               loading={updateGroupMutation.isPending}
