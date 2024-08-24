@@ -1,7 +1,6 @@
 import { Button, Form, Input, Spin } from 'antd'
 import { UserAddEditForm } from './UserAddEditForm'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { findUsers } from '@/api/client.api'
 import { SearchOutlined } from '@ant-design/icons'
 import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
@@ -12,6 +11,7 @@ import { PageContainer } from '@/components/Layout/PageContainer'
 import { UserRowCard } from './UserRowCard'
 import { z } from 'zod'
 import { UserWalletForm } from './UserWalletForm'
+import { findUsers } from '@/api/clients/user.client'
 
 const FullNameSearch = z.object({
   full_name: z
@@ -34,7 +34,10 @@ export const UsersList = () => {
     queryKey: ['users', { firstName }],
     getNextPageParam: (prevData) => prevData.cursor,
     queryFn: ({ pageParam = null }: { pageParam: string | null }) =>
-      findUsers({ pageParam, searchParams: { firstName, limit } }),
+      findUsers({
+        pageParam,
+        searchParams: { firstName, limit: parseInt(limit, 10) },
+      }),
     initialPageParam: null,
     select: ({ pages }) => pages.flatMap(({ items }) => items),
   })

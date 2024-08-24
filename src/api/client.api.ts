@@ -8,7 +8,7 @@ import {
   IUpdateUserDto,
   ICreateTransferDto,
   IPaymentEntity,
-  IPaginatedRespose,
+  IPaginatedResponse,
   IPaymentWithUser,
 } from 'entix-shared'
 import { http } from './http'
@@ -44,7 +44,7 @@ export const findUsers = async ({
 }: {
   pageParam: string | null
   searchParams: ISearchQueryParams
-}): Promise<IPaginatedRespose<IUser>> => {
+}): Promise<IPaginatedResponse<IUser>> => {
   const queryParams = new URLSearchParams({
     ...searchParams,
     cursor: `${pageParam}`,
@@ -88,7 +88,7 @@ export const getStatements = async ({
 }: {
   pageParam: string | null
   searchParams: ISearchQueryParams
-}): Promise<IPaginatedRespose<IPaymentWithUser>> => {
+}): Promise<IPaginatedResponse<IPaymentWithUser>> => {
   const queryParams = new URLSearchParams({
     ...searchParams,
     cursor: `${pageParam}`,

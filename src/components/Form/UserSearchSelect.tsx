@@ -5,7 +5,7 @@ import { IGroup } from 'entix-shared'
 import { debounce } from 'lodash'
 import { useMemo, useState } from 'react'
 
-interface IUserSearchSelectProps {
+interface IUserGroupUserSearchSelectProps {
   value?: string[] // An array of user IDs
   onChange?: (value: string[]) => void // A function that accepts an array of user IDs
   isUpdating: boolean
@@ -13,13 +13,13 @@ interface IUserSearchSelectProps {
   setSelectedIds: (selected: SelectProps['options']) => void
 }
 
-export const UserSearchSelect = ({
+export const UserGroupUserSearchSelect = ({
   value,
   onChange,
   //   isUpdating,
   //   editGroup,
   //   setSelectedIds,
-}: IUserSearchSelectProps) => {
+}: IUserGroupUserSearchSelectProps) => {
   const [name, setSearch] = useState('')
   const options: SelectProps['options'] = []
 

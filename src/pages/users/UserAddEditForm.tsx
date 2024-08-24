@@ -14,7 +14,7 @@ import {
 import {
   CreateUserDto,
   ICreateUserDto,
-  IPaginatedRespose,
+  IPaginatedResponse,
   IUser,
   UpdateUserDto,
 } from 'entix-shared'
@@ -108,7 +108,7 @@ export const UserAddEditForm = () => {
     onSuccess: () => {
       queryClient.setQueryData(
         ['users'],
-        (oldUsers: IPaginatedRespose<IUser>) => ({
+        (oldUsers: IPaginatedResponse<IUser>) => ({
           ...oldUsers,
           data: oldUsers.items.map((user) => {
             if (user.id === editUser?.id) {
