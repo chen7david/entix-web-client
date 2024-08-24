@@ -48,7 +48,7 @@ export const GroupUserSearchSelect = ({
   const formatedOptions = defaultOptions.map(mapUserToSelectOption)
 
   const userSearchQuery = useQuery({
-    queryKey: ['users', { firstName }],
+    queryKey: ['users:search', { firstName }],
     queryFn: () =>
       findUsers({ pageParam: null, searchParams: { firstName, limit: 10 } }),
     enabled: !!firstName,
