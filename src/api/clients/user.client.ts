@@ -1,15 +1,15 @@
-// import { QueryFunction } from '@tanstack/react-query'
+import { IPaginatedResponse, IUser, IUserQueryParams } from 'entix-shared'
+import { http } from '../http'
+import { formatUrlParams } from '../http.helpers'
 
-// export const filterUsers: QueryFunction<
-//   IUserModel[],
-//   [string, { name: string }]
-// > = async ({ queryKey }): Promise<IUserModel[]> => {
-//   const [, params] = queryKey
-//   const queryParams = new URLSearchParams({
-//     ...params,
-//   }).toString()
-//   const response = await http.get(`/api/v1/users?${queryParams}`)
-//   return response.data.data
-// }
-
-export const filterUsers = async (): Promise<unknown> => Object.values({})
+export const findUsers = async ({
+  pageParam,
+  searchParams,
+}: {
+  pageParam: string | null
+  searchParams: IUserQueryParams
+}): Promise<IPaginatedResponse<IUser>> => {
+  const queryParams = formatUrlParams(pageParam, searchParams)
+  const response = await http.get(`/api/v1/users?${queryParams}`)
+  return response.data
+}

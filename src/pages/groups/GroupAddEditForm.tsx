@@ -6,20 +6,17 @@ import { useAtom } from 'jotai'
 import utc from 'dayjs/plugin/utc'
 import { editGroupAtom, editGroupStatusAtom } from '@/store/group.atom'
 import { GroupDeleteModel } from './GroupDeleteModel'
-import { createGroup, updateGroup } from '@/api/clients/group.client'
-import { CreateGroupDto, ICreateGroupDto, UpdateGroupDto } from 'entix-shared'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
-  Button,
-  Drawer,
-  message,
-  Form,
-  Input,
-  Select,
-  DatePicker,
-  TimePicker,
-} from 'antd'
+  createGroup,
+  getGroupUsers,
+  updateGroup,
+} from '@/api/clients/group.client'
+import { CreateGroupDto, ICreateGroupDto, UpdateGroupDto } from 'entix-shared'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Button, Drawer, message, Form, Input, Select, DatePicker } from 'antd'
 import { useSearchParams } from 'react-router-dom'
+import { z } from 'zod'
+import { GroupUserSearchSelect } from './GroupUserSearchSelect'
 dayjs.extend(utc)
 
 export const GroupAddEditForm = () => {
@@ -27,27 +24,39 @@ export const GroupAddEditForm = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [editGroup, setEditGroup] = useAtom(editGroupAtom)
   const [isEditingGroup, setIsEditingGroup] = useAtom(editGroupStatusAtom)
-  const CreateGroupDtoRule = createSchemaFieldRule(CreateGroupDto)
+  const CreateGroupDtoRule = createSchemaFieldRule(
+    CreateGroupDto.extend({
+      userIds: z.array(z.coerce.number()).optional(),
+    }),
+  )
   const UpdateGroupDtoRule = createSchemaFieldRule(UpdateGroupDto)
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams({
     name: '',
-    sortBy: 'created_at:desc',
     limit: '10',
   })
 
   const name = searchParams.get('name') || ''
 
+  const groupUserQuery = useQuery({
+    queryKey: ['group:users', editGroup?.id ?? -1],
+    enabled: !!editGroup?.id,
+    queryFn: getGroupUsers,
+  })
+
   useEffect(() => {
     if (isEditingGroup) {
       setIsDrawerOpen(true)
-      form.setFieldsValue(editGroup)
+      form.setFieldsValue({
+        ...editGroup,
+        userIds: groupUserQuery?.data?.map(({ id }) => id),
+      })
     }
-  }, [isEditingGroup, form])
+  }, [isEditingGroup, form, groupUserQuery?.data])
 
   const closeDrawer = () => {
-    setEditGroup(null)
     setIsDrawerOpen(false)
+    setEditGroup(null)
     setIsEditingGroup(false)
     form.resetFields()
   }
@@ -57,7 +66,7 @@ export const GroupAddEditForm = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['groups', { name }] })
       closeDrawer()
-      message.success('User updated successfully')
+      message.success('User created successfully')
     },
   })
 
@@ -115,6 +124,16 @@ export const GroupAddEditForm = () => {
           >
             <Input placeholder="name" />
           </Form.Item>
+          <Form.Item
+            hasFeedback
+            name="userIds"
+            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
+          >
+            <GroupUserSearchSelect
+              groupId={editGroup?.id ?? 0}
+              defaultOptions={groupUserQuery?.data ?? []}
+            />
+          </Form.Item>
 
           <Form.Item
             hasFeedback
@@ -122,6 +141,25 @@ export const GroupAddEditForm = () => {
             rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
           >
             <Input.TextArea rows={4} placeholder="description" />
+          </Form.Item>
+          <Form.Item
+            hasFeedback
+            name="startDate"
+            normalize={(value) => (value ? dayjs(value) : undefined)}
+            getValueProps={(value) => ({
+              value: value ? dayjs(value) : undefined,
+            })}
+            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
+          >
+            <DatePicker
+              showHour
+              showMinute
+              minuteStep={5}
+              showTime
+              style={{ width: '100%' }}
+              placeholder="Start date"
+              allowClear={false}
+            />
           </Form.Item>
 
           <Form.Item
@@ -139,54 +177,6 @@ export const GroupAddEditForm = () => {
                 { value: 90, label: '90 minutes' },
                 { value: 120, label: '120 minutes' },
               ]}
-            />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="time"
-            normalize={(value) =>
-              value ? dayjs(value).format('HH:mm') : value
-            }
-            getValueProps={(value) => ({
-              value: value ? dayjs(value, 'HH:mm') : value,
-            })}
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
-          >
-            <TimePicker
-              use12Hours
-              minuteStep={5}
-              placeholder="Select time"
-              style={{ width: '100%' }}
-              format={'HH:mm'}
-            />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="startDate"
-            normalize={(value) => (value ? dayjs(value) : value)}
-            getValueProps={(value) => ({ value: dayjs(value) })}
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
-          >
-            <DatePicker
-              style={{ width: '100%' }}
-              placeholder="Start date"
-              allowClear={false}
-            />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="endDate"
-            normalize={(value) => (value ? dayjs(value) : value)}
-            getValueProps={(value) => ({ value: dayjs(value) })}
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
-          >
-            <DatePicker
-              style={{ width: '100%' }}
-              placeholder="End date"
-              allowClear={false}
             />
           </Form.Item>
 
