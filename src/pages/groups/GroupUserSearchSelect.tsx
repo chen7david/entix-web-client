@@ -1,7 +1,7 @@
 import { relateGroupUser, unRelateGroupUser } from '@/api/clients/group.client'
 import { findUsers } from '@/api/clients/user.client'
 import { useQuery } from '@tanstack/react-query'
-import { Select, SelectProps, Spin } from 'antd'
+import { Avatar, Select, SelectProps, Spin } from 'antd'
 import { IUser } from 'entix-shared'
 import { useEffect, useState } from 'react'
 
@@ -12,11 +12,22 @@ export type IGroupUserSearchSelectProps = {
   groupId?: number
 }
 
-function mapUserToSelectOption({ id, firstName, lastName }: IUser) {
+function SelectetUserWithAvatar({ user }: { user: IUser }) {
+  return (
+    <div className="flex items-center gap-1">
+      <Avatar size={24} src={user.imageUrl}>
+        <span>{user.firstName[0]}</span>
+      </Avatar>
+      <span>{user.firstName}</span>
+    </div>
+  )
+}
+
+function mapUserToSelectOption(user: IUser) {
   return {
-    value: id,
-    label: `${firstName} ${lastName}`,
-    key: id,
+    value: user.id,
+    key: user.id,
+    label: <SelectetUserWithAvatar user={user} />,
   }
 }
 
