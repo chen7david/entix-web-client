@@ -128,6 +128,13 @@ export const GroupAddEditForm = () => {
         >
           <Form.Item
             hasFeedback
+            name="name"
+            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
+          >
+            <Input placeholder="name" />
+          </Form.Item>
+          <Form.Item
+            hasFeedback
             name="userIds"
             rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
           >
@@ -136,13 +143,6 @@ export const GroupAddEditForm = () => {
               defaultOptions={groupUserQuery?.data ?? []}
             />
           </Form.Item>
-          <Form.Item
-            hasFeedback
-            name="name"
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
-          >
-            <Input placeholder="name" />
-          </Form.Item>
 
           <Form.Item
             hasFeedback
@@ -150,6 +150,25 @@ export const GroupAddEditForm = () => {
             rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
           >
             <Input.TextArea rows={4} placeholder="description" />
+          </Form.Item>
+          <Form.Item
+            hasFeedback
+            name="startDate"
+            normalize={(value) => (value ? dayjs(value) : undefined)}
+            getValueProps={(value) => ({
+              value: value ? dayjs(value) : undefined,
+            })}
+            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
+          >
+            <DatePicker
+              showHour
+              showMinute
+              minuteStep={5}
+              showTime
+              style={{ width: '100%' }}
+              placeholder="Start date"
+              allowClear={false}
+            />
           </Form.Item>
 
           <Form.Item
@@ -167,58 +186,6 @@ export const GroupAddEditForm = () => {
                 { value: 90, label: '90 minutes' },
                 { value: 120, label: '120 minutes' },
               ]}
-            />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="time"
-            normalize={(value) =>
-              value ? dayjs(value).format('HH:mm') : value
-            }
-            getValueProps={(value) => ({
-              value: value ? dayjs(value, 'HH:mm') : value,
-            })}
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
-          >
-            <TimePicker
-              use12Hours
-              minuteStep={5}
-              placeholder="Select time"
-              style={{ width: '100%' }}
-              format={'HH:mm'}
-            />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="startDate"
-            normalize={(value) => (value ? dayjs(value) : value)}
-            getValueProps={(value) => ({ value: dayjs(value) })}
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
-          >
-            <DatePicker
-              showHour
-              showMinute
-              minuteStep={5}
-              showTime
-              style={{ width: '100%' }}
-              placeholder="Start date"
-              allowClear={false}
-            />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="endDate"
-            normalize={(value) => (value ? dayjs(value) : value)}
-            getValueProps={(value) => ({ value: dayjs(value) })}
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
-          >
-            <DatePicker
-              style={{ width: '100%' }}
-              placeholder="End date"
-              allowClear={false}
             />
           </Form.Item>
 

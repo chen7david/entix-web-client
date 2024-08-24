@@ -15,7 +15,13 @@ export type IGroupUserSearchSelectProps = {
 function SelectetUserWithAvatar({ user }: { user: IUser }) {
   return (
     <div className="flex items-center gap-1">
-      <Avatar size={24} src={user.imageUrl}>
+      <Avatar
+        style={{
+          backgroundColor: user?.sex == 'm' ? '#3291a8' : '#cc233f',
+        }}
+        size={24}
+        src={user.imageUrl}
+      >
         <span>{user.firstName[0]}</span>
       </Avatar>
       <span>{user.firstName}</span>
