@@ -64,8 +64,8 @@ export const GroupAddEditForm = () => {
   }, [isEditingGroup, form, groupUserQuery?.data])
 
   const closeDrawer = () => {
-    setEditGroup(null)
     setIsDrawerOpen(false)
+    setEditGroup(null)
     setIsEditingGroup(false)
     form.resetFields()
   }
@@ -75,7 +75,7 @@ export const GroupAddEditForm = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['groups', { name }] })
       closeDrawer()
-      message.success('User updated successfully')
+      message.success('User created successfully')
     },
   })
 

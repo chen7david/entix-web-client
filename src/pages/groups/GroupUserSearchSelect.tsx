@@ -9,7 +9,7 @@ export type IGroupUserSearchSelectProps = {
   value?: string[]
   onChange?: (value: string[]) => void
   defaultOptions: IUser[]
-  groupId: number
+  groupId?: number
 }
 
 function mapUserToSelectOption({ id, firstName, lastName }: IUser) {
@@ -58,6 +58,9 @@ export const GroupUserSearchSelect = ({
 
   const handleChange = async (selectedValues: SelectProps['value']) => {
     const newValues = selectedValues as string[]
+    if (onChange) onChange(newValues)
+
+    if (!groupId) return
     const oldValues = value ?? []
 
     const [addedId] = newValues.filter((value) => !oldValues.includes(value))
@@ -65,9 +68,6 @@ export const GroupUserSearchSelect = ({
 
     const [removedId] = oldValues.filter((value) => !newValues.includes(value))
     if (removedId) await unRelateGroupUser({ groupId, userId: removedId })
-
-    console.log({ newValues, addedId, removedId })
-    if (onChange) onChange(newValues)
   }
 
   const onSearch = async (v: string) => {
