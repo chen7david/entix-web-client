@@ -23,12 +23,12 @@ export const adminSidebarMenuItems: MenuItem[] = [
       },
       {
         label: 'Users',
-        key: '/users/list',
+        key: '/users',
         icon: <UserOutlined />,
       },
       {
         label: 'Groups',
-        key: '/groups/list',
+        key: '/groups',
         icon: <TeamOutlined />,
       },
       {

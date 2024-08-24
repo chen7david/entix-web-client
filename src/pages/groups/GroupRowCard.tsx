@@ -5,6 +5,7 @@ import cn from 'classnames'
 import { EditOutlined, CalendarOutlined } from '@ant-design/icons'
 import { editGroupAtom, editGroupStatusAtom } from '@/store/group.atom'
 import dayjs from 'dayjs'
+import { useNavigate } from 'react-router-dom'
 
 export interface IGroupRowCard extends React.HTMLAttributes<HTMLDivElement> {
   group: IGroup
@@ -13,6 +14,7 @@ export interface IGroupRowCard extends React.HTMLAttributes<HTMLDivElement> {
 export const GroupRowCard = ({ group, className, ...props }: IGroupRowCard) => {
   const [, setEditGroup] = useAtom(editGroupAtom)
   const [, setIsEditingGroup] = useAtom(editGroupStatusAtom)
+  const navigate = useNavigate()
   return (
     <div
       {...props}
@@ -49,7 +51,12 @@ export const GroupRowCard = ({ group, className, ...props }: IGroupRowCard) => {
             setIsEditingGroup(true)
           }}
         />
-        <Button type="text" shape="circle" icon={<CalendarOutlined />} />
+        <Button
+          onClick={() => navigate(`/groups/${group.id}/sessions`)}
+          type="text"
+          shape="circle"
+          icon={<CalendarOutlined />}
+        />
       </div>
     </div>
   )
