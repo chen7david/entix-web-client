@@ -5,6 +5,7 @@ import {
   AreaChartOutlined,
   TeamOutlined,
   ShopOutlined,
+  FundProjectionScreenOutlined,
 } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 
@@ -30,6 +31,11 @@ export const adminSidebarMenuItems: MenuItem[] = [
         label: 'Groups',
         key: '/groups',
         icon: <TeamOutlined />,
+      },
+      {
+        label: 'Sessions',
+        key: '/sessions',
+        icon: <FundProjectionScreenOutlined />,
       },
       {
         label: 'Roles',

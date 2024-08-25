@@ -1,18 +1,22 @@
-import { IGroup } from 'entix-shared'
+import { ISession } from 'entix-shared'
 import { useAtom } from 'jotai'
 import { Avatar, Button } from 'antd'
 import cn from 'classnames'
-import { EditOutlined, TeamOutlined } from '@ant-design/icons'
-import { editGroupAtom, editGroupStatusAtom } from '@/store/group.atom'
+import { EditOutlined, FundProjectionScreenOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
+import { editSessionAtom, editSessionStatusAtom } from '@/store/session.atom'
 
-export interface IGroupRowCard extends React.HTMLAttributes<HTMLDivElement> {
-  group: IGroup
+export interface ISessionRowCard extends React.HTMLAttributes<HTMLDivElement> {
+  session: ISession
 }
 
-export const GroupRowCard = ({ group, className, ...props }: IGroupRowCard) => {
-  const [, setEditGroup] = useAtom(editGroupAtom)
-  const [, setIsEditingGroup] = useAtom(editGroupStatusAtom)
+export const SessionRowCard = ({
+  session,
+  className,
+  ...props
+}: ISessionRowCard) => {
+  const [, setEditSession] = useAtom(editSessionAtom)
+  const [, setIsEditingSession] = useAtom(editSessionStatusAtom)
   return (
     <div
       {...props}
@@ -28,12 +32,12 @@ export const GroupRowCard = ({ group, className, ...props }: IGroupRowCard) => {
           }}
           size={38}
         >
-          <TeamOutlined />
+          <FundProjectionScreenOutlined />
         </Avatar>
       </div>
-      <span className="">{group.name}</span>
-      <span className="">{dayjs().day(group.day).format('dddd')}</span>
-      <span className="md:text-center">{group.duration}</span>
+      <span className="">{session.name}</span>
+      <span className="">{dayjs(session.startDate).format('dddd')}</span>
+      <span className="md:text-center">{session.duration}</span>
       <div
         id="actions"
         className="flextext-center flex-col md:flex-row md:gap-1 col-start-3 col-end-4 row-start-1 row-end-4 md:col-start-auto md:col-end-auto md:row-start-auto md:row-end-auto"
@@ -43,8 +47,8 @@ export const GroupRowCard = ({ group, className, ...props }: IGroupRowCard) => {
           shape="circle"
           icon={<EditOutlined />}
           onClick={() => {
-            setEditGroup(group)
-            setIsEditingGroup(true)
+            setEditSession(session)
+            setIsEditingSession(true)
           }}
         />
       </div>

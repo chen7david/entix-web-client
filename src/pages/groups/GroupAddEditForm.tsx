@@ -20,12 +20,10 @@ import {
   Form,
   Input,
   Select,
-  DatePicker,
   Divider,
   Switch,
 } from 'antd'
 import { useSearchParams } from 'react-router-dom'
-import { z } from 'zod'
 import { GroupUserSearchSelect } from './GroupUserSearchSelect'
 dayjs.extend(utc)
 
@@ -34,11 +32,7 @@ export const GroupAddEditForm = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [editGroup, setEditGroup] = useAtom(editGroupAtom)
   const [isEditingGroup, setIsEditingGroup] = useAtom(editGroupStatusAtom)
-  const CreateGroupDtoRule = createSchemaFieldRule(
-    CreateGroupDto.extend({
-      userIds: z.array(z.coerce.number()).optional(),
-    }),
-  )
+  const CreateGroupDtoRule = createSchemaFieldRule(CreateGroupDto)
   const UpdateGroupDtoRule = createSchemaFieldRule(UpdateGroupDto)
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams({
@@ -155,23 +149,24 @@ export const GroupAddEditForm = () => {
           >
             <Input.TextArea rows={4} placeholder="description" />
           </Form.Item>
+
           <Form.Item
             hasFeedback
-            name="startDate"
-            normalize={(value) => (value ? dayjs(value) : undefined)}
-            getValueProps={(value) => ({
-              value: value ? dayjs(value) : undefined,
-            })}
+            name="day"
             rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
           >
-            <DatePicker
-              showHour
-              showMinute
-              minuteStep={5}
-              showTime
+            <Select
+              placeholder="Day of the week"
               style={{ width: '100%' }}
-              placeholder="Start date"
-              allowClear={false}
+              options={[
+                { value: 1, label: 'Monday' },
+                { value: 2, label: 'Tuesday' },
+                { value: 3, label: 'Wednesday' },
+                { value: 4, label: 'Thursday' },
+                { value: 5, label: 'Friday' },
+                { value: 6, label: 'Saturday' },
+                { value: 0, label: 'Sunday' },
+              ]}
             />
           </Form.Item>
 

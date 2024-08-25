@@ -5,12 +5,12 @@ import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import utc from 'dayjs/plugin/utc'
 import { editGroupAtom, editGroupStatusAtom } from '@/store/group.atom'
+import { createGroup, updateGroup } from '@/api/clients/group.client'
 import {
-  createGroup,
-  getGroupUsers,
-  updateGroup,
-} from '@/api/clients/group.client'
-import { CreateGroupDto, ICreateGroupDto, UpdateGroupDto } from 'entix-shared'
+  CreateSessionDto,
+  ICreateSessionDto,
+  UpdateGroupDto,
+} from 'entix-shared'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Button,
@@ -21,11 +21,9 @@ import {
   Select,
   DatePicker,
   Divider,
-  Switch,
 } from 'antd'
 import { useSearchParams } from 'react-router-dom'
-import { z } from 'zod'
-import { GroupUserSearchSelect } from '../groups/GroupUserSearchSelect'
+import { GroupSearchSelect } from './GroupSearchSelect'
 dayjs.extend(utc)
 
 export const SessionAddEditForm = () => {
@@ -33,36 +31,23 @@ export const SessionAddEditForm = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [editGroup, setEditGroup] = useAtom(editGroupAtom)
   const [isEditingGroup, setIsEditingGroup] = useAtom(editGroupStatusAtom)
-  const CreateGroupDtoRule = createSchemaFieldRule(
-    CreateGroupDto.extend({
-      userIds: z.array(z.coerce.number()).optional(),
-    }),
-  )
+  const CreateSessionDtoRule = createSchemaFieldRule(CreateSessionDto)
   const UpdateGroupDtoRule = createSchemaFieldRule(UpdateGroupDto)
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams({
     name: '',
     limit: '10',
   })
-
   const name = searchParams.get('name') || ''
-
-  const groupUserQuery = useQuery({
-    queryKey: ['group:session', editGroup?.id ?? -1],
-    enabled: !!editGroup?.id,
-    queryFn: getGroupUsers,
-  })
 
   useEffect(() => {
     if (isEditingGroup) {
       setIsDrawerOpen(true)
       form.setFieldsValue({
         ...editGroup,
-        userIds: groupUserQuery?.data?.map(({ id }) => id),
-        updateFutureSession: false,
       })
     }
-  }, [isEditingGroup, form, groupUserQuery?.data])
+  }, [isDrawerOpen, form])
 
   const closeDrawer = () => {
     setIsDrawerOpen(false)
@@ -74,7 +59,7 @@ export const SessionAddEditForm = () => {
   const createGroupMutation = useMutation({
     mutationFn: createGroup,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['groups', { name }] })
+      queryClient.invalidateQueries({ queryKey: ['session', { name }] })
       closeDrawer()
       message.success('User created successfully')
     },
@@ -89,16 +74,16 @@ export const SessionAddEditForm = () => {
     },
   })
 
-  const handleOnsubmit = async (v: ICreateGroupDto) => {
+  const handleOnsubmit = async (v: ICreateSessionDto) => {
     console.log(v)
-    if (isEditingGroup && editGroup) {
-      await updateGroupMutation.mutate({
-        groupId: editGroup?.id,
-        formData: v,
-      })
-    } else {
-      await createGroupMutation.mutate(v)
-    }
+    // if (isEditingGroup && editGroup) {
+    //   await updateGroupMutation.mutate({
+    //     groupId: editGroup?.id,
+    //     formData: v,
+    //   })
+    // } else {
+    //   await createGroupMutation.mutate(v)
+    // }
   }
 
   return (
@@ -112,7 +97,7 @@ export const SessionAddEditForm = () => {
         />
       </div>
       <Drawer
-        title={`${isEditingGroup ? 'Edit' : 'Add'} Group`}
+        title={`${isEditingGroup ? 'Edit' : 'Add'} Session`}
         onClose={() => closeDrawer()}
         open={isDrawerOpen}
         extra={
@@ -132,25 +117,22 @@ export const SessionAddEditForm = () => {
           <Form.Item
             hasFeedback
             name="name"
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
+            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateSessionDtoRule]}
           >
             <Input placeholder="name" />
           </Form.Item>
           <Form.Item
             hasFeedback
-            name="userIds"
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
+            name="groupId"
+            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateSessionDtoRule]}
           >
-            <GroupUserSearchSelect
-              groupId={editGroup?.id ?? 0}
-              defaultOptions={groupUserQuery?.data ?? []}
-            />
+            <GroupSearchSelect groupId={editGroup?.id ?? 0} />
           </Form.Item>
 
           <Form.Item
             hasFeedback
             name="description"
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
+            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateSessionDtoRule]}
           >
             <Input.TextArea rows={4} placeholder="description" />
           </Form.Item>
@@ -161,7 +143,7 @@ export const SessionAddEditForm = () => {
             getValueProps={(value) => ({
               value: value ? dayjs(value) : undefined,
             })}
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
+            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateSessionDtoRule]}
           >
             <DatePicker
               showHour
@@ -177,7 +159,7 @@ export const SessionAddEditForm = () => {
           <Form.Item
             hasFeedback
             name="duration"
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateGroupDtoRule]}
+            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateSessionDtoRule]}
           >
             <Select
               placeholder="Select duration"
@@ -188,6 +170,27 @@ export const SessionAddEditForm = () => {
                 { value: 60, label: '60 minutes' },
                 { value: 90, label: '90 minutes' },
                 { value: 120, label: '120 minutes' },
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item
+            hasFeedback
+            name="futureSessionCount"
+            initialValue={1}
+            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateSessionDtoRule]}
+          >
+            <Select
+              placeholder="Future session count"
+              style={{ width: '100%' }}
+              options={[
+                { value: 1, label: '1 session' },
+                { value: 5, label: '5 session' },
+                { value: 10, label: '10 session' },
+                { value: 20, label: '20 session' },
+                { value: 40, label: '40 session' },
+                { value: 60, label: '60 session' },
+                { value: 100, label: '100 session' },
               ]}
             />
           </Form.Item>
@@ -204,28 +207,6 @@ export const SessionAddEditForm = () => {
             </Button>
           </Form.Item>
 
-          <Form.Item
-            noStyle
-            name="updateFutureSession"
-            label="Update future sessions:"
-            hidden={!isEditingGroup}
-            valuePropName="checked"
-          >
-            <Switch
-              checkedChildren="All"
-              unCheckedChildren="0"
-              onChange={(checked) => {
-                form.setFieldValue('updateFutureSession', checked)
-              }}
-            />
-          </Form.Item>
-          <p
-            hidden={!isEditingGroup}
-            className="mb-3 mt-3 text-xs text-gray-400"
-          >
-            When "Update future sessions" is ON all session after the current
-            date will be updated with the new group details.
-          </p>
           <Form.Item hidden={!isEditingGroup}>
             <Button
               loading={updateGroupMutation.isPending}

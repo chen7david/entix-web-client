@@ -51,6 +51,7 @@ export const Wallet = () => {
     <>
       <Toolbar className="bg-white shadow-sm flex gap-2">
         <DatePicker.RangePicker
+          size="large"
           defaultValue={[dayjs(startDate), dayjs(endDate)]}
           onChange={(dates) => {
             if (!dates) return
@@ -68,6 +69,7 @@ export const Wallet = () => {
         />
         {isAdmin && (
           <Select
+            size="large"
             defaultValue={'ETP'}
             options={[
               { value: 'ETP', label: 'ETP' },

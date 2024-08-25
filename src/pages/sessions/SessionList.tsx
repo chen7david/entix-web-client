@@ -5,20 +5,20 @@ import utc from 'dayjs/plugin/utc'
 import dayjs from 'dayjs'
 import { useInView } from 'react-intersection-observer'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import { findGroups, findOneGroups } from '@/api/clients/group.client'
 import { useEffect } from 'react'
 import { PageContainer } from '@/components/Layout/PageContainer'
-import { GroupRowCard } from '../groups/GroupRowCard'
 import { SessionAddEditForm } from './SessionAddEditForm'
+import { findSessions } from '@/api/clients/session.client'
+import { SessionRowCard } from './SessionRowCard'
 dayjs.extend(utc)
 
-export const GroupSessionList = () => {
-  const { id } = useParams()
+export const SessionList = () => {
   const [form] = Form.useForm()
   const { ref, inView } = useInView()
   const [searchParams, setSearchParams] = useSearchParams({
     startDate: dayjs().utc().subtract(1, 'month').toISOString(),
     endDate: dayjs().utc().toISOString(),
+    groupId: '',
     name: '',
     limit: '10',
   })
@@ -27,20 +27,24 @@ export const GroupSessionList = () => {
   const endDate = searchParams.get('endDate') || ''
 
   const getOneGroupQuery = useQuery({
-    queryKey: ['groups', { id }],
-    queryFn: async () => findOneGroups(id ?? 0),
+    queryKey: ['groups'],
+    queryFn: async () => findOneGroup(id ?? 0),
   })
 
   console.log(getOneGroupQuery.data)
 
   const usePaginatedQuery = useInfiniteQuery({
-    queryKey: [`groups/${id}/sessions`, { startDate, endDate }],
+    queryKey: ['sessions', { startDate, endDate }],
     initialPageParam: null,
     getNextPageParam: (prevData) => prevData.cursor,
     queryFn: ({ pageParam = null }: { pageParam: string | null }) =>
-      findGroups({
+      findSessions({
         pageParam,
-        searchParams: { id, startDate, endDate, limit: parseInt(limit, 10) },
+        searchParams: {
+          startDate: new Date(startDate),
+          endDate: new Date(endDate),
+          limit: parseInt(limit, 10),
+        },
       }),
   })
 
@@ -59,6 +63,7 @@ export const GroupSessionList = () => {
         <Form form={form} layout="inline" onFinish={onSearch}>
           <Form.Item>
             <DatePicker.RangePicker
+              size="large"
               defaultValue={[dayjs(startDate), dayjs(endDate)]}
               onChange={(dates) => {
                 if (!dates) return
@@ -76,13 +81,15 @@ export const GroupSessionList = () => {
             />
           </Form.Item>
         </Form>
-        <SessionAddEditForm />
+        <SessionAddEditForm session={getOneGroupQuery?.data} />
       </Toolbar>
       <PageContainer className="flex flex-col gap-2">
         {usePaginatedQuery?.data?.pages
           ?.flatMap(({ items }) => items)
           .flat()
-          .map((group) => <GroupRowCard key={group.id} group={group} />)}
+          .map((session) => {
+            return <SessionRowCard key={session.id} session={session} />
+          })}
 
         {usePaginatedQuery.isFetching ? (
           <span className="m-6 flex justify-center">

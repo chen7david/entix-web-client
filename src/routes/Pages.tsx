@@ -11,7 +11,7 @@ import { Wallet } from '@/pages/wallet/Wallet'
 import { OrderList } from '@/pages/orders/Orders'
 import { Shop } from '@/pages/shop/Shop'
 import { GroupList } from '@/pages/groups/GroupList'
-import { GroupSessionList } from '@/pages/group-sessions/GroupSessionList'
+import { SessionList } from '@/pages/sessions/SessionList'
 
 export const Pages = () => {
   return (
@@ -27,7 +27,7 @@ export const Pages = () => {
       <Route element={<PrivateRoutes />}>
         <Route path="/users" element={<UsersList />} />
         <Route path="/groups" element={<GroupList />} />
-        <Route path="/groups/:id/sessions" element={<GroupSessionList />} />
+        <Route path="/sessions" element={<SessionList />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/wallet" element={<Wallet />} />
         <Route path="/orders" element={<OrderList />} />
