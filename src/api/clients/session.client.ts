@@ -32,7 +32,10 @@ export const findOneSession = async (
 export const createSession = async (
   formData: ICreateSessionDto,
 ): Promise<ISession> => {
-  const response = await http.post('/api/v1/sessions', formData)
+  const response = await http.post(
+    `/api/v1/groups/${formData.groupId}/sessions`,
+    formData,
+  )
   return response.data
 }
 

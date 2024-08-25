@@ -1,6 +1,6 @@
 import { Toolbar } from '@/components/Layout/Toolbar'
 import { DatePicker, Form, Spin } from 'antd'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import utc from 'dayjs/plugin/utc'
 import dayjs from 'dayjs'
 import { useInView } from 'react-intersection-observer'
@@ -8,7 +8,7 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { PageContainer } from '@/components/Layout/PageContainer'
 import { SessionAddEditForm } from './SessionAddEditForm'
-import { findSessions } from '@/api/clients/session.client'
+import { findOneSession, findSessions } from '@/api/clients/session.client'
 import { SessionRowCard } from './SessionRowCard'
 dayjs.extend(utc)
 
@@ -26,12 +26,12 @@ export const SessionList = () => {
   const startDate = searchParams.get('startDate') || ''
   const endDate = searchParams.get('endDate') || ''
 
-  const getOneGroupQuery = useQuery({
+  const getOneSessionQuery = useQuery({
     queryKey: ['groups'],
-    queryFn: async () => findOneGroup(id ?? 0),
+    queryFn: async () => findOneSession(id ?? 0),
   })
 
-  console.log(getOneGroupQuery.data)
+  console.log(getOneSessionQuery.data)
 
   const usePaginatedQuery = useInfiniteQuery({
     queryKey: ['sessions', { startDate, endDate }],
@@ -81,7 +81,7 @@ export const SessionList = () => {
             />
           </Form.Item>
         </Form>
-        <SessionAddEditForm session={getOneGroupQuery?.data} />
+        <SessionAddEditForm />
       </Toolbar>
       <PageContainer className="flex flex-col gap-2">
         {usePaginatedQuery?.data?.pages

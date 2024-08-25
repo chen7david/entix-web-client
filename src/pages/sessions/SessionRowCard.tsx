@@ -36,7 +36,10 @@ export const SessionRowCard = ({
         </Avatar>
       </div>
       <span className="">{session.name}</span>
-      <span className="">{dayjs(session.startDate).format('dddd')}</span>
+      <span className="">
+        {dayjs(session.startDate).format('dddd - HH:mm')}
+        <div>{dayjs(session.startDate).format('YYYY-mm-DD')}</div>
+      </span>
       <span className="md:text-center">{session.duration}</span>
       <div
         id="actions"

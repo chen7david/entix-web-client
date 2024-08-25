@@ -4,14 +4,12 @@ import { createSchemaFieldRule } from 'antd-zod'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import utc from 'dayjs/plugin/utc'
-import { editGroupAtom, editGroupStatusAtom } from '@/store/group.atom'
-import { createGroup, updateGroup } from '@/api/clients/group.client'
 import {
   CreateSessionDto,
   ICreateSessionDto,
-  UpdateGroupDto,
+  UpdateSessionDto,
 } from 'entix-shared'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Button,
   Drawer,
@@ -23,50 +21,60 @@ import {
   Divider,
 } from 'antd'
 import { useSearchParams } from 'react-router-dom'
+import { editSessionAtom, editSessionStatusAtom } from '@/store/session.atom'
+import { createSession, updateSession } from '@/api/clients/session.client'
 import { GroupSearchSelect } from './GroupSearchSelect'
 dayjs.extend(utc)
 
 export const SessionAddEditForm = () => {
   const [form] = Form.useForm()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const [editGroup, setEditGroup] = useAtom(editGroupAtom)
-  const [isEditingGroup, setIsEditingGroup] = useAtom(editGroupStatusAtom)
+  const [editSession, setEditSession] = useAtom(editSessionAtom)
+  const [isEditingSession, setIsEditingSession] = useAtom(editSessionStatusAtom)
   const CreateSessionDtoRule = createSchemaFieldRule(CreateSessionDto)
-  const UpdateGroupDtoRule = createSchemaFieldRule(UpdateGroupDto)
+  const UpdateSessionDtoRule = createSchemaFieldRule(UpdateSessionDto)
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams({
+    startDate: dayjs().utc().subtract(1, 'month').toISOString(),
+    endDate: dayjs().utc().toISOString(),
+    groupId: '',
     name: '',
     limit: '10',
   })
-  const name = searchParams.get('name') || ''
+  const limit = searchParams.get('limit') || ''
+  const startDate = searchParams.get('startDate') || ''
+  const endDate = searchParams.get('endDate') || ''
 
   useEffect(() => {
-    if (isEditingGroup) {
+    if (isEditingSession) {
+      console.log('isEditingSession')
       setIsDrawerOpen(true)
       form.setFieldsValue({
-        ...editGroup,
+        ...editSession,
       })
     }
-  }, [isDrawerOpen, form])
+  }, [isEditingSession, isDrawerOpen, form])
 
   const closeDrawer = () => {
     setIsDrawerOpen(false)
-    setEditGroup(null)
-    setIsEditingGroup(false)
+    setEditSession(null)
+    setIsEditingSession(false)
     form.resetFields()
   }
 
-  const createGroupMutation = useMutation({
-    mutationFn: createGroup,
+  const createSessionMutation = useMutation({
+    mutationFn: createSession,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['session', { name }] })
+      queryClient.invalidateQueries({
+        queryKey: ['session', { startDate, endDate }],
+      })
       closeDrawer()
       message.success('User created successfully')
     },
   })
 
-  const updateGroupMutation = useMutation({
-    mutationFn: updateGroup,
+  const updateSessionMutation = useMutation({
+    mutationFn: updateSession,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['groups', { name }] })
       closeDrawer()
@@ -76,14 +84,14 @@ export const SessionAddEditForm = () => {
 
   const handleOnsubmit = async (v: ICreateSessionDto) => {
     console.log(v)
-    // if (isEditingGroup && editGroup) {
-    //   await updateGroupMutation.mutate({
-    //     groupId: editGroup?.id,
-    //     formData: v,
-    //   })
-    // } else {
-    //   await createGroupMutation.mutate(v)
-    // }
+    if (isEditingSession && editSession) {
+      await updateSessionMutation.mutate({
+        sessionId: editSession?.id,
+        formData: v,
+      })
+    } else {
+      await createSessionMutation.mutate(v)
+    }
   }
 
   return (
@@ -97,11 +105,11 @@ export const SessionAddEditForm = () => {
         />
       </div>
       <Drawer
-        title={`${isEditingGroup ? 'Edit' : 'Add'} Session`}
+        title={`${isEditingSession ? 'Edit' : 'Add'} Session`}
         onClose={() => closeDrawer()}
         open={isDrawerOpen}
         extra={
-          <Button hidden={isEditingGroup} onClick={() => form.resetFields()}>
+          <Button hidden={isEditingSession} onClick={() => form.resetFields()}>
             Clear
           </Button>
         }
@@ -111,28 +119,34 @@ export const SessionAddEditForm = () => {
           size="large"
           form={form}
           onFinish={handleOnsubmit}
-          title="AddEditGroupForm"
+          title="AddEditSessionForm"
           key={Math.random()}
         >
           <Form.Item
             hasFeedback
             name="name"
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateSessionDtoRule]}
+            rules={[
+              isEditingSession ? UpdateSessionDtoRule : CreateSessionDtoRule,
+            ]}
           >
             <Input placeholder="name" />
           </Form.Item>
           <Form.Item
             hasFeedback
             name="groupId"
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateSessionDtoRule]}
+            rules={[
+              isEditingSession ? UpdateSessionDtoRule : CreateSessionDtoRule,
+            ]}
           >
-            <GroupSearchSelect groupId={editGroup?.id ?? 0} />
+            <GroupSearchSelect />
           </Form.Item>
 
           <Form.Item
             hasFeedback
             name="description"
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateSessionDtoRule]}
+            rules={[
+              isEditingSession ? UpdateSessionDtoRule : CreateSessionDtoRule,
+            ]}
           >
             <Input.TextArea rows={4} placeholder="description" />
           </Form.Item>
@@ -143,7 +157,9 @@ export const SessionAddEditForm = () => {
             getValueProps={(value) => ({
               value: value ? dayjs(value) : undefined,
             })}
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateSessionDtoRule]}
+            rules={[
+              isEditingSession ? UpdateSessionDtoRule : CreateSessionDtoRule,
+            ]}
           >
             <DatePicker
               showHour
@@ -159,7 +175,9 @@ export const SessionAddEditForm = () => {
           <Form.Item
             hasFeedback
             name="duration"
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateSessionDtoRule]}
+            rules={[
+              isEditingSession ? UpdateSessionDtoRule : CreateSessionDtoRule,
+            ]}
           >
             <Select
               placeholder="Select duration"
@@ -178,7 +196,9 @@ export const SessionAddEditForm = () => {
             hasFeedback
             name="futureSessionCount"
             initialValue={1}
-            rules={[isEditingGroup ? UpdateGroupDtoRule : CreateSessionDtoRule]}
+            rules={[
+              isEditingSession ? UpdateSessionDtoRule : CreateSessionDtoRule,
+            ]}
           >
             <Select
               placeholder="Future session count"
@@ -197,9 +217,9 @@ export const SessionAddEditForm = () => {
 
           <Divider dashed />
 
-          <Form.Item hidden={isEditingGroup}>
+          <Form.Item hidden={isEditingSession}>
             <Button
-              loading={createGroupMutation.isPending}
+              loading={createSessionMutation.isPending}
               block
               htmlType="submit"
             >
@@ -207,9 +227,9 @@ export const SessionAddEditForm = () => {
             </Button>
           </Form.Item>
 
-          <Form.Item hidden={!isEditingGroup}>
+          <Form.Item hidden={!isEditingSession}>
             <Button
-              loading={updateGroupMutation.isPending}
+              loading={updateSessionMutation.isPending}
               block
               htmlType="submit"
             >
@@ -218,8 +238,8 @@ export const SessionAddEditForm = () => {
           </Form.Item>
 
           {/* <Form.Item>
-            {editGroup && (
-              <GroupDeleteModel closeDrawer={closeDrawer} group={editGroup} />
+            {editSession && (
+              <SessionDeleteModel closeDrawer={closeDrawer} group={editSession} />
             )}
           </Form.Item> */}
         </Form>
