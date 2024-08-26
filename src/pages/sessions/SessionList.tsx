@@ -4,11 +4,11 @@ import { useSearchParams } from 'react-router-dom'
 import utc from 'dayjs/plugin/utc'
 import dayjs from 'dayjs'
 import { useInView } from 'react-intersection-observer'
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { PageContainer } from '@/components/Layout/PageContainer'
 import { SessionAddEditForm } from './SessionAddEditForm'
-import { findOneSession, findSessions } from '@/api/clients/session.client'
+import { findSessions } from '@/api/clients/session.client'
 import { SessionRowCard } from './SessionRowCard'
 dayjs.extend(utc)
 
@@ -25,14 +25,6 @@ export const SessionList = () => {
   const limit = searchParams.get('limit') || ''
   const startDate = searchParams.get('startDate') || ''
   const endDate = searchParams.get('endDate') || ''
-
-  const getOneSessionQuery = useQuery({
-    queryKey: ['groups'],
-    queryFn: async () => findOneSession(id ?? 0),
-  })
-
-  console.log(getOneSessionQuery.data)
-
   const usePaginatedQuery = useInfiniteQuery({
     queryKey: ['sessions', { startDate, endDate }],
     initialPageParam: null,
@@ -54,8 +46,8 @@ export const SessionList = () => {
     }
   }, [inView])
 
-  const onSearch = async (v) => {
-    console.log(v)
+  const onSearch = async () => {
+    // console.log(v)
   }
   return (
     <>

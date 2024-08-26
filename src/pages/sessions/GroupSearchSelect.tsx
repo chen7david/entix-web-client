@@ -12,7 +12,7 @@ export type IGroupSearchSelectProps = {
 export const GroupSearchSelect = ({
   onChange,
   value,
-  groupId,
+  // groupId,
 }: IGroupSearchSelectProps) => {
   const [name, setName] = useState('')
   const [options, setOptions] = useState<SelectProps['options']>([])
