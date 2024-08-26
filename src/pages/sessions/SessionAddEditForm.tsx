@@ -18,13 +18,15 @@ import {
   Select,
   DatePicker,
   Divider,
+  Avatar,
 } from 'antd'
+import cn from 'classnames'
 import { useSearchParams } from 'react-router-dom'
 import { editSessionAtom, editSessionStatusAtom } from '@/store/session.atom'
 import { createSession, updateSession } from '@/api/clients/session.client'
 import { GroupSearchSelect } from './GroupSearchSelect'
-import { SessionUserSearchSelect } from './SessionUserSearchSelect'
 import { findSessionUsers } from '@/api/clients/user.client'
+import { updateUserSession } from '@/api/clients/user-session.cient'
 dayjs.extend(utc)
 
 export const SessionAddEditForm = () => {
@@ -67,6 +69,13 @@ export const SessionAddEditForm = () => {
       })
     }
   }, [isEditingSession, sessionUsersQuery?.data])
+
+  const updateUserSessionMutation = useMutation({
+    mutationFn: updateUserSession,
+    onSuccess: (v) => {
+      console.log('hello', v)
+    },
+  })
 
   const createSessionMutation = useMutation({
     mutationFn: createSession,
@@ -120,6 +129,54 @@ export const SessionAddEditForm = () => {
           </Button>
         }
       >
+        {editSession && (
+          <div className="flex flex-col gap-2 mb-5">
+            {sessionUsersQuery?.data?.map((user) => (
+              <div
+                className={cn(
+                  'bg-green-100 flex rounded p-3 items-center justify-between',
+                  { 'bg-orange-100': user.canceledAt },
+                )}
+              >
+                <Avatar
+                  style={{
+                    backgroundColor: user?.sex == 'm' ? '#3291a8' : '#cc233f',
+                  }}
+                  src={user.imageUrl}
+                >
+                  {user.firstName[0]}
+                </Avatar>
+                <div>
+                  {user.firstName} {user.lastName}
+                </div>
+                <div>
+                  <Button
+                    loading={updateUserSessionMutation.isPending}
+                    onClick={() => {
+                      if (!user.canceledAt) {
+                        console.log('canel attendance')
+                        updateUserSessionMutation.mutate({
+                          userId: user.id,
+                          sessionId: editSession.id,
+                          item: { canceledAt: new Date() },
+                        })
+                      } else {
+                        console.log('restore attendance')
+                        updateUserSessionMutation.mutate({
+                          userId: user.id,
+                          sessionId: editSession.id,
+                          item: { canceledAt: null },
+                        })
+                      }
+                    }}
+                  >
+                    {user.canceledAt ? 'Present' : 'Absent'}
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         <Form
           layout="vertical"
           size="large"
@@ -138,21 +195,6 @@ export const SessionAddEditForm = () => {
           >
             <GroupSearchSelect />
           </Form.Item>
-
-          {editSession && (
-            <Form.Item
-              hasFeedback
-              name="userIds"
-              rules={[
-                isEditingSession ? UpdateSessionDtoRule : CreateSessionDtoRule,
-              ]}
-            >
-              <SessionUserSearchSelect
-                selectedOptions={sessionUsersQuery?.data || []}
-                sessionId={editSession?.id}
-              />
-            </Form.Item>
-          )}
 
           <Form.Item
             hasFeedback
@@ -177,6 +219,7 @@ export const SessionAddEditForm = () => {
           </Form.Item>
 
           <Form.Item
+            hidden={editSession !== null}
             hasFeedback
             name="futureSessionCount"
             rules={[
