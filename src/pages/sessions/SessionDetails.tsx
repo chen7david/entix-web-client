@@ -1,12 +1,11 @@
 import { findSessionUsers } from '@/api/clients/user.client'
 import { PageContainer } from '@/components/Layout/PageContainer'
 import { Toolbar } from '@/components/Layout/Toolbar'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { SessionPointsCard } from './SessionPointsCard'
 import { useRef } from 'react'
-import { Button, message } from 'antd'
-import { updateSession } from '@/api/clients/session.client'
+import { Button } from 'antd'
 
 // Define the type of the ref
 type SessionPointsCardRef = {
