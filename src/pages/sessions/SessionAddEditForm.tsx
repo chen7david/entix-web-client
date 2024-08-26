@@ -9,13 +9,12 @@ import {
   ICreateSessionDto,
   UpdateSessionDto,
 } from 'entix-shared'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Button,
   Drawer,
   message,
   Form,
-  Input,
   Select,
   DatePicker,
   Divider,
@@ -24,6 +23,8 @@ import { useSearchParams } from 'react-router-dom'
 import { editSessionAtom, editSessionStatusAtom } from '@/store/session.atom'
 import { createSession, updateSession } from '@/api/clients/session.client'
 import { GroupSearchSelect } from './GroupSearchSelect'
+import { SessionUserSearchSelect } from './SessionUserSearchSelect'
+import { findSessionUsers } from '@/api/clients/user.client'
 dayjs.extend(utc)
 
 export const SessionAddEditForm = () => {
@@ -41,19 +42,8 @@ export const SessionAddEditForm = () => {
     name: '',
     limit: '10',
   })
-  const limit = searchParams.get('limit') || ''
   const startDate = searchParams.get('startDate') || ''
   const endDate = searchParams.get('endDate') || ''
-
-  useEffect(() => {
-    if (isEditingSession) {
-      console.log('isEditingSession')
-      setIsDrawerOpen(true)
-      form.setFieldsValue({
-        ...editSession,
-      })
-    }
-  }, [isEditingSession, isDrawerOpen, form])
 
   const closeDrawer = () => {
     setIsDrawerOpen(false)
@@ -61,6 +51,22 @@ export const SessionAddEditForm = () => {
     setIsEditingSession(false)
     form.resetFields()
   }
+
+  const sessionUsersQuery = useQuery({
+    queryKey: ['session:users'],
+    queryFn: () => findSessionUsers(editSession?.id || 0),
+    enabled: !!editSession,
+  })
+
+  useEffect(() => {
+    if (isEditingSession) {
+      setIsDrawerOpen(true)
+      form.setFieldsValue({
+        ...editSession,
+        userIds: sessionUsersQuery?.data?.map(({ id }) => id) || [],
+      })
+    }
+  }, [isEditingSession, sessionUsersQuery?.data])
 
   const createSessionMutation = useMutation({
     mutationFn: createSession,
@@ -123,15 +129,7 @@ export const SessionAddEditForm = () => {
           key={Math.random()}
         >
           <Form.Item
-            hasFeedback
-            name="name"
-            rules={[
-              isEditingSession ? UpdateSessionDtoRule : CreateSessionDtoRule,
-            ]}
-          >
-            <Input placeholder="name" />
-          </Form.Item>
-          <Form.Item
+            hidden={editSession !== null}
             hasFeedback
             name="groupId"
             rules={[
@@ -141,15 +139,21 @@ export const SessionAddEditForm = () => {
             <GroupSearchSelect />
           </Form.Item>
 
-          <Form.Item
-            hasFeedback
-            name="description"
-            rules={[
-              isEditingSession ? UpdateSessionDtoRule : CreateSessionDtoRule,
-            ]}
-          >
-            <Input.TextArea rows={4} placeholder="description" />
-          </Form.Item>
+          {editSession && (
+            <Form.Item
+              hasFeedback
+              name="userIds"
+              rules={[
+                isEditingSession ? UpdateSessionDtoRule : CreateSessionDtoRule,
+              ]}
+            >
+              <SessionUserSearchSelect
+                selectedOptions={sessionUsersQuery?.data || []}
+                sessionId={editSession?.id}
+              />
+            </Form.Item>
+          )}
+
           <Form.Item
             hasFeedback
             name="startDate"
@@ -174,28 +178,7 @@ export const SessionAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="duration"
-            rules={[
-              isEditingSession ? UpdateSessionDtoRule : CreateSessionDtoRule,
-            ]}
-          >
-            <Select
-              placeholder="Select duration"
-              style={{ width: '100%' }}
-              options={[
-                { value: 30, label: '30 minutes' },
-                { value: 45, label: '45 minutes' },
-                { value: 60, label: '60 minutes' },
-                { value: 90, label: '90 minutes' },
-                { value: 120, label: '120 minutes' },
-              ]}
-            />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
             name="futureSessionCount"
-            initialValue={1}
             rules={[
               isEditingSession ? UpdateSessionDtoRule : CreateSessionDtoRule,
             ]}

@@ -13,3 +13,10 @@ export const findUsers = async ({
   const response = await http.get(`/api/v1/users?${queryParams}`)
   return response.data
 }
+
+export const findSessionUsers = async (
+  sessionId: number | string,
+): Promise<IUser[]> => {
+  const response = await http.get(`/api/v1/sessions/${sessionId}/users`)
+  return response.data
+}
