@@ -12,6 +12,7 @@ import { OrderList } from '@/pages/orders/Orders'
 import { Shop } from '@/pages/shop/Shop'
 import { GroupList } from '@/pages/groups/GroupList'
 import { SessionList } from '@/pages/sessions/SessionList'
+import { SessionDetails } from '@/pages/sessions/SessionDetails'
 
 export const Pages = () => {
   return (
@@ -28,6 +29,7 @@ export const Pages = () => {
         <Route path="/users" element={<UsersList />} />
         <Route path="/groups" element={<GroupList />} />
         <Route path="/sessions" element={<SessionList />} />
+        <Route path="/sessions/:id" element={<SessionDetails />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/wallet" element={<Wallet />} />
         <Route path="/orders" element={<OrderList />} />

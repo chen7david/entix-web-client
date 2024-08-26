@@ -5,6 +5,7 @@ import cn from 'classnames'
 import { EditOutlined, FundProjectionScreenOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { editSessionAtom, editSessionStatusAtom } from '@/store/session.atom'
+import { useNavigate } from 'react-router-dom'
 
 export interface ISessionRowCard extends React.HTMLAttributes<HTMLDivElement> {
   session: ISession
@@ -17,11 +18,12 @@ export const SessionRowCard = ({
 }: ISessionRowCard) => {
   const [, setEditSession] = useAtom(editSessionAtom)
   const [, setIsEditingSession] = useAtom(editSessionStatusAtom)
+  const navigate = useNavigate()
   return (
     <div
       {...props}
       className={cn(
-        'bg-white rounded-lg items-center text-sm text-slate-700 p-2 md:p-4 grid grid-flow-row grid-rows-5  grid-cols-[0.5fr,1fr,0.2fr] md:grid-flow-cols md:grid-rows-1 md:grid-cols-[0.5fr,1fr,1fr,1fr,1fr]',
+        'bg-white rounded-lg items-center text-sm text-slate-700 p-2 md:p-4 grid grid-flow-row grid-rows-3  grid-cols-[0.5fr,1fr,0.2fr] md:grid-flow-cols md:grid-rows-1 md:grid-cols-[0.5fr,1fr,1fr,1fr,1fr]',
         className,
       )}
     >
@@ -35,11 +37,12 @@ export const SessionRowCard = ({
           <FundProjectionScreenOutlined />
         </Avatar>
       </div>
-      <span className="">{session.name}</span>
-      <span className="">
+
+      <span className="text-xs">
         {dayjs(session.startDate).format('dddd - HH:mm')}
-        <div>{dayjs(session.startDate).format('YYYY-mm-DD')}</div>
+        <div>{dayjs(session.startDate).format('YYYY-MM-DD')}</div>
       </span>
+      <span className="">{session.name}</span>
       <span className="md:text-center">{session.duration}</span>
       <div
         id="actions"
@@ -53,6 +56,12 @@ export const SessionRowCard = ({
             setEditSession(session)
             setIsEditingSession(true)
           }}
+        />
+        <Button
+          type="text"
+          shape="circle"
+          icon={<FundProjectionScreenOutlined />}
+          onClick={() => navigate('/sessions/' + session.id)}
         />
       </div>
     </div>
