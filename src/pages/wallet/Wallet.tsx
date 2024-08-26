@@ -5,13 +5,12 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { DatePicker, Select, Spin } from 'antd'
 import { useSearchParams } from 'react-router-dom'
 import { StatementRowCard } from './StatementRowCard'
-
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
 import { currUserAtom, isAdminAtom } from '@/store/auth.atom'
 import { useAtom } from 'jotai'
 import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
+import utc from 'dayjs/plugin/utc'
+import dayjs from 'dayjs'
 dayjs.extend(utc)
 
 export const Wallet = () => {
@@ -52,6 +51,7 @@ export const Wallet = () => {
     <>
       <Toolbar className="bg-white shadow-sm flex gap-2">
         <DatePicker.RangePicker
+          size="large"
           defaultValue={[dayjs(startDate), dayjs(endDate)]}
           onChange={(dates) => {
             if (!dates) return
@@ -69,6 +69,7 @@ export const Wallet = () => {
         />
         {isAdmin && (
           <Select
+            size="large"
             defaultValue={'ETP'}
             options={[
               { value: 'ETP', label: 'ETP' },

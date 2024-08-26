@@ -22,6 +22,11 @@ export const findGroups = async ({
   return response.data
 }
 
+export const findOneGroup = async (id: number | string): Promise<IGroup> => {
+  const response = await http.get(`/api/v1/groups/${id}`)
+  return response.data
+}
+
 export const createGroup = async (
   formData: ICreateGroupDto,
 ): Promise<IGroup> => {

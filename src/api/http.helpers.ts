@@ -1,6 +1,8 @@
 export function formatUrlParams(
   cursor: string | null,
-  params: { [key: string]: string | number | null | undefined | boolean },
+  params: {
+    [key: string]: string | number | null | undefined | boolean | Date
+  },
 ) {
   const queryParams = new URLSearchParams({})
   Object.entries({ ...params, cursor }).forEach(

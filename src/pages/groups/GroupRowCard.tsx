@@ -2,7 +2,7 @@ import { IGroup } from 'entix-shared'
 import { useAtom } from 'jotai'
 import { Avatar, Button } from 'antd'
 import cn from 'classnames'
-import { EditOutlined, CalendarOutlined } from '@ant-design/icons'
+import { EditOutlined, TeamOutlined } from '@ant-design/icons'
 import { editGroupAtom, editGroupStatusAtom } from '@/store/group.atom'
 import dayjs from 'dayjs'
 
@@ -24,17 +24,15 @@ export const GroupRowCard = ({ group, className, ...props }: IGroupRowCard) => {
       <div className="flex h-full row-span-3 justify-center items-center md:justify-start">
         <Avatar
           style={{
-            backgroundColor: '#3291a8',
+            backgroundColor: 'gray',
           }}
           size={38}
         >
-          {group?.name[0]}
+          <TeamOutlined />
         </Avatar>
       </div>
       <span className="">{group.name}</span>
-      <span className="">
-        {dayjs(group.startDate).format('YYYY-MM-DD HH:mm')}
-      </span>
+      <span className="">{dayjs().day(group.day).format('dddd')}</span>
       <span className="md:text-center">{group.duration}</span>
       <div
         id="actions"
@@ -49,7 +47,6 @@ export const GroupRowCard = ({ group, className, ...props }: IGroupRowCard) => {
             setIsEditingGroup(true)
           }}
         />
-        <Button type="text" shape="circle" icon={<CalendarOutlined />} />
       </div>
     </div>
   )

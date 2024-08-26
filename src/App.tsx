@@ -8,6 +8,7 @@ import { sidebarOpenAtom } from './store/sidebar.atom'
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useAtom(sidebarOpenAtom)
+
   return (
     <AppContainer>
       <Drawer

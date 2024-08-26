@@ -17,7 +17,6 @@ export const GroupList = () => {
   const { ref, inView } = useInView()
   const [searchParams, setSearchParams] = useSearchParams({
     name: '',
-    sortBy: 'created_at:desc',
     limit: '10',
   })
 
