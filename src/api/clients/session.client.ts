@@ -43,7 +43,7 @@ export const updateSession = async ({
   sessionId,
   formData,
 }: {
-  sessionId: number
+  sessionId: number | string
   formData: IUpdateSessionDto
 }): Promise<ISession> => {
   const response = await http.patch('/api/v1/sessions/' + sessionId, formData)

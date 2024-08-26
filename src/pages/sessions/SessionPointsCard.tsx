@@ -5,7 +5,7 @@ import { Avatar, Button, message } from 'antd'
 import { CurrencyType, IUserWithAttendance } from 'entix-shared'
 import { useAtom } from 'jotai'
 import { forwardRef, useState, useImperativeHandle } from 'react'
-
+import cn from 'classnames'
 type ISessionPointsCard = {
   user: IUserWithAttendance
 }
@@ -30,11 +30,13 @@ export const SessionPointsCard = forwardRef<
   })
 
   const savePoints = async () => {
+    if (score < 1) return message.warning('You need 1 point or more')
     sessionPointsMutation.mutate({
       senderId: currUser!.id,
       recipientId: user.id,
       currencyType: CurrencyType.EntixPoints,
       amount: score,
+      description: 'sessions reward points',
     })
   }
 
@@ -43,7 +45,12 @@ export const SessionPointsCard = forwardRef<
   }))
 
   return (
-    <div className="bg-gray-100 rounded text-xs p-3 flex flex-col w-28 h-58 items-center gap-5">
+    <div
+      className={cn(
+        'bg-gray-100 rounded text-xs p-3 flex flex-col w-28 h-58 items-center gap-5',
+        { 'bg-orange-100': user.canceledAt },
+      )}
+    >
       <div className="flex flex-col items-center gap-2">
         <Avatar
           size={45}
@@ -62,22 +69,31 @@ export const SessionPointsCard = forwardRef<
 
       <div>
         <Button.Group>
-          <Button onClick={() => setScore(score + 1)}>+</Button>
-          <Button onClick={() => setScore(score - 1)}>-</Button>
+          <Button
+            disabled={user.canceledAt !== null}
+            onClick={() => setScore(score + 1)}
+          >
+            +
+          </Button>
+          <Button
+            disabled={user.canceledAt !== null}
+            onClick={() => score > 0 && setScore(score - 1)}
+          >
+            -
+          </Button>
         </Button.Group>
       </div>
 
       <div>
-        <Button.Group>
-          <Button
-            loading={sessionPointsMutation.isPending}
-            size="small"
-            type="primary"
-            onClick={savePoints}
-          >
-            save
-          </Button>
-        </Button.Group>
+        <Button
+          disabled={user.canceledAt !== null}
+          loading={sessionPointsMutation.isPending}
+          size="small"
+          type="primary"
+          onClick={savePoints}
+        >
+          save
+        </Button>
       </div>
     </div>
   )

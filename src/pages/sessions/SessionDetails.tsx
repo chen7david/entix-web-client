@@ -1,11 +1,12 @@
 import { findSessionUsers } from '@/api/clients/user.client'
 import { PageContainer } from '@/components/Layout/PageContainer'
 import { Toolbar } from '@/components/Layout/Toolbar'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { SessionPointsCard } from './SessionPointsCard'
 import { useRef } from 'react'
-import { Button } from 'antd'
+import { Button, message } from 'antd'
+import { updateSession } from '@/api/clients/session.client'
 
 // Define the type of the ref
 type SessionPointsCardRef = {
@@ -28,7 +29,7 @@ export const SessionDetails = () => {
 
   return (
     <>
-      <Toolbar className="bg-white shadow-sm">
+      <Toolbar className="bg-white shadow-sm flex gap-2">
         <Button onClick={handleSaveAll}>Save Points</Button>
       </Toolbar>
       <PageContainer className="flex flex-col gap-2">
