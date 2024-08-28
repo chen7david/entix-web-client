@@ -1,6 +1,6 @@
-import { makePayment } from '@/api/clients/payment.client'
+import { getUserEtpBalance, makePayment } from '@/api/clients/payment.client'
 import { currUserAtom } from '@/store/auth.atom'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Avatar, Button, message } from 'antd'
 import { CurrencyType, IUserWithAttendance } from 'entix-shared'
 import { useAtom } from 'jotai'
@@ -11,7 +11,10 @@ type ISessionPointsCard = {
 }
 
 export type SessionPointsCardRef = {
-  save: () => void
+  savePoints: () => void
+  plusOne: () => void
+  plusFive: () => void
+  plusTen: () => void
 }
 
 export const SessionPointsCard = forwardRef<
@@ -20,6 +23,22 @@ export const SessionPointsCard = forwardRef<
 >(({ user }, ref) => {
   const [score, setScore] = useState(0)
   const [currUser] = useAtom(currUserAtom)
+  const [isHovered, setIsHovered] = useState(false)
+
+  const handleMouseEnter = () => {
+    setIsHovered(true)
+    console.log({ isHovered })
+  }
+
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+    console.log({ isHovered })
+  }
+
+  const getBalanceQuery = useQuery({
+    queryKey: ['user:etp-balance', { userId: user.id }],
+    queryFn: async () => getUserEtpBalance({ userId: user.id }),
+  })
 
   const sessionPointsMutation = useMutation({
     mutationFn: makePayment,
@@ -40,20 +59,35 @@ export const SessionPointsCard = forwardRef<
     })
   }
 
+  const plusOne = () => {
+    setScore(score + 1)
+  }
+
+  const plusFive = () => {
+    setScore(score + 5)
+  }
+
+  const plusTen = () => {
+    setScore(score + 10)
+  }
+
   useImperativeHandle(ref, () => ({
-    save: savePoints,
+    savePoints: savePoints,
+    plusFive: plusFive,
+    plusTen: plusTen,
+    plusOne: plusOne,
   }))
 
   return (
     <div
       className={cn(
-        'bg-gray-100 rounded text-xs p-3 flex flex-col w-28 h-58 items-center gap-5',
+        'bg-gray-100 border-solid border-2 border-gray-200 rounded text-xs p-8 flex flex-col w-36 h-58 items-center gap-5',
         { 'bg-orange-100': user.canceledAt },
       )}
     >
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center gap-1">
         <Avatar
-          size={45}
+          size={60}
           style={{
             backgroundColor: user?.sex === 'm' ? '#3291a8' : '#cc233f',
           }}
@@ -63,10 +97,20 @@ export const SessionPointsCard = forwardRef<
         </Avatar>
         {user.firstName} {user.lastName}
       </div>
-      <div className="bg-gray-200 w-20 h-10 rounded-lg flex items-center justify-center font-bold text-lg">
-        {score}
-      </div>
 
+      <div
+        onClick={savePoints}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className={cn(
+          'bg-gray-200 w-20 h-10 rounded-lg flex items-center justify-center font-bold text-lg cursor-pointer',
+          {
+            ' border-solid border-2 border-gray-300': isHovered,
+          },
+        )}
+      >
+        {!isHovered ? score : (getBalanceQuery?.data?.balance ?? 0) / 100}
+      </div>
       <div>
         <Button.Group>
           <Button
@@ -82,18 +126,6 @@ export const SessionPointsCard = forwardRef<
             -
           </Button>
         </Button.Group>
-      </div>
-
-      <div>
-        <Button
-          disabled={user.canceledAt !== null}
-          loading={sessionPointsMutation.isPending}
-          size="small"
-          type="primary"
-          onClick={savePoints}
-        >
-          save
-        </Button>
       </div>
     </div>
   )
