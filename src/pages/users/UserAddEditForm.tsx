@@ -15,10 +15,11 @@ import {
   CreateUserDto,
   ICreateUserDto,
   IPaginatedResponse,
+  IPaymentPlan,
   IUser,
   UpdateUserDto,
 } from 'entix-shared'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   forceActivateAccount,
   createUser,
@@ -35,6 +36,7 @@ import { UserDeleteModel } from './UserDeleteModel'
 import timezones from 'timezones-list'
 import { useSearchParams } from 'react-router-dom'
 import utc from 'dayjs/plugin/utc'
+import { getAllPaymentPlans } from '@/api/clients/paymentplans.client'
 dayjs.extend(utc)
 
 export const UserAddEditForm = () => {
@@ -59,6 +61,15 @@ export const UserAddEditForm = () => {
     isManualActivation,
   ])
 
+  const getAllPaymentPlansQuery = useQuery({
+    queryKey: ['paymentplans:all'],
+    queryFn: getAllPaymentPlans,
+    enabled: !!editUser,
+  })
+
+  const paymentPlans: IPaymentPlan[] | undefined =
+    getAllPaymentPlansQuery?.data?.items
+  console.log({ paymentPlans })
   useEffect(() => {
     if (isEditingUser) {
       setIsDrawerOpen(true)
@@ -345,6 +356,22 @@ export const UserAddEditForm = () => {
               options={timezones.map((timezone) => ({
                 value: timezone.tzCode,
                 label: timezone.label,
+              }))}
+            />
+          </Form.Item>
+
+          <Form.Item
+            hasFeedback
+            name="paymentPlanId"
+            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
+          >
+            <Select
+              showSearch
+              placeholder="Select a paymentplan"
+              optionFilterProp="label"
+              options={paymentPlans?.map((plan) => ({
+                value: plan.id,
+                label: plan.name,
               }))}
             />
           </Form.Item>

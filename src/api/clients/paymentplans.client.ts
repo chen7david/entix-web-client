@@ -20,6 +20,13 @@ export const findPaymentPlans = async ({
   return response.data
 }
 
+export const getAllPaymentPlans = async (): Promise<
+  IPaginatedResponse<IPaymentPlan>
+> => {
+  const response = await http.get(`/api/v1/paymentplans?limit=300`)
+  return response.data
+}
+
 export const createPaymentPlan = async (
   createPaymentPlanDto: ICreatePaymentPlanDto,
 ): Promise<IPaymentPlan> => {
@@ -27,10 +34,13 @@ export const createPaymentPlan = async (
   return response.data
 }
 
-export const updatePaymentPlan = async (
-  id: number | string,
-  updatePaymentPlanDto: IUpdatePaymentPlanDto,
-): Promise<IPaymentPlan> => {
+export const updatePaymentPlan = async ({
+  id,
+  updatePaymentPlanDto,
+}: {
+  id: number | string
+  updatePaymentPlanDto: IUpdatePaymentPlanDto
+}): Promise<IPaymentPlan> => {
   const response = await http.patch(
     '/api/v1/paymentplans/' + id,
     updatePaymentPlanDto,

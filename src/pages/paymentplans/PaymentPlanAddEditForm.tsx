@@ -1,152 +1,84 @@
 import { useEffect, useState } from 'react'
 import { PlusOutlined } from '@ant-design/icons'
+import { Button, Drawer, message, Form, Input } from 'antd'
 import {
-  Button,
-  Drawer,
-  DatePicker,
-  Select,
-  message,
-  Form,
-  Input,
-  Space,
-  Badge,
-} from 'antd'
-import {
-  CreateUserDto,
-  ICreateUserDto,
-  IPaginatedResponse,
-  IUser,
-  UpdateUserDto,
+  CreatePaymentPlanDto,
+  ICreatePaymentPlanDto,
+  UpdatePaymentPlanDto,
 } from 'entix-shared'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createSchemaFieldRule } from 'antd-zod'
-import dayjs, { Dayjs } from 'dayjs'
-import { editUserAtom, editUserStatusAtom } from '@/store/update.atom'
 import { useAtom } from 'jotai'
-import { AvatarUploader } from '@/components/Form/UploadAvatar'
-import { useHotkeys } from 'react-hotkeys-hook'
-import timezones from 'timezones-list'
 import { useSearchParams } from 'react-router-dom'
-import utc from 'dayjs/plugin/utc'
-dayjs.extend(utc)
+import {
+  createPaymentPlan,
+  updatePaymentPlan,
+} from '@/api/clients/paymentplans.client'
+import {
+  editPaymentPlanAtom,
+  editPaymentPlanStatusAtom,
+} from '@/store/paymentplan.atom'
 
-export const UserAddEditForm = () => {
+export const PaymentPlanAddEditForm = () => {
   const [form] = Form.useForm()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isCloseDrawerOnSuccess, setIsCloseDrawerOnSuccess] = useState(false)
-  const [isManualActivation, setIsManualActivation] = useState(false)
-  const [editUser, setEditUser] = useAtom(editUserAtom)
-  const [isEditingUser, setIsEditingUser] = useAtom(editUserStatusAtom)
-  const CreateUserDtoRule = createSchemaFieldRule(CreateUserDto)
-  const UpdateUserDtoRule = createSchemaFieldRule(UpdateUserDto)
+  const [editPaymentPlan, setEditPaymentPlan] = useAtom(editPaymentPlanAtom)
+  const [isEditingPaymentPlan, setIsEditingPaymentPlan] = useAtom(
+    editPaymentPlanStatusAtom,
+  )
+  const CreatePaymentPlanDtoRule = createSchemaFieldRule(CreatePaymentPlanDto)
+  const UpdatePaymentPlanDtoRule = createSchemaFieldRule(UpdatePaymentPlanDto)
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams({
-    firstName: '',
+    name: '',
     sortBy: 'created_at:desc',
     limit: '10',
   })
 
-  const firstName = searchParams.get('firstName') || ''
-
-  useHotkeys('ctrl+k', () => setIsManualActivation(!isManualActivation), [
-    isManualActivation,
-  ])
+  const name = searchParams.get('name') || ''
 
   useEffect(() => {
-    if (isEditingUser) {
+    if (isEditingPaymentPlan) {
       setIsDrawerOpen(true)
-      form.setFieldsValue({
-        ...editUser,
-        dateOfBirth: dayjs(editUser?.dateOfBirth).utc(),
-      })
+      form.setFieldsValue(editPaymentPlan)
     }
-  }, [isEditingUser, form])
+  }, [isEditingPaymentPlan, form])
 
   const closeDrawer = () => {
-    setEditUser(null)
+    setEditPaymentPlan(null)
     setIsDrawerOpen(false)
-    setIsEditingUser(false)
-    setIsManualActivation(false)
+    setIsEditingPaymentPlan(false)
     form.resetFields()
   }
 
-  const createUserMutation = useMutation({
-    mutationFn: createUser,
+  const createPaymentPlanMutation = useMutation({
+    mutationFn: createPaymentPlan,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users', { firstName }] })
+      queryClient.invalidateQueries({ queryKey: ['users', { name }] })
       closeDrawer()
-      message.success('User updated successfully')
+      message.success('PaymentPlan updated successfully')
     },
   })
 
-  const updateUserMutation = useMutation({
-    mutationFn: updateUser,
+  const updatePaymentPlanMutation = useMutation({
+    mutationFn: updatePaymentPlan,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users', { firstName }] })
+      queryClient.invalidateQueries({ queryKey: ['users', { name }] })
       if (isCloseDrawerOnSuccess) closeDrawer()
-      message.success('User updated successfully')
+      message.success('PaymentPlan updated successfully')
     },
   })
 
-  const resendAccountVerificationEmailMutation = useMutation({
-    mutationFn: sendAccountActivationEmail,
-    onSuccess: () => {
-      closeDrawer()
-      message.success(`Activation email sent to ${editUser?.email}`)
-    },
-  })
-
-  const forceActivateAccountMutation = useMutation({
-    mutationFn: forceActivateAccount,
-    onSuccess: () => {
-      queryClient.setQueryData(
-        ['users'],
-        (oldUsers: IPaginatedResponse<IUser>) => ({
-          ...oldUsers,
-          data: oldUsers.items.map((user) => {
-            if (user.id === editUser?.id) {
-              const updatedEditUser = {
-                ...user,
-                activated_at: new Date(),
-              }
-              setEditUser(updatedEditUser)
-              return updatedEditUser
-            }
-            return user
-          }),
-        }),
-      )
-      message.success(`${editUser?.email} was activated`)
-    },
-  })
-
-  const handleOnsubmit = (v: ICreateUserDto) => {
-    if (!v.imageUrl) v.imageUrl = ''
-    if (isEditingUser && editUser) {
+  const handleOnsubmit = (v: ICreatePaymentPlanDto) => {
+    if (isEditingPaymentPlan && editPaymentPlan) {
       setIsCloseDrawerOnSuccess(true)
-      updateUserMutation.mutate({ userId: editUser.id, formData: v })
+      updatePaymentPlanMutation.mutate({
+        id: editPaymentPlan.id,
+        updatePaymentPlanDto: v,
+      })
     } else {
-      createUserMutation.mutate(v)
-    }
-  }
-
-  const disableFutureDates = (current: Dayjs | null): boolean => {
-    return current !== null && current > dayjs().endOf('day')
-  }
-
-  const handleResendActivationEmail = () => {
-    if (!editUser) {
-      message.error('Activation email failed')
-      return
-    }
-    if (editUser.activatedAt) {
-      message.error('User is already activated')
-      return
-    }
-    if (isManualActivation) {
-      forceActivateAccountMutation.mutate(editUser.id)
-    } else {
-      resendAccountVerificationEmailMutation.mutate(editUser.username)
+      createPaymentPlanMutation.mutate(v)
     }
   }
 
@@ -161,11 +93,14 @@ export const UserAddEditForm = () => {
         />
       </div>
       <Drawer
-        title={`${isEditingUser ? 'Edit' : 'Add'} User`}
+        title={`${isEditingPaymentPlan ? 'Edit' : 'Add'} PaymentPlan`}
         onClose={() => closeDrawer()}
         open={isDrawerOpen}
         extra={
-          <Button hidden={isEditingUser} onClick={() => form.resetFields()}>
+          <Button
+            hidden={isEditingPaymentPlan}
+            onClick={() => form.resetFields()}
+          >
             Clear
           </Button>
         }
@@ -174,177 +109,143 @@ export const UserAddEditForm = () => {
           size="large"
           form={form}
           onFinish={handleOnsubmit}
-          title="AddEditUserForm"
+          title="AddEditPaymentPlanForm"
           key={Math.random()}
         >
-          <Form.Item name="imageUrl">
-            <AvatarUploader
-              onUploaded={async ({ secure_url }) => {
-                form.setFieldValue('imageUrl', secure_url)
-                if (editUser) {
-                  updateUserMutation.mutate({
-                    userId: editUser.id,
-                    formData: { imageUrl: secure_url },
-                  })
-                }
-              }}
-              defaultImageUrl={editUser?.imageUrl}
+          <Form.Item
+            hasFeedback
+            name="name"
+            rules={[
+              isEditingPaymentPlan
+                ? UpdatePaymentPlanDtoRule
+                : CreatePaymentPlanDtoRule,
+            ]}
+          >
+            <Input disabled={isEditingPaymentPlan} placeholder="name" />
+          </Form.Item>
+
+          <Form.Item
+            hasFeedback
+            name="one"
+            rules={[
+              isEditingPaymentPlan
+                ? UpdatePaymentPlanDtoRule
+                : CreatePaymentPlanDtoRule,
+            ]}
+          >
+            <Input
+              type="number"
+              prefix="￥"
+              suffix="RMB"
+              placeholder="one on one"
             />
           </Form.Item>
 
           <Form.Item
             hasFeedback
-            name="username"
-            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
+            name="two"
+            rules={[
+              isEditingPaymentPlan
+                ? UpdatePaymentPlanDtoRule
+                : CreatePaymentPlanDtoRule,
+            ]}
           >
-            <Input disabled={isEditingUser} placeholder="Username" />
-          </Form.Item>
-
-          <Form.Item>
-            <Space.Compact style={{ width: '100%' }}>
-              <Form.Item
-                noStyle
-                hasFeedback
-                name="email"
-                rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
-              >
-                <Input
-                  placeholder="Email"
-                  prefix={
-                    isEditingUser && (
-                      <Badge
-                        color={editUser?.activatedAt ? 'green' : 'orange'}
-                      />
-                    )
-                  }
-                />
-              </Form.Item>
-
-              {isEditingUser && (
-                <Button
-                  loading={
-                    forceActivateAccountMutation.isPending ||
-                    resendAccountVerificationEmailMutation.isPending
-                  }
-                  onClick={handleResendActivationEmail}
-                >
-                  {isManualActivation ? 'Activate' : 'Resend'}
-                </Button>
-              )}
-            </Space.Compact>
-          </Form.Item>
-
-          <Form.Item
-            hidden={isEditingUser}
-            hasFeedback
-            name="password"
-            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
-          >
-            <Input.Password placeholder="Password" />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="firstName"
-            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
-          >
-            <Input placeholder="First name" />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="lastName"
-            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
-          >
-            <Input placeholder="Last name" />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="sex"
-            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
-          >
-            <Select
-              placeholder="Sex"
-              options={[
-                { value: 'm', label: 'Male' },
-                { value: 'f', label: 'Female' },
-              ]}
+            <Input
+              type="number"
+              prefix="￥"
+              suffix="RMB"
+              placeholder="two students"
             />
           </Form.Item>
 
           <Form.Item
             hasFeedback
-            name="dateOfBirth"
-            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
+            name="three"
+            rules={[
+              isEditingPaymentPlan
+                ? UpdatePaymentPlanDtoRule
+                : CreatePaymentPlanDtoRule,
+            ]}
           >
-            <DatePicker
-              style={{ width: '100%' }}
-              placeholder="Date of birth"
-              disabledDate={disableFutureDates}
-              allowClear={false}
+            <Input
+              type="number"
+              prefix="￥"
+              suffix="RMB"
+              placeholder="three students"
             />
           </Form.Item>
 
           <Form.Item
             hasFeedback
-            name="nativeName"
-            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
+            name="four"
+            rules={[
+              isEditingPaymentPlan
+                ? UpdatePaymentPlanDtoRule
+                : CreatePaymentPlanDtoRule,
+            ]}
           >
-            <Input placeholder="Native name" />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="phone"
-            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
-          >
-            <Input placeholder="Phone" />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="wechatid"
-            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
-          >
-            <Input placeholder="Wechat" />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="countryOfBirth"
-            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
-          >
-            <Input placeholder="Country of birth" />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="placeOfBirth"
-            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
-          >
-            <Input placeholder="Place of birth" />
-          </Form.Item>
-
-          <Form.Item
-            hasFeedback
-            name="timezone"
-            rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
-          >
-            <Select
-              showSearch
-              placeholder="Select a tinezone"
-              optionFilterProp="label"
-              options={timezones.map((timezone) => ({
-                value: timezone.tzCode,
-                label: timezone.label,
-              }))}
+            <Input
+              type="number"
+              prefix="￥"
+              suffix="RMB"
+              placeholder="four students"
             />
           </Form.Item>
 
-          <Form.Item hidden={isEditingUser}>
+          <Form.Item
+            hasFeedback
+            name="five"
+            rules={[
+              isEditingPaymentPlan
+                ? UpdatePaymentPlanDtoRule
+                : CreatePaymentPlanDtoRule,
+            ]}
+          >
+            <Input
+              type="number"
+              prefix="￥"
+              suffix="RMB"
+              placeholder="five students"
+            />
+          </Form.Item>
+
+          <Form.Item
+            hasFeedback
+            name="six"
+            rules={[
+              isEditingPaymentPlan
+                ? UpdatePaymentPlanDtoRule
+                : CreatePaymentPlanDtoRule,
+            ]}
+          >
+            <Input
+              type="number"
+              prefix="￥"
+              suffix="RMB"
+              placeholder="six students"
+            />
+          </Form.Item>
+
+          <Form.Item
+            hasFeedback
+            name="seven"
+            rules={[
+              isEditingPaymentPlan
+                ? UpdatePaymentPlanDtoRule
+                : CreatePaymentPlanDtoRule,
+            ]}
+          >
+            <Input
+              type="number"
+              prefix="￥"
+              suffix="RMB"
+              placeholder="seven students"
+            />
+          </Form.Item>
+
+          <Form.Item hidden={isEditingPaymentPlan}>
             <Button
-              loading={createUserMutation.isPending}
+              loading={createPaymentPlanMutation.isPending}
               block
               htmlType="submit"
             >
@@ -352,20 +253,14 @@ export const UserAddEditForm = () => {
             </Button>
           </Form.Item>
 
-          <Form.Item hidden={!isEditingUser}>
+          <Form.Item hidden={!isEditingPaymentPlan}>
             <Button
-              loading={updateUserMutation.isPending}
+              loading={updatePaymentPlanMutation.isPending}
               block
               htmlType="submit"
             >
               Save
             </Button>
-          </Form.Item>
-
-          <Form.Item>
-            {editUser && (
-              <UserDeleteModel closeDrawer={closeDrawer} user={editUser} />
-            )}
           </Form.Item>
         </Form>
       </Drawer>
