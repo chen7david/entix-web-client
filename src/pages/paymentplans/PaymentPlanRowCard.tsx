@@ -28,6 +28,7 @@ export const PaymentPlanRowCard = ({
         </Avatar>
       </div>
       <div>{paymentPlan.name}</div>
+      <div>{dayjs(paymentPlan.updatedAt).format('YYYY-MM-DD HH:mm')}</div>
       <Button
         type="text"
         shape="circle"
@@ -37,7 +38,6 @@ export const PaymentPlanRowCard = ({
           setIsEditingPaymentPlan(true)
         }}
       />
-      <div>{dayjs(paymentPlan.updatedAt).format('YYYY-MM-DD HH:mm')}</div>
     </div>
   )
 }
