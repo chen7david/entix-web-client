@@ -83,6 +83,7 @@ export const SessionPointsCard = forwardRef<
       className={cn(
         'bg-gray-100 border-solid border-2 border-gray-200 rounded text-xs p-8 flex flex-col w-36 h-58 items-center gap-5',
         { 'bg-orange-100': user.canceledAt },
+        { 'bg-green-100': user.paidAt },
       )}
     >
       <div className="flex flex-col items-center gap-1">
