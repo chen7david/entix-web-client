@@ -1,11 +1,12 @@
 import { findSessionUsers } from '@/api/clients/user.client'
 import { PageContainer } from '@/components/Layout/PageContainer'
 import { Toolbar } from '@/components/Layout/Toolbar'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { SessionPointsCard, SessionPointsCardRef } from './SessionPointsCard'
 import { useRef } from 'react'
 import { Button } from 'antd'
+import { processSessionPayments } from '@/api/clients/session.client'
 
 export const SessionDetails = () => {
   const { id } = useParams()
@@ -33,6 +34,10 @@ export const SessionDetails = () => {
     queryFn: () => findSessionUsers(id || 0),
   })
 
+  const processSessionPaymentsMutation = useMutation({
+    mutationFn: processSessionPayments,
+  })
+
   return (
     <>
       <Toolbar className="bg-white shadow-sm flex gap-2">
@@ -47,6 +52,16 @@ export const SessionDetails = () => {
         </Button>
         <Button type="text" onClick={plusTen}>
           +10
+        </Button>
+
+        <Button
+          type="primary"
+          loading={processSessionPaymentsMutation.isPending}
+          onClick={() => {
+            processSessionPaymentsMutation.mutate({ sessionId: id || 0 })
+          }}
+        >
+          Complete
         </Button>
       </Toolbar>
       <PageContainer className="flex flex-col gap-2">

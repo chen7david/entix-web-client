@@ -57,6 +57,17 @@ export const deleteSession = async (
   return response.data
 }
 
+export const processSessionPayments = async ({
+  sessionId,
+}: {
+  sessionId: number | string
+}): Promise<{ success: boolean }> => {
+  const response = await http.post(
+    '/api/v1/sessions/' + sessionId + '/process-payments',
+  )
+  return response.data
+}
+
 /** START: Session USER ACTIONS */
 
 export const getSessionUsers = async ({
