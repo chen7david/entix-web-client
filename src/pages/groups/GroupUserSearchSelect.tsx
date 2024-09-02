@@ -24,7 +24,9 @@ function SelectetUserWithAvatar({ user }: { user: IUser }) {
       >
         <span>{user.firstName[0]}</span>
       </Avatar>
-      <span>{user.firstName}</span>
+      <span>
+        {user.firstName} {user.lastName}
+      </span>
     </div>
   )
 }
