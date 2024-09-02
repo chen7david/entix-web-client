@@ -49,6 +49,7 @@ export const SessionPointsCard = forwardRef<
   })
 
   const savePoints = async () => {
+    if (user.canceledAt) return
     if (score < 1) return message.warning('You need 1 point or more')
     sessionPointsMutation.mutate({
       senderId: currUser!.id,
@@ -60,14 +61,17 @@ export const SessionPointsCard = forwardRef<
   }
 
   const plusOne = () => {
+    if (user.canceledAt) return
     setScore(score + 1)
   }
 
   const plusFive = () => {
+    if (user.canceledAt) return
     setScore(score + 5)
   }
 
   const plusTen = () => {
+    if (user.canceledAt) return
     setScore(score + 10)
   }
 
