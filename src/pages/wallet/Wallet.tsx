@@ -18,8 +18,8 @@ export const Wallet = () => {
   const [isAdmin] = useAtom(isAdminAtom)
   const { ref, inView } = useInView()
   const [searchParams, setSearchParams] = useSearchParams({
-    startDate: dayjs().utc().subtract(1, 'month').toISOString(),
-    endDate: dayjs().utc().toISOString(),
+    startDate: dayjs().utc().startOf('day').toISOString(),
+    endDate: dayjs().utc().endOf('day').toISOString(),
     limit: '10',
     currencyType: 'ETP',
     userId: `${currUser?.id}`,
@@ -47,12 +47,47 @@ export const Wallet = () => {
       statementsQuery.fetchNextPage()
     }
   }, [inView])
+
   return (
     <>
       <Toolbar className="bg-white shadow-sm flex gap-2">
         <DatePicker.RangePicker
           size="large"
-          defaultValue={[dayjs(startDate), dayjs(endDate)]}
+          defaultValue={[dayjs().startOf('day'), dayjs().endOf('day')]}
+          presets={[
+            {
+              label: 'Today',
+              value: [dayjs().startOf('day'), dayjs().endOf('day')],
+            },
+            {
+              label: 'Last 7 Days',
+              value: [
+                dayjs().subtract(7, 'days').startOf('day'),
+                dayjs().endOf('day'),
+              ],
+            },
+            {
+              label: 'Last 14 Days',
+              value: [
+                dayjs().subtract(14, 'days').startOf('day'),
+                dayjs().endOf('day'),
+              ],
+            },
+            {
+              label: 'Last 30 Days',
+              value: [
+                dayjs().subtract(30, 'days').startOf('day'),
+                dayjs().endOf('day'),
+              ],
+            },
+            {
+              label: 'Last 90 Days',
+              value: [
+                dayjs().subtract(90, 'days').startOf('day'),
+                dayjs().endOf('day'),
+              ],
+            },
+          ]}
           onChange={(dates) => {
             if (!dates) return
             const [startDate, endDate] = dates
