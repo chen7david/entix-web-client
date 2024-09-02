@@ -17,7 +17,11 @@ export const findSessions = async ({
   pageParam: string | null
   searchParams: ISessionQueryParams
 }): Promise<IPaginatedResponse<ISession[]>> => {
-  const queryParams = formatUrlParams(pageParam, searchParams)
+  const queryParams = formatUrlParams(pageParam, {
+    ...searchParams,
+    startDate: new Date(searchParams.startDate || '').toISOString(),
+    endDate: new Date(searchParams.endDate || '').toISOString(),
+  })
   const response = await http.get(`/api/v1/sessions?${queryParams}`)
   return response.data
 }

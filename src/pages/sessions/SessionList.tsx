@@ -16,7 +16,7 @@ export const SessionList = () => {
   const [form] = Form.useForm()
   const { ref, inView } = useInView()
 
-  // Set today's start and end dates
+  // Set today's start and end dates in UTC and ISO format
   const todayStart = dayjs().utc().startOf('day').toISOString()
   const todayEnd = dayjs().utc().endOf('day').toISOString()
 
@@ -28,7 +28,7 @@ export const SessionList = () => {
     limit: '10',
   })
 
-  const limit = searchParams.get('limit') || ''
+  const limit = searchParams.get('limit') || '10'
   const startDate = searchParams.get('startDate') || todayStart
   const endDate = searchParams.get('endDate') || todayEnd
 
@@ -66,60 +66,77 @@ export const SessionList = () => {
               presets={[
                 {
                   label: 'Today',
-                  value: [dayjs().startOf('day'), dayjs().endOf('day')],
+                  value: [
+                    dayjs().utc().startOf('day'),
+                    dayjs().utc().endOf('day'),
+                  ],
                 },
                 {
                   label: 'Tomorrow',
                   value: [
-                    dayjs().add(1, 'day').startOf('day'),
-                    dayjs().add(1, 'day').endOf('day'),
+                    dayjs().add(1, 'day').utc().startOf('day'),
+                    dayjs().add(1, 'day').utc().endOf('day'),
+                  ],
+                },
+                {
+                  label: 'Next 7 Days',
+                  value: [
+                    dayjs().add(1, 'day').utc().startOf('day'),
+                    dayjs().add(7, 'days').utc().endOf('day'),
+                  ],
+                },
+                {
+                  label: 'Next 30 Days',
+                  value: [
+                    dayjs().add(1, 'day').utc().startOf('day'),
+                    dayjs().add(30, 'days').utc().endOf('day'),
                   ],
                 },
                 {
                   label: 'Next Month',
                   value: [
-                    dayjs().add(1, 'month').startOf('month'),
-                    dayjs().add(1, 'month').endOf('month'),
+                    dayjs().add(1, 'month').utc().startOf('month'),
+                    dayjs().add(1, 'month').utc().endOf('month'),
                   ],
                 },
                 {
                   label: 'Next Year',
                   value: [
-                    dayjs().add(1, 'year').startOf('year'),
-                    dayjs().add(1, 'year').endOf('year'),
+                    dayjs().add(1, 'year').utc().startOf('year'),
+                    dayjs().add(1, 'year').utc().endOf('year'),
                   ],
                 },
                 {
                   label: 'Last 7 Days',
                   value: [
-                    dayjs().add(-7, 'd').startOf('day'),
-                    dayjs().endOf('day'),
+                    dayjs().subtract(7, 'days').utc().startOf('day'),
+                    dayjs().utc().endOf('day'),
                   ],
                 },
                 {
                   label: 'Last 14 Days',
                   value: [
-                    dayjs().add(-14, 'd').startOf('day'),
-                    dayjs().endOf('day'),
+                    dayjs().subtract(14, 'days').utc().startOf('day'),
+                    dayjs().utc().endOf('day'),
                   ],
                 },
                 {
                   label: 'Last 30 Days',
                   value: [
-                    dayjs().add(-30, 'd').startOf('day'),
-                    dayjs().endOf('day'),
+                    dayjs().subtract(30, 'days').utc().startOf('day'),
+                    dayjs().utc().endOf('day'),
                   ],
                 },
                 {
                   label: 'Last 90 Days',
                   value: [
-                    dayjs().add(-90, 'd').startOf('day'),
-                    dayjs().endOf('day'),
+                    dayjs().subtract(90, 'days').utc().startOf('day'),
+                    dayjs().utc().endOf('day'),
                   ],
                 },
               ]}
               size="large"
-              defaultValue={[dayjs(todayStart), dayjs(todayEnd)]}
+              defaultValue={[dayjs(startDate).utc(), dayjs(endDate).utc()]}
               onChange={(dates) => {
                 if (!dates) return
                 const [startDate, endDate] = dates
@@ -127,9 +144,9 @@ export const SessionList = () => {
                 setSearchParams((prev: URLSearchParams) => {
                   prev.set(
                     'startDate',
-                    startDate?.utc().startOf('day').toISOString(),
+                    startDate.utc().startOf('day').toISOString(),
                   )
-                  prev.set('endDate', endDate?.utc().endOf('day').toISOString())
+                  prev.set('endDate', endDate.utc().endOf('day').toISOString())
                   return prev
                 })
               }}
