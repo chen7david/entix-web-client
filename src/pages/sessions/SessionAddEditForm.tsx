@@ -191,6 +191,7 @@ export const SessionAddEditForm = () => {
                 { value: 40, label: '40 session' },
                 { value: 60, label: '60 session' },
                 { value: 100, label: '100 session' },
+                { value: 200, label: '200 session' },
               ]}
             />
           </Form.Item>

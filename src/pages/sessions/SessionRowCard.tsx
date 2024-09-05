@@ -40,7 +40,9 @@ export const SessionRowCard = ({
 
       <span className="text-xs">
         {dayjs(session.startDate).format('dddd - HH:mm')}
-        <div>{dayjs(session.startDate).format('YYYY-MM-DD')}</div>
+        {dayjs(session.startDate)
+          .add(session.duration, 'minute')
+          .format(' - HH:mm')}
       </span>
       <span className="">{session.name}</span>
       <span className="md:text-center">{session.duration}</span>
