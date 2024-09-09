@@ -51,7 +51,6 @@ export const UserAddEditForm = () => {
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams({
     firstName: '',
-    sortBy: 'created_at:desc',
     limit: '10',
   })
 
@@ -306,10 +305,10 @@ export const UserAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="nativeName"
+            name="otherName"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
-            <Input placeholder="Native name" />
+            <Input placeholder="Other name" />
           </Form.Item>
 
           <Form.Item
@@ -322,7 +321,7 @@ export const UserAddEditForm = () => {
 
           <Form.Item
             hasFeedback
-            name="wechatid"
+            name="wechat"
             rules={[isEditingUser ? UpdateUserDtoRule : CreateUserDtoRule]}
           >
             <Input placeholder="Wechat" />
