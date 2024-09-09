@@ -149,7 +149,6 @@ export const SessionAddEditForm = () => {
           >
             <GroupSearchSelect />
           </Form.Item>
-
           <Form.Item
             hasFeedback
             name="startDate"
@@ -171,7 +170,6 @@ export const SessionAddEditForm = () => {
               allowClear={false}
             />
           </Form.Item>
-
           <Form.Item
             hidden={editSession !== null}
             hasFeedback
@@ -195,9 +193,7 @@ export const SessionAddEditForm = () => {
               ]}
             />
           </Form.Item>
-
           <Divider dashed />
-
           <Form.Item hidden={isEditingSession}>
             <Button
               loading={createSessionMutation.isPending}
@@ -207,7 +203,6 @@ export const SessionAddEditForm = () => {
               Submit
             </Button>
           </Form.Item>
-
           <Form.Item hidden={!isEditingSession}>
             <Button
               loading={updateSessionMutation.isPending}
@@ -217,7 +212,6 @@ export const SessionAddEditForm = () => {
               Save
             </Button>
           </Form.Item>
-
           {/* <Form.Item>
             {editSession && (
               <SessionDeleteModel closeDrawer={closeDrawer} group={editSession} />

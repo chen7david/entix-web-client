@@ -1,6 +1,6 @@
 import { getUserEtpBalance, makePayment } from '@/api/clients/payment.client'
 import { currUserAtom } from '@/store/auth.atom'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Avatar, Button, message } from 'antd'
 import { CurrencyType, IUserWithAttendance } from 'entix-shared'
 import { useAtom } from 'jotai'
@@ -24,6 +24,7 @@ export const SessionPointsCard = forwardRef<
   const [score, setScore] = useState(0)
   const [currUser] = useAtom(currUserAtom)
   const [isHovered, setIsHovered] = useState(false)
+  const queryClient = useQueryClient()
 
   const handleMouseEnter = () => {
     setIsHovered(true)
@@ -41,8 +42,11 @@ export const SessionPointsCard = forwardRef<
   })
 
   const sessionPointsMutation = useMutation({
+    mutationKey: ['etp:make-payment'],
     mutationFn: makePayment,
     onSuccess: () => {
+      // invalidate the user:etp-balance
+      queryClient.invalidateQueries({ queryKey: ['user:etp-balance'] })
       message.success(`Added ${score} points to ${user.firstName}'s account`)
       setScore(0)
     },
