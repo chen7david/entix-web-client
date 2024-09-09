@@ -32,7 +32,6 @@ export const PaymentPlanAddEditForm = () => {
   const queryClient = useQueryClient()
   const [searchParams] = useSearchParams({
     name: '',
-    sortBy: 'created_at:desc',
     limit: '10',
   })
 
