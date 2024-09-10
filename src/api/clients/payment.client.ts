@@ -1,10 +1,24 @@
-import { ICreatePaymentDto, IPaymentEntity } from 'entix-shared'
+import {
+  ICreatePaymentDto,
+  IPaymentEntity,
+  IReverseTransferDto,
+} from 'entix-shared'
 import { http } from '../http'
 
 export const makePayment = async (
-  ledgerPaymentDto: ICreatePaymentDto,
+  createPaymentDto: ICreatePaymentDto,
 ): Promise<{ sender: IPaymentEntity; recipient: IPaymentEntity }> => {
-  const response = await http.post('/api/v1/payments', ledgerPaymentDto)
+  const response = await http.post('/api/v1/payments', createPaymentDto)
+  return response.data
+}
+
+export const reversePayment = async (
+  reversePaymentDto: IReverseTransferDto,
+): Promise<{ sender: IPaymentEntity; recipient: IPaymentEntity }> => {
+  const response = await http.post(
+    '/api/v1/payments/reverse-transfers',
+    reversePaymentDto,
+  )
   return response.data
 }
 

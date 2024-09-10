@@ -65,7 +65,6 @@ export const UserRowCard = ({ user, className, ...props }: IUserRowCard) => {
           shape="circle"
           icon={<WalletOutlined />}
           onClick={() => {
-            console.log('hello there')
             setEditUser(user)
             setIsManageWallet(true)
           }}

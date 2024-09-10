@@ -11,6 +11,7 @@ import { useInView } from 'react-intersection-observer'
 import { useEffect } from 'react'
 import utc from 'dayjs/plugin/utc'
 import dayjs from 'dayjs'
+import { PaymentAddEditForm } from './PaymentAddEditForm'
 dayjs.extend(utc)
 
 export const Wallet = () => {
@@ -136,6 +137,7 @@ export const Wallet = () => {
           </div>
         )}
       </PageContainer>
+      <PaymentAddEditForm />
     </>
   )
 }
