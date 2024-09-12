@@ -7,6 +7,7 @@ import { SessionPointsCard, SessionPointsCardRef } from './SessionPointsCard'
 import { useRef } from 'react'
 import { Button } from 'antd'
 import { processSessionPayments } from '@/api/clients/session.client'
+import { SessionNotesCard } from './SessionNotesCard'
 
 export const SessionDetails = () => {
   const { id } = useParams()
@@ -75,6 +76,7 @@ export const SessionDetails = () => {
               }}
             />
           ))}
+          <SessionNotesCard sessionId={id || ''} />
         </div>
       </PageContainer>
     </>

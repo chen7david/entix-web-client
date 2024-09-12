@@ -2,7 +2,11 @@ import { ISession } from 'entix-shared'
 import { useAtom } from 'jotai'
 import { Avatar, Button } from 'antd'
 import cn from 'classnames'
-import { EditOutlined, FundProjectionScreenOutlined } from '@ant-design/icons'
+import {
+  EditOutlined,
+  FundProjectionScreenOutlined,
+  FileWordOutlined,
+} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { editSessionAtom, editSessionStatusAtom } from '@/store/session.atom'
 import { useNavigate } from 'react-router-dom'
@@ -64,6 +68,12 @@ export const SessionRowCard = ({
           shape="circle"
           icon={<FundProjectionScreenOutlined />}
           onClick={() => navigate('/sessions/' + session.id)}
+        />
+        <Button
+          type="text"
+          shape="circle"
+          icon={<FileWordOutlined />}
+          onClick={() => navigate('/sessions/' + session.id + '/words')}
         />
       </div>
     </div>
