@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* styles.css or in a <style> tag */
+@media print {
+  @page {
+    size: A4;
+    margin: 20mm; /* Adjust as needed */
+  }
+
+  /* Ensure content can span multiple pages */
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .page-break {
+    page-break-before: always; /* Adjust if needed */
+  }
+
+  .print-hidden {
+    display: none;
+  }
+
+  /* Prevent elements from cutting off */
+  .space-y-4 {
+    margin-bottom: 10px; /* Adjust spacing as needed */
+  }
+
+  /* Ensure the flex container doesn't cut off content */
+  .flex {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap; /* Allows content to wrap and span multiple pages */
+  }
+}

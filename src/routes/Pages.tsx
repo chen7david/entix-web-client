@@ -14,6 +14,7 @@ import { GroupList } from '@/pages/groups/GroupList'
 import { SessionList } from '@/pages/sessions/SessionList'
 import { SessionDetails } from '@/pages/sessions/SessionDetails'
 import { PaymentPlanList } from '@/pages/paymentplans/PaymentPlanList'
+import { SessionWordsPage } from '@/pages/sessions/SessionWordsPage'
 
 export const Pages = () => {
   return (
@@ -31,6 +32,7 @@ export const Pages = () => {
         <Route path="/groups" element={<GroupList />} />
         <Route path="/sessions" element={<SessionList />} />
         <Route path="/sessions/:id" element={<SessionDetails />} />
+        <Route path="/sessions/:id/words" element={<SessionWordsPage />} />
         <Route path="/paymentplans" element={<PaymentPlanList />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/wallet" element={<Wallet />} />
