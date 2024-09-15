@@ -25,6 +25,7 @@ import { createSession, updateSession } from '@/api/clients/session.client'
 import { GroupSearchSelect } from './GroupSearchSelect'
 import { findSessionUsers } from '@/api/clients/user.client'
 import { UserSessionStatusCard } from './UserSessionStatusCard'
+import TextArea from 'antd/es/input/TextArea'
 dayjs.extend(utc)
 
 export const SessionAddEditForm = () => {
@@ -167,6 +168,20 @@ export const SessionAddEditForm = () => {
               showTime
               style={{ width: '100%' }}
               placeholder="Start date"
+              allowClear={false}
+            />
+          </Form.Item>
+          <Form.Item
+            hidden={editSession === null}
+            hasFeedback
+            name="description"
+            rules={[
+              isEditingSession ? UpdateSessionDtoRule : CreateSessionDtoRule,
+            ]}
+          >
+            <TextArea
+              style={{ width: '100%' }}
+              placeholder="Description"
               allowClear={false}
             />
           </Form.Item>
