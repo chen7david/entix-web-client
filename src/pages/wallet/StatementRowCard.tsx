@@ -6,6 +6,7 @@ import { EditOutlined } from '@ant-design/icons'
 import { useAtom } from 'jotai'
 import { editPaymentAtom, editPaymentStatusAtom } from '@/store/payment.atom'
 import { Button } from 'antd'
+import { isAdminAtom } from '@/store/auth.atom'
 dayjs.extend(utc)
 
 export interface IStatementRowCard
@@ -18,6 +19,7 @@ export const StatementRowCard = ({
   className,
   ...props
 }: IStatementRowCard) => {
+  const [isAdmin] = useAtom(isAdminAtom)
   const [, setEditPayment] = useAtom(editPaymentAtom)
   const [, setIsEditPayment] = useAtom(editPaymentStatusAtom)
   return (
@@ -52,6 +54,7 @@ export const StatementRowCard = ({
       </div>
       <div id="date">{dayjs(item.createdAt).format('YYYY-MM-DD')}</div>
       <Button
+        hidden={!isAdmin}
         type="text"
         shape="circle"
         icon={<EditOutlined />}
