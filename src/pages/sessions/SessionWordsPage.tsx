@@ -121,7 +121,7 @@ export const WordListPrint = ({
           <div>
             <p className="font-medium">Pause Duration</p>
             <Select
-              defaultValue="1000"
+              defaultValue="500"
               style={{ width: 120 }}
               onChange={(value) => setPauseDuration(Number(value))}
             >
