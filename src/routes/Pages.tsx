@@ -25,6 +25,7 @@ export const Pages = () => {
         <Route path="/password-recovery" element={<OptPasswordRecovery />} />
         <Route path="/login" element={<Login />} />
       </Route>
+      <Route path="/sessions/:id/words" element={<SessionWordsPage />} />
 
       {/* PRIVATE */}
       <Route element={<PrivateRoutes />}>
@@ -32,7 +33,6 @@ export const Pages = () => {
         <Route path="/groups" element={<GroupList />} />
         <Route path="/sessions" element={<SessionList />} />
         <Route path="/sessions/:id" element={<SessionDetails />} />
-        <Route path="/sessions/:id/words" element={<SessionWordsPage />} />
         <Route path="/paymentplans" element={<PaymentPlanList />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/wallet" element={<Wallet />} />

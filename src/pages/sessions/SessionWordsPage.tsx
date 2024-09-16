@@ -9,7 +9,7 @@ import { getSessionWords } from '@/api/clients/session-words.cient'
 import { WordListPrintOut } from './WordListPrintOut'
 import { Button, Select } from 'antd'
 import { useAtom } from 'jotai'
-import { isAdminAtom } from '@/store/auth.atom'
+import { isAdminAtom, isLoginAtom } from '@/store/auth.atom'
 
 const { Option } = Select
 
@@ -24,6 +24,7 @@ export const WordListPrint = ({
 }) => {
   const staticBaseUrl = (path: string) => `https://static.entix.me${path}`
   const audioRefs = useRef<HTMLAudioElement[]>([])
+  const [isLogin] = useAtom(isLoginAtom)
   const [playingIndex, setPlayingIndex] = useState<number | null>(null)
   const [isEnglish, setIsEnglish] = useState(true)
   const [isPlayingAll, setIsPlayingAll] = useState(false)
@@ -105,15 +106,17 @@ export const WordListPrint = ({
   return (
     <>
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold">{documentTitle}</h2>
-            <p className="text-lg">{session?.xid}</p>
-            <p className="text-lg">
-              {dayjs(session?.startDate).format('YYYY-MM-DD')}
-            </p>
+        {isLogin && (
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold">{documentTitle}</h2>
+              <p className="text-lg">{session?.xid}</p>
+              <p className="text-lg">
+                {dayjs(session?.startDate).format('YYYY-MM-DD')}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
         <div className="flex gap-4 items-center">
           <div>
             <p className="font-medium">Pause Duration</p>
@@ -194,10 +197,13 @@ export const WordListPrint = ({
 
 export const SessionWordsPage = () => {
   const [isAdmin] = useAtom(isAdminAtom)
+  const [isLogin] = useAtom(isLoginAtom)
   const { id } = useParams()
+
   const findSessionQuery = useQuery({
     queryKey: ['session:current'],
     queryFn: () => findOneSession(id || ''),
+    enabled: isLogin,
   })
 
   const findSessionWordsQuery = useQuery({
