@@ -52,6 +52,36 @@ export const SessionWordsPage = () => {
   const words = findSessionWordsQuery.data || []
   const printRef = useRef<HTMLDivElement>(null)
 
+  // Function to play the audio for the word list
+  const playAudio = async () => {
+    for (const word of words) {
+      const englishAudio = new Audio(
+        `https://api.entix.me/audio/${word.voiceEnUrl}`,
+      )
+      const chineseAudio = new Audio(
+        `https://api.entix.me/audio/${word.voiceZhUrl}`,
+      )
+
+      // Play English audio
+      await englishAudio.play()
+      await new Promise((resolve) => {
+        englishAudio.onended = resolve
+      })
+
+      // 2-second pause
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      // Play Chinese audio
+      await chineseAudio.play()
+      await new Promise((resolve) => {
+        chineseAudio.onended = resolve
+      })
+
+      // 2-second pause before the next word
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+    }
+  }
+
   return (
     <div className="p-6">
       {/* Print button */}
@@ -63,6 +93,14 @@ export const SessionWordsPage = () => {
         )}
         content={() => printRef.current}
       />
+
+      {/* Play button */}
+      <button
+        className="mb-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 ml-4"
+        onClick={playAudio}
+      >
+        Play Words
+      </button>
 
       {/* Session details (shown on screen, not printed) */}
 
