@@ -42,7 +42,7 @@ export const SessionPointsCard = forwardRef<
   })
 
   const sessionPointsMutation = useMutation({
-    mutationKey: ['etp:make-payment'],
+
     mutationFn: makePayment,
     onSuccess: () => {
       // invalidate the user:etp-balance
