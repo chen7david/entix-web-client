@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { PlusOutlined } from '@ant-design/icons'
 import { createSchemaFieldRule } from 'antd-zod'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
@@ -42,21 +41,11 @@ export const PaymentAddEditForm = () => {
   })
 
   const handleOnsubmit = async (v: IReverseTransferDto) => {
-    console.log(v)
     reversePaymentMutation.mutate(v)
   }
 
-  console.log(editPayment)
   return (
     <>
-      <div className="flex-1 flex justify-end">
-        <Button
-          className="item-right"
-          size="large"
-          icon={<PlusOutlined />}
-          onClick={() => setIsDrawerOpen(true)}
-        />
-      </div>
       <Drawer
         title={`${isEditingPayment ? 'Edit' : 'Add'} Payment`}
         onClose={() => closeDrawer()}
