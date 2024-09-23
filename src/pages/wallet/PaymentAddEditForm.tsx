@@ -41,11 +41,9 @@ export const PaymentAddEditForm = () => {
   })
 
   const handleOnsubmit = async (v: IReverseTransferDto) => {
-    console.log(v)
     reversePaymentMutation.mutate(v)
   }
 
-  console.log(editPayment)
   return (
     <>
       <Drawer
