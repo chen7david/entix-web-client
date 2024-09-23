@@ -49,14 +49,6 @@ export const PaymentAddEditForm = () => {
   console.log(editPayment)
   return (
     <>
-      <div className="flex-1 flex justify-end">
-        <Button
-          className="item-right"
-          size="large"
-          icon={<PlusOutlined />}
-          onClick={() => setIsDrawerOpen(true)}
-        />
-      </div>
       <Drawer
         title={`${isEditingPayment ? 'Edit' : 'Add'} Payment`}
         onClose={() => closeDrawer()}
