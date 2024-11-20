@@ -84,7 +84,7 @@ export const SessionAddEditForm = () => {
     mutationFn: updateSession,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['session', { startDate, endDate }],
+        queryKey: ['sessions'],
       })
       closeDrawer()
       message.success('User updated successfully')
