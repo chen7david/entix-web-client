@@ -8,12 +8,15 @@ import { useRef } from 'react'
 import { Button } from 'antd'
 import { processSessionPayments } from '@/api/clients/session.client'
 import { SessionNotesCard } from './SessionNotesCard'
+import { useQueryClient } from '@tanstack/react-query'
 
 export const SessionDetails = () => {
   const { id } = useParams()
   // Correctly type the ref array
   const cardRefs = useRef<(SessionPointsCardRef | null)[]>([])
-
+  
+  const queryClient = useQueryClient()
+  
   const handleSaveAll = () => {
     cardRefs.current.forEach((ref) => ref?.savePoints())
   }
@@ -36,6 +39,11 @@ export const SessionDetails = () => {
   })
 
   const processSessionPaymentsMutation = useMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['session:users'],
+      })
+    },
     mutationFn: processSessionPayments,
   })
 
@@ -82,3 +90,4 @@ export const SessionDetails = () => {
     </>
   )
 }
+//session:users
