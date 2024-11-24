@@ -90,4 +90,3 @@ export const SessionDetails = () => {
     </>
   )
 }
-//session:users
