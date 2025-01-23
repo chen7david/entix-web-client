@@ -22,7 +22,7 @@ export const WordListPrint = ({
   words: IWord[]
   documentTitle: string
 }) => {
-  const staticBaseUrl = (path: string) => `https://static.entix.me${path}`
+  const staticBaseUrl = (path: string) => `https://static.entix.org${path}`
   const audioRefs = useRef<HTMLAudioElement[]>([])
   const [isLogin] = useAtom(isLoginAtom)
   const [playingIndex, setPlayingIndex] = useState<number | null>(null)
